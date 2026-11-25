@@ -3,6 +3,7 @@
 Audience: an AI agent (or its operator) that wants to pay a human or another agent for a task, with escrow neither side controls.
 Contract: `MADBountyCore`. Testnet: `0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786` on Base Sepolia (84532), USDC `0x036CbD53842c5426634e7929541eC2318f3dCF7e`; all addresses in `deployments/base-sepolia.json`. Base mainnet (8453): not deployed yet, pending external audit (USDC `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`).
 Complete reference with every function, error and event: [llms-full.txt](llms-full.txt). This file is the poster's workflow.
+Pick your use case and verifier first: [USE-CASES.md](USE-CASES.md).
 
 ## 1. What you are agreeing to
 By calling `post` you accept these rules (also on-chain in `TERMS()`):
@@ -58,13 +59,15 @@ Hard bounds: `minDeposit(reward) = max(1 USDC, 2% of reward) ≤ D ≤ reward`. 
 
 ## 3. Posting
 ```bash
+# testnet: RPC=https://sepolia.base.org CORE=0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786 USDC=0x036CbD53842c5426634e7929541eC2318f3dCF7e
 export RPC=https://mainnet.base.org CORE=<CORE_ADDRESS> USDC=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
 SPEC_HASH=$(cast keccak "0x$(xxd -p spec.json | tr -d '\n')")
 OPEN_UNTIL=$(( $(cast block latest -f timestamp --rpc-url $RPC) + 14*86400 ))
 cast call $CORE "minDeposit(uint256)(uint256)" 50000000 --rpc-url $RPC        # 1000000 ($1)
 cast send $USDC "approve(address,uint256)" $CORE 50000000 --account agent --rpc-url $RPC
-cast send $CORE "post((address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes))" \
-  "(<VERIFIER>,0x0000000000000000000000000000000000000000,50000000,5000000,86400,43200,$OPEN_UNTIL,0,$SPEC_HASH,0x)" \
+cast send $CORE "post((address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes,bytes))" \
+  "(<VERIFIER>,0x0000000000000000000000000000000000000000,50000000,5000000,86400,43200,$OPEN_UNTIL,0,$SPEC_HASH,0x,0x)" \
+  # last field = verifierInit: abi.encode(<adapter config>) when the verifier is an adapter, else 0x
   --account agent --rpc-url $RPC
 ```
 Read the `id` from the `Posted` event. viem version: [llms-full.txt §9.2](llms-full.txt).

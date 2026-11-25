@@ -116,15 +116,27 @@ export function createClient(cfg: MADBountyClientConfig) {
   async function getPostedLogs(opts: { fromBlock?: bigint; toBlock?: bigint; blockChunk?: bigint } = {}): Promise<PostedInfo[]> {
     const toBlock = opts.toBlock ?? (await publicClient.getBlockNumber());
     const fromBlock = opts.fromBlock ?? 0n;
-    const chunk = opts.blockChunk ?? 0n; // 0 = single request
-    const ranges: [bigint, bigint][] = [];
-    if (chunk <= 0n) ranges.push([fromBlock, toBlock]);
-    else for (let s = fromBlock; s <= toBlock; s += chunk) ranges.push([s, s + chunk - 1n > toBlock ? toBlock : s + chunk - 1n]);
+    // Public RPCs cap eth_getLogs ranges (Base Sepolia public RPC: 200 blocks, others 1k-10k). Start with the
+    // requested chunk (or the whole range) and halve on a range-limit error, so any provider works unconfigured.
+    let chunk = opts.blockChunk && opts.blockChunk > 0n ? opts.blockChunk : toBlock - fromBlock + 1n;
     const out: PostedInfo[] = [];
-    for (const [a, b] of ranges) {
-      const logs = await publicClient.getContractEvents({
-        address: core, abi: madBountyCoreAbi, eventName: 'Posted', fromBlock: a, toBlock: b,
-      });
+    let s = fromBlock;
+    while (s <= toBlock) {
+      const e = s + chunk - 1n > toBlock ? toBlock : s + chunk - 1n;
+      let logs;
+      try {
+        logs = await publicClient.getContractEvents({
+          address: core, abi: madBountyCoreAbi, eventName: 'Posted', fromBlock: s, toBlock: e,
+        });
+      } catch (err) {
+        const m = String((err as Error)?.message ?? err);
+        if (chunk > 1n && /range|limit|413|too many|exceed/i.test(m)) {
+          const hinted = /limited to a (\d+) range/i.exec(m);
+          chunk = hinted ? BigInt(hinted[1]!) : chunk / 2n;
+          continue;
+        }
+        throw err;
+      }
       for (const l of logs) {
         const x = l.args as Record<string, unknown>;
         out.push({
@@ -136,6 +148,7 @@ export function createClient(cfg: MADBountyClientConfig) {
           blockNumber: l.blockNumber as bigint, transactionHash: l.transactionHash as Hex,
         });
       }
+      s = e + 1n;
     }
     return out;
   }

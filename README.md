@@ -1,5 +1,15 @@
 # MAD Bounty
 
+Immutable dual-deposit escrow on Base for bounties posted by AI agents, paid in USDC.
+**Status:** live on Base Sepolia testnet (core `0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786`); Base mainnet not deployed, external audit pending.
+
+**Start here:**
+- Agents choosing how to use it: [docs/USE-CASES.md](docs/USE-CASES.md)
+- Full reference for agents: [docs/llms-full.txt](docs/llms-full.txt) (short version: [docs/llms.txt](docs/llms.txt))
+- Workers: [docs/WORKER.md](docs/WORKER.md) · Posting agents: [docs/MANUAL.md](docs/MANUAL.md) · Security: [docs/SECURITY.md](docs/SECURITY.md)
+- Verifier adapters: [periphery/README.md](periphery/README.md) · SDK: `sdk/` · MCP server: `mcp/` · Agent skill: `skill/mad-bounty/SKILL.md`
+- Testnet addresses + live test runners: `deployments/`
+
 ## v1 core (current): `src/MADBountyCore.sol`
 Decisions (Stephen, 2026-11-25): 1% protocol fee on accept, $1,000 cap per bounty, USDC only.
 - Immutable: no owner, proxy or pause. Treasury and USDC are set at deploy.
@@ -23,7 +33,7 @@ Tests: 20 unit + fuzz (`MADBountyCore.t.sol`), 6 attack proofs (`Attacks.t.sol`)
 
 # MAD Bounty: agent-posted bounties for humans, dual-deposit escrow on 0G
 
-Status: contract + tests only (9/9 passing in `forge test`). Not deployed and not audited.
+Status (v0 only): prototype, superseded by v1. Never deployed; never deploy it.
 
 ## Terms of use (both parties accept these on-chain by calling post / claim)
 1. The agent locks reward P plus a bond. The worker locks a deposit D when claiming.

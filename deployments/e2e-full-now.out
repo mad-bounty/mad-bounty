@@ -1,0 +1,122 @@
+2026-11-25T17:15:52Z ==== NOW phase. agent 0xdb04aa53590e1D93A9Dd747552f7f51aa8f4d720 worker 0x2Ae54f56054fd4b758FA2d60500fEFDB3f5834f7 verifier 0xE54d497657C862d84C6eCEF5f6dA17D88C0959b1
+2026-11-25T17:15:54Z PASS fund verifier ETH  (0x9d9242c439cb453539f0efd0f8093cf6c154d280dee4dd7708ab011ce828e68f)
+2026-11-25T17:15:56Z PASS verifier -> agent 15 USDC  (0xe45c8fa943c6ab8782b508f63467472ec1829afe2e687c3fc2140beba814bd94)
+2026-11-25T17:15:59Z PASS worker -> agent 8 USDC  (0xe9756cfc25162d993b7928e4e1371e56f7a458201f136c20b8f2c00e2be78228)
+2026-11-25T17:16:00Z PASS agent approve  (0x31d0b8a0d1ba8549f116c7fa4ff3ff68ede863377b9620084bbb640302aaa02c)
+2026-11-25T17:16:02Z PASS worker approve  (0x9324f9fbb0dfcf1ed4f7b991cf692eb10112f2285dd89cf3f730fe9248a1e902)
+2026-11-25T17:16:03Z PASS verifier approve  (0x30fbf3b067dbf23e647c4c5a75175f7b302caf351465e50d4b03900e7d9a3e11)
+2026-11-25T17:16:04Z PASS NAME()
+2026-11-25T17:16:05Z PASS VERSION()
+2026-11-25T17:16:05Z PASS TERMS() non-empty + mentions silence rule  ("Agent escrows reward; worker escrows deposit on claim. Named verifier decides. )
+2026-11-25T17:16:06Z PASS manualURI()
+2026-11-25T17:16:07Z PASS manualHash()
+2026-11-25T17:16:07Z PASS treasury()
+2026-11-25T17:16:08Z PASS usdc()
+2026-11-25T17:16:09Z PASS FEE_BPS == 100
+2026-11-25T17:16:10Z PASS minDeposit($2) = $1 floor
+2026-11-25T17:16:10Z PASS minDeposit($100) = $2 (2%)
+2026-11-25T17:16:11Z PASS post reward < $1 reverts BadParam
+2026-11-25T17:16:12Z PASS post reward > $1000 reverts BadParam
+2026-11-25T17:16:12Z PASS post deposit < floor reverts BadParam
+2026-11-25T17:16:13Z PASS post deposit > reward reverts BadParam
+2026-11-25T17:16:14Z PASS post workWindow < 1h reverts BadParam
+2026-11-25T17:16:15Z PASS post reviewWindow < 12h reverts BadParam
+2026-11-25T17:16:15Z PASS post openUntil in past reverts BadParam
+2026-11-25T17:16:16Z PASS post verifier = 0 reverts BadParam
+2026-11-25T17:16:17Z PASS post HashReveal window+12h > review reverts BadConfig
+2026-11-25T17:16:18Z PASS post HashReveal window < 1h reverts BadConfig
+2026-11-25T17:16:18Z PASS adapter onPost by non-core reverts NotCore
+2026-11-25T17:16:19Z PASS withdraw with nothing owed reverts BadParam
+2026-11-25T17:16:20Z PASS retryBurn with nothing owed reverts BadParam
+2026-11-25T17:16:23Z PASS cancel: post #6  (0xb8d6f80c1e09e878e07a1e8d75068d01531393aa292626ef73f9b5e1623a7d96)
+2026-11-25T17:16:23Z PASS #6 cancel by stranger reverts NotAllowed
+2026-11-25T17:16:25Z PASS #6 cancel by agent  (0x95100e0cdf9b92f271bcbf0f0e0cae9d71a338379654e854ce55308d44845115)
+2026-11-25T17:16:27Z PASS #6 state Cancelled  (Cancelled)
+2026-11-25T17:16:28Z PASS #6 agent refunded in full  (0.0)
+2026-11-25T17:16:30Z PASS #6 vault holds 0.0 USDC  (0.0)
+2026-11-25T17:16:31Z PASS #6 claim after cancel reverts BadState
+2026-11-25T17:16:33Z PASS expiry: post #7  (0x0d125b2dbd8a79d8d6a71939a1f623e32fd53ffe9b65c3830c19a6e54c0c397c)
+2026-11-25T17:16:33Z PASS #7 refundExpired before openUntil reverts TooEarly
+2026-11-25T17:16:35Z PASS claimAuthorizer=V, verifier=V: post #8  (0xb63f76e9e6b76c2be06e156b6365d7cafa096721f33bb01fe587f53526a68423)
+2026-11-25T17:16:36Z PASS #8 claim with no auth reverts TooLate
+2026-11-25T17:16:38Z PASS #8 W's claim auth used by another address reverts BadSig
+2026-11-25T17:16:40Z PASS #8 claim auth signed by wrong key reverts BadSig
+2026-11-25T17:16:41Z PASS #8 claim with valid auth  (0xe5cecc1baf522e45f5b3d0f86024c4021e02f91a4ab6079808b2f8ce4b767dbe)
+2026-11-25T17:16:43Z PASS #8 state Claimed  (Claimed)
+2026-11-25T17:16:44Z PASS #8 vault holds 2.0 USDC  (2.0)
+2026-11-25T17:16:45Z PASS #8 second claim reverts BadState
+2026-11-25T17:16:46Z PASS #8 submit by non-worker reverts NotAllowed
+2026-11-25T17:16:46Z PASS #8 settle before submit reverts BadState
+2026-11-25T17:16:48Z PASS #8 submit  (0x1db67169822f035ad8679fe78d1e0376858fc6a4d1ef3f6b6289239b7ef8a090)
+2026-11-25T17:16:48Z PASS #8 settle by non-verifier reverts NotAllowed
+2026-11-25T17:16:49Z PASS #8 payOnTimeout early reverts TooEarly
+2026-11-25T17:16:50Z PASS #8 extendReview by worker reverts NotAllowed
+2026-11-25T17:16:53Z PASS #8 verifier settle(accept) directly  (0x86db8cbc8d385de05593375fee5f443720f1addc312be1147711770cd2bb66e0)
+2026-11-25T17:16:54Z PASS #8 state Paid  (Paid)
+2026-11-25T17:16:55Z PASS #8 worker +1.99 (reward-1% + deposit)  (1.99)
+2026-11-25T17:16:56Z PASS #8 treasury +0.01 fee
+2026-11-25T17:16:58Z PASS #8 vault holds 0.0 USDC  (0.0)
+2026-11-25T17:16:58Z PASS #8 settle twice reverts BadState
+2026-11-25T17:17:01Z PASS abandon: post #9  (0x1c25e9e16ec34908ae16286ec5d20ea5f9bab28569268b93bfd0da1c940fd7bc)
+2026-11-25T17:17:02Z PASS #9 claim  (0x0b6eabf444be62d28f3db5cee4af42ee0e036ed906bf8aa05ab8c29590ffe575)
+2026-11-25T17:17:03Z PASS #9 reclaimAbandoned early reverts TooEarly
+2026-11-25T17:17:05Z PASS direct reject+reverse: post #10  (0x361ce53414cbff71b724a0ddf2e321d9bbbe4e1ecc81b7a88e048f4a59b0d215)
+2026-11-25T17:17:06Z PASS #10 claim  (0xed7353c1e90e8914649357d6b716681d003d7a1f5acf7c7b8b259d46568f96a0)
+2026-11-25T17:17:08Z PASS #10 submit  (0x6b8ed6375fdb71df0083622996d011008a9d537c7d86a772154d11d92bbf5535)
+2026-11-25T17:17:09Z PASS #10 verifier settle(reject)  (0x0047ac27cedfb9f15458c2d720ab4551521af517954b00686cd63ba155586198)
+2026-11-25T17:17:11Z PASS #10 state Rejected  (Rejected)
+2026-11-25T17:17:12Z PASS #10 finalizeReject during cooling reverts TooEarly
+2026-11-25T17:17:12Z PASS #10 reverse by non-verifier reverts NotAllowed
+2026-11-25T17:17:14Z PASS #10 verifier reverse()  (0x03c16c70253b9485bef0d1e3380e4a65317d3a64dc8e20cf5a267a4ac431d98e)
+2026-11-25T17:17:16Z PASS #10 state Paid  (Paid)
+2026-11-25T17:17:17Z PASS #10 worker paid after reverse
+2026-11-25T17:17:18Z PASS #10 vault holds 0.0 USDC  (0.0)
+2026-11-25T17:17:20Z PASS sig reject+reverseWithSig: post #11  (0xeea63e4506a6d76d9e4fe0d0d28848be5f53180d07fc796c3b91f2a427e44e52)
+2026-11-25T17:17:21Z PASS #11 claim  (0xf85a825d01d7a86c5bc329e2c894d5dac08d95696a6919b8093636d0a61e9ae6)
+2026-11-25T17:17:23Z PASS #11 submit  (0x35ac27dbb6b420ec869267255ab041db28d35aeb695f8e133ab304cdd92db803)
+2026-11-25T17:17:25Z PASS #11 replay of #3-style accept sig for another id reverts BadSig
+2026-11-25T17:17:27Z PASS #11 accept sig with wrong evidence reverts BadSig
+2026-11-25T17:17:30Z PASS #11 verdict signed by agent key reverts BadSig
+2026-11-25T17:17:33Z PASS #11 stranger relays reject sig  (0x0a45afdfbc6e0af89824f3a985f7d75ee745a268ab3c1ea54d49231f2f02d84e)
+2026-11-25T17:17:34Z PASS #11 state Rejected  (Rejected)
+2026-11-25T17:17:35Z PASS #11 reject sig reused as reverse reverts BadSig
+2026-11-25T17:17:37Z PASS #11 accept sig can't overturn reject reverts BadState
+2026-11-25T17:17:40Z PASS #11 reverseWithSig relayed  (0xfc312cbd65c1a89c024ea814be023dc5b76709ceda531778c81b9f3930a6bd30)
+2026-11-25T17:17:41Z PASS #11 state Paid  (Paid)
+2026-11-25T17:17:43Z PASS extendReview + timeout: post #12  (0xf2e5a72c22d9058112262bdfdaaa2257dde49e3573840264aa74909a9b2e28ea)
+2026-11-25T17:17:45Z PASS #12 claim  (0x6bcbfb85d8f93279c2234a461dae33594946045ae0cedf69196c651f000d0a35)
+2026-11-25T17:17:46Z PASS #12 submit  (0x43f6edf5312b88a29e2858c0ba664738ecf3b1154b1c792e6e79add118aee217)
+2026-11-25T17:17:48Z PASS #12 agent extendReview  (0xf38f3b95f2c1f4bb16128f0bb012ce69675523cb199aead87e6b54c9b84ff36e)
+2026-11-25T17:17:49Z PASS #12 deadline +12h
+2026-11-25T17:17:50Z PASS #12 second extendReview reverts NotAllowed
+2026-11-25T17:17:52Z PASS REFUND reject: post #13  (0x0f625517516e224f1b6c6ccb70aa7eb55edd3bf13e5a276f5cb1120859de3f13)
+2026-11-25T17:17:53Z PASS #13 claim  (0x6f69df4f371deeb8d788d2a1215ddb631ea39304b29ba3abe1be4b444cb0889a)
+2026-11-25T17:17:55Z PASS #13 submit  (0x932d29f3f51a0aa640e7391f30fc2617df972b6194d1451dd5b5d807877efdcd)
+2026-11-25T17:17:56Z PASS #13 reject (REFUND)  (0xe8bce7506ad6da20d9232437be2ab54a3a0c744258cb5bede7c1dae8b21208ee)
+2026-11-25T17:17:58Z PASS BURN reject: post #14  (0xfa8d5d34a848faf30a1afbdfcae093464b690d55a1d7c19d0549c5303da02792)
+2026-11-25T17:18:00Z PASS #14 claim  (0x8e629a6f99f0aab35665bee852230022430f866f838f54652c32bcbd5a5d8e66)
+2026-11-25T17:18:01Z PASS #14 submit  (0xee590b9b286bf617ee38d840937b6cef51330554fe89ce59d576a956f3455988)
+2026-11-25T17:18:03Z PASS #14 reject (BURN)  (0x7a0683cb9fbbbf59cd6c19452e245075550c3cf8caa7a21869b7432cba1895a6)
+2026-11-25T17:18:05Z PASS Fallback [V, backup] step 120s: post #15  (0x1f879d88676a1e37a59ec16f5b4a6b06a34ca360237414b04310e97f78b0d504)
+2026-11-25T17:18:06Z PASS #15 claim  (0xe59accbddc4863c39ae5f17b14c9145c019fe7ac7b8e08ad4cacf856332cf0c9)
+2026-11-25T17:18:08Z PASS #15 submit  (0xe082b660b98772759da46ad2e23da976ab905c31d15bb87c480b5bdafd7abc0a)
+2026-11-25T17:18:09Z PASS #15 backup verdict before its step reverts TooEarly
+2026-11-25T17:18:10Z PASS #15 backup sig claimed as primary reverts BadSig
+2026-11-25T17:18:11Z PASS #15 signer index out of range reverts BadIndex
+2026-11-25T17:18:13Z PASS Fallback primary reject + reverse: post #16  (0xd08439f181b26cbc801e1d035be4c81ed4141171ddcf981374c562ac79e1ce3f)
+2026-11-25T17:18:14Z PASS #16 claim  (0xe5982a1c348491811c0b85fe32b05369087f96542e2a3b17694a10b36a47900d)
+2026-11-25T17:18:16Z PASS #16 submit  (0x074753ab437fdd597e560f8f372bb3eacbcf455ff3164387ff0964e3c5a5cdef)
+2026-11-25T17:18:18Z PASS #16 primary reject via Fallback  (0xb481e26b349c7e5c6f117b4bcc4b3314fc40bbe504bf010ee8e341750ed4f349)
+2026-11-25T17:18:19Z PASS #16 state Rejected  (Rejected)
+2026-11-25T17:18:21Z PASS #16 backup cannot reverse reverts BadSig
+2026-11-25T17:18:23Z PASS #16 core-domain reverse sig rejected by adapter reverts BadSig
+2026-11-25T17:18:24Z PASS #16 primary reverse via Fallback  (0x29870ea266010998b08fff01c9111e853350a3c6721b290da4d000f24fd2b3d0)
+2026-11-25T17:18:26Z PASS #16 state Paid  (Paid)
+2026-11-25T17:18:27Z FAIL Fallback configure after atomic config reverts AlreadyConfigured  (Error: server returned an error response: error code 3: execution reverted, data: "0xddafad98")
+2026-11-25T17:18:28Z FAIL deploy E2EFlag target  ("0xdb04aa53590e1D93A9Dd747552f7f51aa8f4d720",
+  "deployedTo": "0x765076e3Aa6ED2Ad4821f354F7bA7b15c95E9D84",
+  "transactionHash": "0xcba83e440615c2c57c4dc604a645d360ece84c001cc21e46beb81f5c6320f392"
+}
+)
+2026-11-25T17:18:30Z FAIL HashReveal: post #17  (Error: Failed to estimate gas: server returned an error response: error code 3: execution reverted, data: "0x07cc321c": BadConfig)
+post failed, aborting

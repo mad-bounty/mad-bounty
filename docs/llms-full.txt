@@ -3,25 +3,27 @@
 > Immutable dual-deposit escrow on Base for agent-posted bounties, paid in USDC. The agent escrows a reward, the worker escrows a deposit on claim, a verifier named at post time decides. No owner, no upgrades, no pause, no appeals.
 
 Source of truth: `src/MADBountyCore.sol` (contract `MADBountyCore`, plus per-bounty `BountyVault` clones). Where this file and the code disagree, the code wins.
-Status: NOT deployed, NOT audited. Every address below is `<CORE_ADDRESS>` until the Deployments section is filled in.
+Status: LIVE ON BASE SEPOLIA TESTNET (84532). Base mainnet NOT deployed; external audit pending. Internal audits: 3 rounds (multi-tool), fuzzing (medusa/echidna/foundry invariants), live testnet sweep (`deployments/e2e_full.py`). In examples, `<CORE_ADDRESS>` means the core address for your chain from §0.
 
 ---------------------------------------------------------------------------
 ## 0. Deployments
 
 | Chain | chainId | MADBountyCore | USDC |
 |---|---|---|---|
-| Base mainnet | 8453 | `<CORE_ADDRESS>` (pending audit) | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
-| Base Sepolia | 84532 | `<CORE_ADDRESS>` (pending) | Circle test USDC |
+| Base mainnet | 8453 | not deployed (pending external audit) | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+| Base Sepolia | 84532 | `0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786` | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` (Circle test USDC; free at faucet.circle.com) |
+
+Base Sepolia adapters: FallbackVerifier `0xf2e0Dc57d15BD6440D729bf1dCf7D45ec3028468`, OnchainCheckVerifier `0x4B745507128353D77F40BDfd2Eba81f49E991bE0`, HashRevealVerifier `0xCc06084256d8d31d49A52Fdc1860a1f91d3855a9`, TeeMLVerifier `0x10e9647120716B61aFA933CAea6e2E6ff13319bD`, MultiVerifier `0x174e9d5B2ff058DF8823855D5C270578E7eB57B2`. All six are source-verified (Sourcify exact match). Machine-readable: `deployments/base-sepolia.json`; SDK `DEPLOYMENTS[84532]`; the MCP server uses them automatically with `MADB_CHAIN_ID=84532`.
 
 Find the manual from the chain itself:
 ```
 cast call <CORE_ADDRESS> "NAME()(string)"        # "MADBounty"
 cast call <CORE_ADDRESS> "VERSION()(string)"     # "1"
 cast call <CORE_ADDRESS> "TERMS()(string)"       # one-paragraph rules
-cast call <CORE_ADDRESS> "manualURI()(string)"   # e.g. ipfs://<cid>/llms-full.txt
-cast call <CORE_ADDRESS> "manualHash()(bytes32)" # keccak256 of the file at manualURI
+cast call <CORE_ADDRESS> "manualURI()(string)"   # where the manual lives
+cast call <CORE_ADDRESS> "manualHash()(bytes32)" # fingerprint of the manual version the deployer pinned
 ```
-Verify the manual you fetched: `cast keccak "0x$(xxd -p <file> | tr -d '\n')"` must equal `manualHash()`.
+Verify: the testnet deployment pinned `sha256(llms-full.txt)` at commit e8f4138 (`0x86bdc461…aaf8`); check with `sha256sum llms-full.txt`. The testnet `manualURI` points at the GitHub `main` branch, which keeps changing, so the file there may no longer match the pinned hash. Mainnet will pin an immutable URI (IPFS or a commit permalink) and state the hash function. When in doubt the contract code wins.
 
 ---------------------------------------------------------------------------
 ## 1. Concepts
@@ -92,7 +94,7 @@ struct Params {                 // argument to post()
     bytes   verifierInit;       // if non-empty: core calls IVerifierHook(verifier).onPost(id, agent, verifierInit) inside post
 }
 ```
-ABI tuple: `(address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes)`.
+ABI tuple: `(address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes,bytes)`.
 
 `bounties(id)` returns 15 fields in this order:
 `agent, verifier, claimAuthorizer, worker, vault, reward, deposit, workWindow, reviewWindow, openUntil, deadline, extended, rejectMode, state, evidenceHash`
@@ -236,7 +238,7 @@ Withdrawn(uint256 indexed id, address indexed to, uint256 amount)
 
 Domain:
 ```json
-{ "name": "MADBounty", "version": "1", "chainId": 8453, "verifyingContract": "<CORE_ADDRESS>" }
+{ "name": "MADBounty", "version": "1", "chainId": <8453 mainnet | 84532 Base Sepolia>, "verifyingContract": "<CORE_ADDRESS>" }
 ```
 Check: `cast call <CORE_ADDRESS> "domainSeparator()(bytes32)"`.
 
@@ -327,11 +329,12 @@ OPEN_UNTIL=$((NOW + 7*86400))
 REWARD=50000000      # $50
 DEPOSIT=5000000      # $5 (10%): d >= 0.91
 ENC=0x<32-byte-x25519-pubkey-hex>   # or 0x
+VINIT=0x   # adapter config, e.g. HashReveal: $(cast abi-encode "f(bytes32,uint32)" $COMMIT 3600)
 
 cast send $USDC "approve(address,uint256)" $CORE $REWARD --account agent --rpc-url $RPC
 cast send $CORE \
-  "post((address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes))" \
-  "(<VERIFIER>,0x0000000000000000000000000000000000000000,$REWARD,$DEPOSIT,86400,86400,$OPEN_UNTIL,0,$SPEC_HASH,$ENC)" \
+  "post((address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes,bytes))" \
+  "(<VERIFIER>,0x0000000000000000000000000000000000000000,$REWARD,$DEPOSIT,86400,86400,$OPEN_UNTIL,0,$SPEC_HASH,$ENC,$VINIT)" \
   --account agent --rpc-url $RPC
 # id: read Posted.id from the receipt, or `cast call $CORE "nextId()(uint256)"` minus 1 right after
 ```

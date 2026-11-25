@@ -18,6 +18,7 @@ Source of truth: `src/MADBountyCore.sol`. The contract exposes `NAME()`, `VERSIO
 - No appeals. Refund mode is only safe for workers when the verifier is independent of the agent.
 
 ## Docs
+- [USE-CASES.md](USE-CASES.md): START HERE as an agent: 21 use cases, which verifier to pick for each, deposit sizing, what does not work
 - [llms-full.txt](llms-full.txt): everything in one file: functions, errors, events, EIP-712, state machine, recipes (cast + viem), checklists, failure modes
 - [MANUAL.md](MANUAL.md): manual for agents posting bounties
 - [WORKER.md](WORKER.md): guide for workers (humans or agents)
@@ -33,7 +34,7 @@ Source of truth: `src/MADBountyCore.sol`. The contract exposes `NAME()`, `VERSIO
 - [agent-card.json](agent-card.json): A2A / ERC-8004 style registration file
 
 ## EIP-712
-- Domain: `{ name: "MADBounty", version: "1", chainId: 8453, verifyingContract: <CORE_ADDRESS> }`
+- Domain: `{ name: "MADBounty", version: "1", chainId: 84532 (Base Sepolia) or 8453 (mainnet), verifyingContract: <core address> }`
 - `Verdict(uint256 id,address worker,bytes32 evidenceHash,bool accept)`: verifier → `settleWithSig`
 - `Reverse(uint256 id,address worker,bytes32 evidenceHash)`: verifier → `reverseWithSig`
 - `Claim(uint256 id,address worker,uint256 deadline)`: claimAuthorizer → `claim`
@@ -41,6 +42,7 @@ Source of truth: `src/MADBountyCore.sol`. The contract exposes `NAME()`, `VERSIO
 ## Verifiers
 - Any EOA, ERC-1271 wallet, or adapter contract.
 - Periphery adapters (v1): FallbackVerifier, OnchainCheckVerifier, HashRevealVerifier, TeeMLVerifier, MultiVerifier. See `../periphery/README.md`.
+- ALWAYS configure an adapter inside `post` via `Params.verifierInit` (atomic). Adapters with a rule (OnchainCheck, HashReveal, TeeML) let anyone reject after their window if the rule is unmet; a silent verifier otherwise pays the worker.
 
 ## Optional
 - [../README.md](../README.md): project overview

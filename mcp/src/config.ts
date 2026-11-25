@@ -16,7 +16,7 @@ export interface ServerConfig {
 
 export function configFromEnv(env: NodeJS.ProcessEnv = process.env): ServerConfig {
   const chainId = Number(env.MADB_CHAIN_ID ?? 8453);
-  const dep = (DEPLOYMENTS as Record<number, { core: Address; usdc: Address; verifiers: Record<string, Address> }>)[chainId];
+  const dep = (DEPLOYMENTS as Record<number, { core: Address; deployBlock: bigint; usdc: Address; verifiers: Record<string, Address> }>)[chainId];
   const core = env.MADB_CORE && isAddress(env.MADB_CORE) ? getAddress(env.MADB_CORE) : dep?.core;
   const pk = env.MADB_PRIVATE_KEY?.trim();
   if (pk && !/^0x[0-9a-fA-F]{64}$/.test(pk)) throw new Error('MADB_PRIVATE_KEY must be 0x + 64 hex chars');
@@ -28,7 +28,7 @@ export function configFromEnv(env: NodeJS.ProcessEnv = process.env): ServerConfi
     privateKey: pk as Hex | undefined,
     knownVerifiers: [...new Set([...(env.MADB_KNOWN_VERIFIERS ?? '').split(',').map((s) => s.trim()).filter((s): s is Address => isAddress(s)).map((a) => getAddress(a)), ...Object.values(dep?.verifiers ?? {})])],
     manualPath: env.MADB_MANUAL_PATH,
-    fromBlock: BigInt(env.MADB_FROM_BLOCK ?? 0),
+    fromBlock: env.MADB_FROM_BLOCK ? BigInt(env.MADB_FROM_BLOCK) : (dep?.deployBlock ?? 0n),
   };
 }
 

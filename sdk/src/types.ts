@@ -112,6 +112,7 @@ export interface TimeoutSet {
 export const DEPLOYMENTS = {
   84532: {
     core: '0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786',
+    deployBlock: 63518400n,
     usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
     verifiers: {
       fallback: '0xf2e0Dc57d15BD6440D729bf1dCf7D45ec3028468',
@@ -121,4 +122,4 @@ export const DEPLOYMENTS = {
       multi: '0x174e9d5B2ff058DF8823855D5C270578E7eB57B2',
     },
   },
-} as const satisfies Record<number, { core: Address; usdc: Address; verifiers: Record<string, Address> }>;
+} as const satisfies Record<number, { core: Address; deployBlock: bigint; usdc: Address; verifiers: Record<string, Address> }>;

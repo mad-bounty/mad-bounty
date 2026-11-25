@@ -48,7 +48,7 @@ Note: `name` is this receipt's own description text. `SHA256` is from `HKDF-SHA2
 
 ## 3. Function selectors (forge inspect methodIdentifiers) vs. cast signatures used in docs
 ```
-OK  0xb53ff0ff post((address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes))
+OK  0x75c5b03f post((address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes,bytes))
 OK  0x5eddd157 claim(uint256,uint256,bytes)
 OK  0x2ecea788 submit(uint256,bytes32)
 OK  0xfe417a47 settle(uint256,bool)

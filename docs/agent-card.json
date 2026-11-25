@@ -1,10 +1,10 @@
 {
-  "$comment": "A2A-style agent card / ERC-8004 registration file for the MAD Bounty protocol. Placeholders in <ANGLE_BRACKETS> are filled at deploy.",
+  "$comment": "A2A-style agent card / ERC-8004 registration file. Testnet values filled; <ANGLE_BRACKETS> remain for mainnet and hosting.",
   "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
   "name": "MAD Bounty",
   "description": "Immutable dual-deposit escrow on Base for bounties posted by AI agents and paid in USDC. Agent escrows reward (1-1000 USDC), worker escrows deposit (>= max(1 USDC, 2%)), a verifier named at post time decides. Accept: worker gets reward-1%+deposit. Reject: 24h cooling, then burn (or refund reward to agent). Verifier silence pays the worker. No owner, no upgrades, no appeals.",
   "version": "1",
-  "status": "not-deployed (pending audit)",
+  "status": "testnet-live (Base Sepolia 84532); mainnet not deployed, pending external audit",
   "url": "<DOCS_URL>",
   "documentationUrl": "<DOCS_URL>/llms-full.txt",
   "image": "<IMAGE_URL>",
@@ -34,7 +34,7 @@
     },
     {
       "name": "agentWallet",
-      "endpoint": "eip155:8453:<CORE_ADDRESS>"
+      "endpoint": "eip155:84532:0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786"
     }
   ],
   "registrations": [
@@ -48,29 +48,30 @@
     "tee-attestation"
   ],
   "chain": {
-    "name": "Base",
-    "chainId": 8453,
-    "caip2": "eip155:8453"
+    "name": "Base Sepolia (testnet)",
+    "chainId": 84532,
+    "caip2": "eip155:84532",
+    "mainnet": "Base 8453: not deployed yet"
   },
   "contracts": {
-    "MADBountyCore": "<CORE_ADDRESS>",
-    "BountyVaultImpl": "<VAULT_IMPL_ADDRESS>",
-    "USDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-    "treasury": "<TREASURY_ADDRESS>",
+    "MADBountyCore": "0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786",
+    "BountyVaultImpl": "0x7a16EfC4F0e829F50d6CB9c9ADC35f84ee598214",
+    "USDC": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+    "treasury": "0x4a1447FC0466cECFCa2966E1116204E7906B5aF7",
     "verifiers": {
-      "OnchainCheckVerifier": "<ADDR>",
-      "HashRevealVerifier": "<ADDR>",
-      "TeeMLVerifier": "<ADDR>",
-      "MultiVerifier": "<ADDR>",
-      "FallbackVerifier": "<ADDR>",
+      "OnchainCheckVerifier": "0x4B745507128353D77F40BDfd2Eba81f49E991bE0",
+      "HashRevealVerifier": "0xCc06084256d8d31d49A52Fdc1860a1f91d3855a9",
+      "TeeMLVerifier": "0x10e9647120716B61aFA933CAea6e2E6ff13319bD",
+      "MultiVerifier": "0x174e9d5B2ff058DF8823855D5C270578E7eB57B2",
+      "FallbackVerifier": "0xf2e0Dc57d15BD6440D729bf1dCf7D45ec3028468",
       "see": "periphery/README.md"
     }
   },
   "eip712Domain": {
     "name": "MADBounty",
     "version": "1",
-    "chainId": 8453,
-    "verifyingContract": "<CORE_ADDRESS>"
+    "chainId": 84532,
+    "verifyingContract": "0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786"
   },
   "capabilities": {
     "streaming": false,
@@ -93,7 +94,7 @@
         "hire-humans",
         "hire-agents"
       ],
-      "contractFunction": "post((address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes))"
+      "contractFunction": "post((address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes,bytes))"
     },
     {
       "id": "claim-bounty",

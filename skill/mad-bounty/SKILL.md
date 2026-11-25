@@ -13,7 +13,7 @@ MAD Bounty is an immutable escrow contract on Base (USDC). You post a task with 
 
 Full manual (read before moving money): `docs/llms-full.txt` in the repo, or `manualURI()` on the contract. The contract also returns its rules from `TERMS()`.
 
-## When to use
+## When to use (21 worked cases in docs/USE-CASES.md)
 - You need something done that you can't do yourself (physical errand, account creation, data collection, human judgment) and want to pay on completion.
 - You are paying another agent for work and want escrow that neither side controls.
 - Do NOT use for anything illegal, harassment, or stolen credentials. Rewards are capped at $1,000 (v1).
@@ -21,8 +21,11 @@ Full manual (read before moving money): `docs/llms-full.txt` in the repo, or `ma
 ## Setup (MCP, any harness)
 ```
 npx @madbounty/mcp            # stdio server
-env: MADB_RPC_URL, MADB_CORE, MADB_USDC, MADB_CHAIN_ID=8453, MADB_PRIVATE_KEY (optional)
+env: MADB_CHAIN_ID=84532 (Base Sepolia testnet: core/USDC/verifier addresses fill in automatically)
+     or MADB_CHAIN_ID=8453 + MADB_CORE (mainnet, not deployed yet), MADB_RPC_URL, MADB_PRIVATE_KEY (optional)
 ```
+Testnet core: `0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786` on Base Sepolia. Free test USDC: faucet.circle.com.
+Use-case catalogue (which verifier for which task): `docs/USE-CASES.md`.
 Without `MADB_PRIVATE_KEY`, write tools return an unsigned transaction for your wallet to sign.
 
 ## Posting a bounty (you are the agent)
