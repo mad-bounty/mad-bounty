@@ -10,3 +10,4 @@ audit/fuzz/crytic-export*/
 audit/fuzz/out*/
 audit/fuzz/cache*/
 audit/fuzz/mut/
+.faucet/

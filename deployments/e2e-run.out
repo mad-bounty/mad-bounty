@@ -1,0 +1,16 @@
+fund worker ETH: tx 0xb70d25864613ac37f08025279e1c5b885ec392778fe74aa4d5abd2c5b0ed943b 
+fund worker USDC: tx 0xb822d90d3133a0a6baea8823f32fe36b55c2fb58489732d78b730f02f835f449 
+agent approve: tx 0xe460b8b0ada844c4a54b6fb2918377d9658cfab023c5cac6646785c038f9f137 
+worker approve: tx 0x5fde90216f5e9e09a48a20ce410b147147508d3a8f1c431b927577b90ac6493d 
+#1 post (EOA verifier, BURN): tx 0x11f73f17603277a2b7d058e8c183bb332c1f5ddbce1b87ba7817ab9d7cbaaa74 
+#1 claim/submit: tx 0xed5af584f4ce99ed5f2c6c33381997ab1c1db88187c41926af93300e18a51146 
+#1 claim/submit: tx 0xad4572941d246f7aedb82a387210d3c9bbbd4d4d03eeb9e2cb3302835d9bac81 
+#1 settleWithSig(accept): tx 0xeae66de699394b362aaa7caa0d379bdd358a49baa391bfe8d5aed5b1624ed268 
+Traceback (most recent call last):
+  File "/home/garvis108/projects/mad-bounty/deployments/e2e_sepolia.py", line 137, in <module>
+    (later_phase if sys.argv[1:] == ["later"] else now_phase)()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/garvis108/projects/mad-bounty/deployments/e2e_sepolia.py", line 76, in now_phase
+    assert state(i) == 5, state(i)
+           ^^^^^^^^^^^^^
+AssertionError: 0

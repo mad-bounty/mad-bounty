@@ -1,0 +1,28 @@
+{
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "deployedAt": "2026-11-25",
+  "commit": "6fd8160",
+  "usdc": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+  "treasury": "0x4a1447FC0466cECFCa2966E1116204E7906B5aF7",
+  "manualURI": "https://github.com/GGBossman/mad-bounty/blob/main/docs/llms-full.txt",
+  "manualHash": "0x86bdc461dd3dc84e496398403169bd023ec01f745117f4b6e2a77cd96566aaf8",
+  "contracts": {
+    "MADBountyCore": "0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786",
+    "FallbackVerifier": "0xf2e0Dc57d15BD6440D729bf1dCf7D45ec3028468",
+    "OnchainCheckVerifier": "0x4B745507128353D77F40BDfd2Eba81f49E991bE0",
+    "HashRevealVerifier": "0xCc06084256d8d31d49A52Fdc1860a1f91d3855a9",
+    "TeeMLVerifier": "0x10e9647120716B61aFA933CAea6e2E6ff13319bD",
+    "MultiVerifier": "0x174e9d5B2ff058DF8823855D5C270578E7eB57B2"
+  },
+  "verification": "Sourcify exact_match (creation + runtime) for all six; visible on base-sepolia.blockscout.com",
+  "deployer": "0xdb04aa53590e1D93A9Dd747552f7f51aa8f4d720 (throwaway testnet key; contracts have no owner, so the deployer holds no powers)",
+  "deployTxs": [
+    "0x5a873c2162864564e5dbcc7c190540a1eaeec4ce25172dce56006d1f15ab0bfa",
+    "0x8cc7c2593522fed44a74be1a364418ca992719f8d96b441ecfffd8ca5e6a4da8",
+    "0x90e3ce42e193e58458a8866456458030d0e90a2e2e0810611b69879b46e1d042",
+    "0x20c775b0139a86a5f34f0c78136c5a32de68b1db918c3fee435530c79cc5bc67",
+    "0x7e5279674ce11d12efcd3ffaa378f8670694bef29d06f55c03da9eb3ad17f7f6",
+    "0x99561c84023a8a8cfeb7e6e5a168cde4c6929bc424afde7266beb1e9fc3efe5b"
+  ]
+}

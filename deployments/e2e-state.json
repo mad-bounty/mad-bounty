@@ -1,0 +1,8 @@
+{
+ "accept_sig": 1,
+ "accept_hashreveal": 2,
+ "reject_multi": 3,
+ "timeout": 4,
+ "zero_work": 5,
+ "created": 1795626117
+}

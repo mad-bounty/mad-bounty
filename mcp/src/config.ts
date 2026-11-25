@@ -1,7 +1,7 @@
 import { createPublicClient, createWalletClient, defineChain, getAddress, http, isAddress, type Address, type Hex } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { base, baseSepolia, foundry } from 'viem/chains';
-import { BASE_MAINNET_USDC, createClient, type MADBountyClient } from '@madbounty/sdk';
+import { BASE_MAINNET_USDC, DEPLOYMENTS, createClient, type MADBountyClient } from '@madbounty/sdk';
 
 export interface ServerConfig {
   rpcUrl: string;
@@ -16,16 +16,17 @@ export interface ServerConfig {
 
 export function configFromEnv(env: NodeJS.ProcessEnv = process.env): ServerConfig {
   const chainId = Number(env.MADB_CHAIN_ID ?? 8453);
-  const core = env.MADB_CORE && isAddress(env.MADB_CORE) ? getAddress(env.MADB_CORE) : undefined;
+  const dep = (DEPLOYMENTS as Record<number, { core: Address; usdc: Address; verifiers: Record<string, Address> }>)[chainId];
+  const core = env.MADB_CORE && isAddress(env.MADB_CORE) ? getAddress(env.MADB_CORE) : dep?.core;
   const pk = env.MADB_PRIVATE_KEY?.trim();
   if (pk && !/^0x[0-9a-fA-F]{64}$/.test(pk)) throw new Error('MADB_PRIVATE_KEY must be 0x + 64 hex chars');
   return {
     rpcUrl: env.MADB_RPC_URL ?? (chainId === 84532 ? 'https://sepolia.base.org' : 'https://mainnet.base.org'),
     chainId,
     core,
-    usdc: env.MADB_USDC && isAddress(env.MADB_USDC) ? getAddress(env.MADB_USDC) : BASE_MAINNET_USDC,
+    usdc: env.MADB_USDC && isAddress(env.MADB_USDC) ? getAddress(env.MADB_USDC) : (dep?.usdc ?? BASE_MAINNET_USDC),
     privateKey: pk as Hex | undefined,
-    knownVerifiers: (env.MADB_KNOWN_VERIFIERS ?? '').split(',').map((s) => s.trim()).filter((s): s is Address => isAddress(s)).map((a) => getAddress(a)),
+    knownVerifiers: [...new Set([...(env.MADB_KNOWN_VERIFIERS ?? '').split(',').map((s) => s.trim()).filter((s): s is Address => isAddress(s)).map((a) => getAddress(a)), ...Object.values(dep?.verifiers ?? {})])],
     manualPath: env.MADB_MANUAL_PATH,
     fromBlock: BigInt(env.MADB_FROM_BLOCK ?? 0),
   };

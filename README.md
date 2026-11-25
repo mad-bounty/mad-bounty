@@ -16,6 +16,8 @@ Decisions (Stephen, 2026-11-25): 1% protocol fee on accept, $1,000 cap per bount
 
 Tests: 20 unit + fuzz (`MADBountyCore.t.sol`), 6 attack proofs (`Attacks.t.sol`), 5 on a Base fork against real USDC (`ForkCore.t.sol`).
 
+**Deployed (testnet):** Base Sepolia core `0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786` + 5 adapters, Sourcify-verified. See `deployments/base-sepolia.json`; live end-to-end runner `deployments/e2e_sepolia.py`. Base mainnet: not deployed (pending external audit).
+
 ---
 ## v0 prototype (superseded, do not deploy): `src/MADBounty.sol`
 
