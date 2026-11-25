@@ -46,3 +46,7 @@ Note: default solver yices hangs on these queries; use `--solver bitwuzla` with 
 
 ## Observations (not violations)
 - minDeposit floors 2%: for reward not a multiple of 50 above $50, deposit can be < 2% by < 1 unit (1e-6 USDC).
+
+## Post-fix re-run (commit e8f4138, core sha256 a6f1ae67…)
+- medusa, 600s, 4 workers: 354,854 calls, 2,946 branches, corpus 164. All 6 properties PASSED
+  (conservation, fees, noGasGriefOwed, noViolation, owedParties, vaults). Log: logs/medusa-postfix.log
