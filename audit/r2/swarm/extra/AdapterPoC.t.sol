@@ -105,7 +105,7 @@ contract AdapterPoCTest is CoreHelpers {
         uint256 id = _post(address(ocv), MADBountyCore.RejectMode.Burn);
         vm.prank(agent);
         vm.expectRevert(AdapterBase.BadConfig.selector);
-        ocv.configure(id, address(0xEA01), "", keccak256(""));
+        ocv.configure(id, address(0xEA01), "", keccak256(""), 6 hours);
     }
 
     // ================================================================== M-2
@@ -116,7 +116,7 @@ contract AdapterPoCTest is CoreHelpers {
         Answer t = new Answer(); // answer == 0 initially
         uint256 id = _post(address(ocv), MADBountyCore.RejectMode.Burn);
         vm.prank(agent);
-        ocv.configure(id, address(t), abi.encodeCall(Answer.get, ()), keccak256(abi.encode(bytes32(0))));
+        ocv.configure(id, address(t), abi.encodeCall(Answer.get, ()), keccak256(abi.encode(bytes32(0))), 6 hours);
         _claimSubmit(id);
         assertTrue(ocv.check(id)); // passes with no work done
         vm.prank(stranger); ocv.resolve(id);

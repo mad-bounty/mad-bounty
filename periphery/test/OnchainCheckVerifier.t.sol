@@ -26,7 +26,7 @@ contract OnchainCheckVerifierTest is PeripheryBase {
 
     function _setup(bytes memory data, bytes32 exp) internal returns (uint256 id) {
         id = _post(address(oc), MADBountyCore.RejectMode.Refund);
-        vm.prank(agent); oc.configure(id, address(tgt), data, exp);
+        vm.prank(agent); oc.configure(id, address(tgt), data, exp, 6 hours);
         _claimSubmit(id, ev);
     }
 
@@ -54,7 +54,7 @@ contract OnchainCheckVerifierTest is PeripheryBase {
         uint256 id = _setup(abi.encodeCall(Target.burn, ()), keccak256(abi.encode(uint256(0))));
         uint256 g = gasleft();
         assertFalse(oc.check(id));
-        assertLt(g - gasleft(), 260_000);
+        assertLt(g - gasleft(), 1_060_000); // CHECK_GAS raised to 1M (audit L-07)
     }
 
     function test_configAuth_setOnce() public {
@@ -62,15 +62,15 @@ contract OnchainCheckVerifierTest is PeripheryBase {
         bytes memory d = abi.encodeCall(Target.get, ());
         vm.prank(stranger);
         vm.expectRevert(AdapterBase.NotAgent.selector);
-        oc.configure(id, address(tgt), d, bytes32(0));
+        oc.configure(id, address(tgt), d, bytes32(0), 6 hours);
         vm.prank(agent);
         vm.expectRevert(AdapterBase.BadConfig.selector);
-        oc.configure(id, stranger, d, bytes32(0)); // EOA target
-        vm.prank(agent); oc.configure(id, address(tgt), d, bytes32(0));
+        oc.configure(id, stranger, d, bytes32(0), 6 hours); // EOA target
+        vm.prank(agent); oc.configure(id, address(tgt), d, bytes32(0), 6 hours);
         vm.prank(agent);
         vm.expectRevert(AdapterBase.AlreadyConfigured.selector);
-        oc.configure(id, address(tgt), d, keccak256("x"));
-        (address t_, , bytes32 e_) = oc.config(id);
+        oc.configure(id, address(tgt), d, keccak256("x"), 6 hours);
+        (address t_, , bytes32 e_,) = oc.config(id);
         assertEq(t_, address(tgt)); assertEq(e_, bytes32(0));
     }
 
@@ -78,8 +78,8 @@ contract OnchainCheckVerifierTest is PeripheryBase {
         uint256 id = _post(address(oc), MADBountyCore.RejectMode.Burn);
         vm.expectRevert(AdapterBase.NotConfigured.selector);
         oc.resolve(id);
-        vm.prank(agent); oc.configure(id, address(tgt), abi.encodeCall(Target.get, ()), keccak256(abi.encode(uint256(0))));
-        vm.expectRevert(MADBountyCore.BadState.selector); // check passes, but bounty still Open
+        vm.prank(agent); oc.configure(id, address(tgt), abi.encodeCall(Target.get, ()), keccak256(abi.encode(uint256(0))), 6 hours);
+        vm.expectRevert(AdapterBase.NotSubmitted.selector); // adapter now gates on Submitted (audit M-01)
         oc.resolve(id);
     }
 

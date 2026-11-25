@@ -4,98 +4,93 @@ Singleton contracts that a bounty names as its `verifier`. Each adapter checks a
 `core.settle(id, accept)` (or `core.reverse(id)`) directly. Shared rules (`AdapterBase.sol`):
 
 - **No funds, no owner, no admin, no upgrade.** Core pays out of the per-bounty vault; adapters never hold USDC.
-- **Config is set-once, agent-only, Open-only**, and only if the adapter is the bounty's verifier
-  (`core.bounties(id).verifier == adapter`). Config must land before a worker claims, so the worker can read the
-  rule before staking a deposit. **Workers: never claim a bounty whose adapter config is missing** — an
-  unconfigured adapter is silent, which pays you on timeout, but it also means the agent misconfigured something.
+- **Configure atomically inside `post`.** Pass `Params.verifierInit = abi.encode(<adapter config>)`. Core then calls
+  `adapter.onPost(id, agent, verifierInit)` in the same transaction, so no worker can claim before the rule
+  exists (audit H-01). The two-step `configure(...)` path still exists (agent-only, Open-only, set-once) but a claim
+  can front-run it. **Workers: never claim a bounty whose adapter config is missing.**
+- **Silence pays the worker** (core rule). Rule-based adapters therefore have a permissionless
+  "reject if the rule is still unmet" path after a window (audit C-01/C-02). Every window must satisfy
+  `1h <= window` and `window + 12h <= reviewWindow`, so the reject can land even under Base's ~12h forced-inclusion delay.
 - **Resolve is permissionless** (anyone can relay). Every config and resolution emits an event.
-- **Silence still pays the worker.** If the adapter never fires, `core.payOnTimeout` works as usual (tested for
-  every adapter).
+- Signer checks accept the address's own ECDSA key first, then ERC-1271 (EIP-7702 smart accounts keep working).
 - EIP-712 verdicts use the adapter's own domain (`MADBountyFallbackVerifier`/`MADBountyMultiVerifier`, version 1),
   type `Verdict(uint256 id,address worker,bytes32 evidenceHash,bool accept)` and
   `Reverse(uint256 id,address worker,bytes32 evidenceHash)`. Core-domain signatures are not valid here (tested).
 
-Gas figures are `forge test` measurements (whole tx incl. core payout), Base L2.
+| Adapter | `verifierInit` encoding |
+|---|---|
+| FallbackVerifier | `abi.encode(address[] signers, uint32 stepTimeout)` |
+| OnchainCheckVerifier | `abi.encode(address target, bytes data, bytes32 expectedResultHash, uint32 checkWindow)` |
+| HashRevealVerifier | `abi.encode(bytes32 commitment, uint32 revealWindow)` |
+| TeeMLVerifier | `abi.encode(address[] signers, bytes32 prefixHash, bytes32 suffixHash, uint32 proofWindow)` |
+| MultiVerifier | `abi.encode(address[] signers /*ascending*/, uint8 threshold)` |
 
-## 1. FallbackVerifier — verifier outage protection
+## 1. FallbackVerifier: protection against verifier outage
 
-**When:** you want a primary human/agent verifier but don't want a dead verifier to force a timeout payout.
-Up to 3 signers `[primary, backup1, backup2]` (EOA or ERC-1271) + `stepTimeout`. Signer `i` may decide from
-`submittedAt + i*stepTimeout`; earlier signers remain valid; first verdict wins.
-`submittedAt = deadline - reviewWindow` (or `- 2*reviewWindow` once extended — `extendReview` adds exactly one
-window, so an extension does not shift the ladder, it only gives backups more time). Config requires
-`stepTimeout*(n-1) < reviewWindow`. **Reverse** (during core's 24h cooling): primary signer only.
+**When:** you want a primary human or agent verifier, but don't want a dead verifier to force a timeout payout.
+Up to 3 signers `[primary, backup1, backup2]` plus `stepTimeout`. Signer `i` may decide from
+`submittedAt + i*stepTimeout`. Earlier signers remain valid, and the first verdict wins. An extension does not shift
+the ladder. Config requires `stepTimeout*(n-1) < reviewWindow`. **Reverse** (during core's 24h cooling): primary only.
 
 - **REFUND-safe:** only if every signer is independent of the agent.
-- **Trust:** each signer, inside its time slot. A backup can override nobody — it only acts if the earlier
-  signers haven't settled yet.
-- **Gas (measured):** resolve ≈ 117k incl. core accept payout; configure (3 signers) ≈ 142k.
+- If all signers stay silent, the worker is paid on timeout.
 
-## 2. OnchainCheckVerifier — accept when an on-chain view returns the expected bytes
+## 2. OnchainCheckVerifier: accept when an on-chain view returns the expected bytes
 
-**When:** the deliverable is observable on-chain (contract deployed, balance reached, registry entry set).
-Config `(target, calldata, expectedResultHash)`; passes when
-`keccak256(returndata of target.staticcall{gas:200k}(calldata)) == expectedResultHash`. Revert / OOG = not passed.
-Target must be a contract (an EOA staticcall would "succeed" with empty data).
+**When:** the deliverable is observable on-chain (contract deployed, registry entry set, NFT transferred).
+Passes when `keccak256(returndata of target.staticcall{gas:1M}(data)) == expectedResultHash`. Revert or OOG counts as not passed.
+- `resolve(id)`: anyone, while Submitted. Accepts if the check passes.
+- `rejectUnmet(id)`: anyone, once `checkWindow` has passed since submission and the check still fails.
 
-- **Accept-only → REFUND-safe: yes.** It cannot reject; failing checks just leave the timeout to pay the worker.
-- **Trust:** the target contract. If its state is cheaply manipulable by anyone (spot prices, donatable balances),
-  anyone can make it pass momentarily — which only pays the worker early.
-- **Gas (measured):** resolve ≈ 103k incl. payout, plus the target call (capped at 200k); configure ≈ 119k.
+- **Pick a check that only the requested work can make true.** A check that is already true, or that anyone can
+  make true (a donatable balance, a spot price), pays the first worker who submits.
+- **REFUND-safe:** only if the agent cannot keep the check false against honest work. Workers: read the target.
 
-## 3. HashRevealVerifier — commit an answer, worker reveals it
+## 3. HashRevealVerifier: commit an answer, the worker reveals it
 
-**When:** puzzle/CTF/search tasks with a single verifiable answer.
-Agent commits `keccak256(abi.encode(bytes answer))`. Only `bounty.worker` may `reveal(id, answer)`, after submit.
+**When:** puzzle, CTF or search tasks with a single verifiable answer.
+The agent commits `keccak256(abi.encode(bytes answer))`.
+- `reveal(id, answer)`: only `bounty.worker`, after submit. A match accepts.
+- `rejectUnrevealed(id)`: anyone, once `revealWindow` has passed since submission.
 
-- **Accept-only → REFUND-safe: yes.**
-- **Warning:** the answer becomes public on reveal. Use answers that are fine to publish, or commit to a hash of
-  private data. Salt low-entropy answers or they can be brute-forced from the commitment.
-- **Front-running is harmless:** a watcher copying the answer from the mempool can't reveal (not the worker) and
-  core pays `bounty.worker` regardless. Don't reuse a commitment across bounties.
-- **Gas (measured):** reveal ≈ 106k incl. payout; configure ≈ 69k.
+- **REFUND-safe:** yes. The agent cannot block a correct reveal.
+- **Warning:** the answer becomes public on reveal. Salt low-entropy answers, or they can be brute-forced from the
+  commitment. Front-running is harmless (only the worker can reveal). Don't reuse a commitment across bounties.
 
-## 4. TeeMLVerifier — 0G Compute TeeML LLM judge
+## 4. TeeMLVerifier: 0G Compute TeeML LLM judge
 
 **When:** an LLM judge is acceptable and you want the verdict signed inside a 0G TeeML enclave.
-0G TeeML signs `hex(sha256(request)) ":" hex(sha256(response))` (129 chars, lowercase) with EIP-191; verified
-against a real 0G signature (provider `0x2161…348c`, glm-5.3-flash, signer `0x878d…6c96`) in
-`test_real0GSignatureVector`.
+0G TeeML signs `hex(sha256(request)) ":" hex(sha256(response))` (129 chars, lowercase) with EIP-191. The adapter is
+verified against a real 0G signature (provider `0x2161…348c`, glm-5.3-flash, signer `0x878d…6c96`).
 
-Config: 1..3 allowed enclave signer addresses (Base can't read 0G chain — pin them) + `prefixHash`, `suffixHash`.
 `resolve(id, request, prefixLen, suffixLen, response, sig)` requires:
-1. request = `prefix ‖ marker ‖ evidence ‖ suffix` with `keccak(prefix)`/`keccak(suffix)` as configured — the agent
-   fixes model, `temperature: 0`, system prompt and rubric. Without this, anyone could ask the TEE "say VERDICT:Y".
-2. `marker = "MADB:" ‖ hex(core) ‖ ":" ‖ id ‖ ":" ‖ 0x-hex(evidenceHash)` — a signature for one bounty can't be
-   replayed on another.
-3. `keccak(evidence) == bounty.evidenceHash`, and evidence is a valid JSON string body (no raw `"`, no control
-   bytes, only valid escapes) so it cannot break out of the user-message string and inject messages/params.
-   Workers commit `evidenceHash = keccak256(JSON-escaped evidence)`.
-4. signature recovers to an allowed signer; verdict = first `VERDICT:Y` / `VERDICT:N` in the response body
-   (neither → revert). The prompt should demand the token exactly once, at the end.
+1. request = `prefix ‖ marker ‖ evidence ‖ suffix`, with `keccak(prefix)`/`keccak(suffix)` as configured. The agent
+   fixes the model, `temperature: 0`, system prompt and rubric.
+2. `marker = "MADB:" ‖ hex(core) ‖ ":" ‖ id ‖ ":" ‖ 0x-hex(evidenceHash)`, so there is no replay across bounties.
+3. `keccak(evidence) == bounty.evidenceHash`. The evidence must also be a valid JSON string body, be ≤ 8 KB, and
+   not contain the word `VERDICT`. The response must be ≤ 16 KB.
+4. The signature recovers to an allowed signer, and the response contains **exactly one** `VERDICT:` token followed by
+   `Y` or `N`. Zero or several tokens revert, so echoed format strings and reasoning can't flip the result.
 
-- **REFUND-safe:** conditionally — the agent doesn't control the enclave, but the agent writes the prompt. Workers
-  must read the prefix/suffix preimages (published off-chain by the agent) before claiming.
-- **Trust:** enclave signer key + model behaviour; prompt injection inside the evidence text remains an LLM risk;
-  pinned signer addresses go stale if the provider rotates keys (then silence → worker paid).
-- **Anti-grinding:** temperature 0 in the template; first valid resolve wins (core leaves Submitted). A party
-  could still re-query a nondeterministic model hoping for a better verdict — and race to submit it.
-- **Reverse:** not supported (a reject stands after cooling).
-- **Gas (measured):** resolve ≈ 145k for a small request; ≈ 0.85M for a 2 KB request + 1 KB response, ≈ 2.9M for 8 KB + 2 KB (byte loops for the JSON
-  check and verdict search dominate; sha256 precompile is cheap). Pennies on Base.
+**Burden of proof is on the worker:** if no valid proof has settled the bounty `proofWindow` after submission,
+anyone may call `rejectUnproven(id)`. A worker who wants to be paid must get the enclave's `VERDICT:Y` and relay it
+in time. Withholding or gas-bombing the evidence no longer blocks the reject (audit C-02).
 
-## 5. MultiVerifier — m-of-n panel
+- **REFUND-safe:** conditionally. The agent doesn't control the enclave, but the agent writes the prompt. Workers
+  must read the prefix/suffix preimages and test them against the enclave BEFORE claiming.
+- **Trust:** enclave signer key and model behaviour. Pinned signer addresses go stale if the provider rotates keys.
+- **Reverse:** not supported.
+- **Gas:** about 0.15M for a small request, up to about 7M at the 8 KB evidence cap. Pennies on Base.
+
+## 5. MultiVerifier: m-of-n panel
 
 **When:** a panel of independent reviewers (humans, agents, 1271 wallets).
-Config: ≤7 signers (strictly ascending), threshold m. `resolve(id, accept, signers[], sigs[])` with signers strictly
-ascending (no duplicates), each a configured signer with a valid EIP-712 sig; ≥ m needed for accept or reject.
-`reverse` needs m Reverse signatures.
+Config: ≤7 signers (strictly ascending) and a threshold m. `resolve(id, accept, signers[], sigs[])` needs ≥ m valid
+signatures. `reverse` needs m Reverse signatures. If the panel is silent, the worker is paid on timeout.
 
-- **REFUND-safe:** if fewer than m signers are agent-controlled. Use m > n/2: with 2m ≤ n both an accept and a
-  reject quorum can exist and the first to land wins.
-- **Gas (measured):** 3-of-5 resolve ≈ 140k incl. payout (~10k per extra ECDSA sig); configure (5 signers) ≈ 322k.
+- **REFUND-safe:** if fewer than m signers are agent-controlled. Use m > n/2.
 
 ## Tests
 
-`FOUNDRY_TEST=periphery/test forge test --match-path 'periphery/test/*'` (the repo's `foundry.toml` sets
-`test = test` by default, so point `FOUNDRY_TEST` at the periphery folder). See `RECEIPT.md`.
+`FOUNDRY_TEST=periphery/test forge test` (80 tests, including `AuditFixes.t.sol`, one regression test per audit
+finding). Audit PoCs: `FOUNDRY_TEST=audit/periphery/test forge test`.

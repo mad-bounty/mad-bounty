@@ -18,6 +18,7 @@ export function toContractParams(p: PostParams) {
     rejectMode: mode,
     specHash: p.specHash,
     encKey: p.encKey ?? '0x',
+    verifierInit: p.verifierInit ?? '0x',
   } as const;
 }
 

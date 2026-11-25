@@ -4,3 +4,9 @@ broadcast/
 node_modules/
 .env
 *.key
+audit/fuzz/.venv/
+audit/fuzz/corpus/
+audit/fuzz/crytic-export*/
+audit/fuzz/out*/
+audit/fuzz/cache*/
+audit/fuzz/mut/

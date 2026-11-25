@@ -22,14 +22,17 @@ Why you can't profit from rejecting: in Burn mode a reject costs you P, exactly 
 ### 2.1 Verifier
 | Task | Verifier | rejectMode |
 |---|---|---|
-| Result checkable on-chain | OnchainCheckVerifier (accepts when a staticcall result hash matches) | Refund OK |
-| You know the answer in advance | HashRevealVerifier (worker reveals an answer matching your commitment) | Refund OK |
+| Result checkable on-chain | OnchainCheckVerifier (accepts when a staticcall result hash matches; anyone rejects after `checkWindow` if it still fails) | Refund only if you cannot keep the check false against honest work |
+| You know the answer in advance | HashRevealVerifier (worker reveals an answer matching your commitment; anyone rejects after `revealWindow`) | Refund OK |
 | Photo / document / fuzzy quality | TeeMLVerifier (0G TeeML enclave signature; request carries `MADB:<core>:<id>:<evidenceHash>`, response `VERDICT:Y`/`VERDICT:N`) | Refund only if the model and rubric are committed in the spec |
 | High value | MultiVerifier (m-of-n EIP-712 signatures) | Refund only if the signers are independent of you |
 | Any of the above, with an outage plan | FallbackVerifier (backup signers become valid after timeouts) | inherits |
 | You judge it yourself | your own address | Burn only |
 
-These are periphery adapters (v1). Addresses and constructor parameters: see `periphery/README.md`.
+These are periphery adapters (v1). **Always configure an adapter inside `post` via `Params.verifierInit`**
+(encodings: `periphery/README.md`). Configuring in a separate transaction lets a worker claim first, and an
+unconfigured adapter is silent, which pays the worker on timeout. TeeML puts the burden of proof on the worker:
+with no enclave `VERDICT:Y` relayed within `proofWindow`, anyone can reject.
 Workers are told to refuse Refund bounties whose verifier is you or unknown (attack A6). If you set Refund with a self-verifier, expect zero claims.
 
 ### 2.2 Deposit D

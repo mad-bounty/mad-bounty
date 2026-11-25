@@ -1,0 +1,27 @@
+== check_feeSum [bitwuzla]
+Symbolic test result: 1 passed; 0 failed; time: 0.27s
+dur=4s
+== check_feeFloor [bitwuzla]
+Symbolic test result: 1 passed; 0 failed; time: 34.02s
+dur=37s
+== check_feeVsCore [bitwuzla]
+Symbolic test result: 1 passed; 0 failed; time: 221.87s
+dur=226s
+== check_minDepositSplit [bitwuzla]
+Symbolic test result: 1 passed; 0 failed; time: 191.69s
+dur=195s
+== check_postDepositFloor [bitwuzla]
+Symbolic test result: 1 passed; 0 failed; time: 1.61s
+dur=44s
+== check_acceptFlow [bitwuzla]
+Symbolic test result: 1 passed; 0 failed; time: 227.12s
+dur=231s
+== check_rejectFlow [bitwuzla]
+Symbolic test result: 1 passed; 0 failed; time: 4.22s
+dur=35s
+== check_feeSplitExact [bitwuzla]
+Symbolic test result: 0 passed; 1 failed; time: 300.79s
+dur=331s
+== check_minDeposit\b [bitwuzla]
+Symbolic test result: 1 passed; 0 failed; time: 114.27s
+dur=117s

@@ -1,0 +1,174 @@
+== check_feeSum [bitwuzla]
+Symbolic test result: 1 passed; 0 failed; time: 0.37s
+dur=40s
+== check_feeFloor [bitwuzla]
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+[31m[ERROR][0m check_feeFloor(uint96) (paths: 7, time: 0.25s, bounds: [])
+Symbolic test result: 0 passed; 1 failed; time: 0.49s
+dur=4s
+== check_feeVsCore [bitwuzla]
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+[31m[ERROR][0m check_feeVsCore(uint96) (paths: 4, time: 0.14s, bounds: [])
+Symbolic test result: 0 passed; 1 failed; time: 0.39s
+dur=5s
+== check_minDepositSplit [bitwuzla]
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+[31m[ERROR][0m check_minDepositSplit(uint32) (paths: 8, time: 0.24s, bounds: [])
+Symbolic test result: 0 passed; 1 failed; time: 0.48s
+dur=5s
+== check_acceptFlow [bitwuzla]
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+[31m[ERROR][0m check_acceptFlow(uint96,uint96) (paths: 212, time: 18.02s, bounds: [])
+Symbolic test result: 0 passed; 1 failed; time: 18.25s
+dur=22s
+== check_rejectFlow [bitwuzla]
+Symbolic test result: 1 passed; 0 failed; time: 5.65s
+dur=9s
+== check_feeSplitExact [bitwuzla]
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+[31m[ERROR][0m check_feeSplitExact(uint96,uint96) (paths: 13, time: 0.23s, bounds: [])
+Symbolic test result: 0 passed; 1 failed; time: 0.40s
+dur=31s
+== check_minDeposit\b [bitwuzla]
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+ERROR    encountered exception during assertion solving: RuntimeError('Download 
+ERROR    solver_output.error='Download not allowed (configure                   
+[31m[ERROR][0m check_minDeposit(uint256) (paths: 11, time: 0.24s, bounds: [])
+Symbolic test result: 0 passed; 1 failed; time: 0.42s
+dur=3s

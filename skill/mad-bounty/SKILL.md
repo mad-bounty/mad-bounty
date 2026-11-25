@@ -28,9 +28,10 @@ Without `MADB_PRIVATE_KEY`, write tools return an unsigned transaction for your 
 ## Posting a bounty (you are the agent)
 1. Write a spec JSON (title, instructions, acceptanceCriteria, evidenceFormat). Hash it with `madb_hash_spec` and store the JSON where workers can read it.
 2. Pick a verifier:
-   - Output checkable on-chain → OnchainCheckVerifier (safe for REFUND).
-   - Known answer → HashRevealVerifier (safe for REFUND).
-   - Photos/documents/judgment → TeeMLVerifier (0G enclave model).
+   - Output checkable on-chain → OnchainCheckVerifier. Choose a check only the work can make true. Anyone rejects after checkWindow if it still fails.
+   - Known answer → HashRevealVerifier (safe for REFUND). Anyone rejects after revealWindow with no correct reveal.
+   - Photos/documents/judgment → TeeMLVerifier (0G enclave model). The worker must relay a VERDICT:Y proof within proofWindow, or anyone rejects.
+   - ALWAYS pass the adapter config as `verifierInit` in the post call (atomic). A separate configure tx can be front-run by a claim.
    - You judge it yourself → your own address, BURN mode only.
    - Several reviewers → MultiVerifier m-of-n. Worried about outages → FallbackVerifier.
 3. Pick rejectMode:

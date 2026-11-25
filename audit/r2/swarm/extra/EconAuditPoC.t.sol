@@ -41,7 +41,7 @@ contract EconAuditPoC is PeripheryBase {
         BankLike bank = new BankLike();
         vm.prank(agent);
         ocv.configure(id, address(bank), abi.encodeWithSignature("ok()"),
-            keccak256(abi.encode(keccak256("credential-proof-valid"))));
+            keccak256(abi.encode(keccak256("credential-proof-valid"))), 6 hours);
 
         // A worker claims; note worker never has to do any task — the rule is 'bank.ok()' which already holds.
         vm.prank(worker); core.claim(id, 0, "");
@@ -61,9 +61,9 @@ contract EconAuditPoC is PeripheryBase {
         BankLike bank = new BankLike();
         vm.prank(agent);
         ocv.configure(id, address(bank), abi.encodeWithSignature("ok()"),
-            keccak256(abi.encode(keccak256("credential-proof-valid"))));
+            keccak256(abi.encode(keccak256("credential-proof-valid"))), 6 hours);
         vm.prank(worker); core.claim(id, 0, "");
-        vm.expectRevert(MADBountyCore.BadState.selector);
+        vm.expectRevert(AdapterBase.NotSubmitted.selector);
         ocv.resolve(id);
     }
 
@@ -75,14 +75,13 @@ contract EconAuditPoC is PeripheryBase {
         GasSensitive gs = new GasSensitive();
         vm.prank(agent);
         ocv.configure(id, address(gs), abi.encodeWithSignature("isOk()"),
-            keccak256(abi.encode(keccak256("valid-proof"))));
+            keccak256(abi.encode(keccak256("valid-proof"))), 6 hours);
         vm.prank(worker); core.claim(id, 0, ""); vm.prank(worker); core.submit(id, ev);
 
-        assertFalse(ocv.check(id));               // 200k-gas cap → returns 0 → not passed
-        (bool ok, bytes memory ret) = address(gs).staticcall(abi.encodeWithSignature("isOk()")); // unbounded
-        assertTrue(ok && keccak256(ret) == keccak256(abi.encode(keccak256("valid-proof"))));
-        vm.expectRevert(OnchainCheckVerifier.CheckFailed.selector);
+        // POST-FIX (L-07): CHECK_GAS raised 200k -> 1M, so the gas-hungry target now passes
+        assertTrue(ocv.check(id));
         ocv.resolve(id);
+        assertEq(uint8(_state(id)), uint8(MADBountyCore.State.Paid));
     }
 
     /// V-16: TeeML marker is (core,id,evidenceHash) — it does NOT distinguish which bounty *instance*
@@ -96,9 +95,11 @@ contract EconAuditPoC is PeripheryBase {
         string memory mb = string(tee.marker(b, e));
         // identical except the decimal id segment (a vs b differ only by id)
         assertEq(bytes(ma).length, bytes(mb).length);
-        // 'first occurrence wins' demonstration:
-        assertTrue(tee.parseVerdict(bytes("VERDICT:Y ... VERDICT:N")));   // Y wins even if N later
-        assertFalse(tee.parseVerdict(bytes("VERDICT:N ... VERDICT:Y")));  // N wins even if Y later
+        // POST-FIX (M-01): two verdict tokens are ambiguous and refused; exactly one is required
+        vm.expectRevert(TeeMLVerifier.NoVerdict.selector);
+        tee.parseVerdict(bytes("VERDICT:Y ... VERDICT:N"));
+        assertTrue(tee.parseVerdict(bytes("... VERDICT:Y")));
+        assertFalse(tee.parseVerdict(bytes("... VERDICT:N")));
     }
 
     /// V-17: isJsonStringBody accepts a lone high-plane byte / non-ASCII / DEL that is legal JSON; but it

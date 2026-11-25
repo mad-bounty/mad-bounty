@@ -98,7 +98,7 @@ contract CoreHandler is Test {
             workWindow: uint32(bound(work, 1 hours, 3 days)), reviewWindow: uint32(bound(review, 12 hours, 3 days)),
             openUntil: uint64(block.timestamp + bound(openSecs, 1 days, 20 days)),
             rejectMode: refund ? MADBountyCore.RejectMode.Refund : MADBountyCore.RejectMode.Burn,
-            specHash: bytes32(uint256(reward)), encKey: ""
+            specHash: bytes32(uint256(reward)), encKey: "", verifierInit: ""
         });
         address a = _actor(agentSeed);
         calls["post"]++;

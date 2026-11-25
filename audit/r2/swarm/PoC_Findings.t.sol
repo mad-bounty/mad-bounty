@@ -73,7 +73,7 @@ contract PoC_M2_OnchainCheckNeedsSubmitted is Base {
         GasSensitiveTarget t = new GasSensitiveTarget();
         t.set(true);
         vm.prank(agent);
-        oc.configure(id, address(t), abi.encodeCall(GasSensitiveTarget.probe, ()), keccak256(abi.encode(bytes32(uint256(1)))));
+        oc.configure(id, address(t), abi.encodeCall(GasSensitiveTarget.probe, ()), keccak256(abi.encode(bytes32(uint256(1)))), 6 hours);
     }
 
     function test_M2_resolveRevertsWhenNotSubmitted() public {
@@ -81,7 +81,7 @@ contract PoC_M2_OnchainCheckNeedsSubmitted is Base {
         _cfg(id);
         assertTrue(oc.check(id), "chain check passes while bounty is still Open");
         // keeper calls resolve() on an Open bounty -> adapter forwards to core.settle -> BadState
-        vm.expectRevert(MADBountyCore.BadState.selector);
+        vm.expectRevert(AdapterBase.NotSubmitted.selector);
         oc.resolve(id);
     }
 

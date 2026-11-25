@@ -13,6 +13,12 @@ interface IERC20 {
     function balanceOf(address who) external view returns (uint256);
 }
 
+/// @notice Optional hook on a contract verifier: configures it atomically inside `post`, so no worker can claim
+///         a bounty whose verifier rules are not yet set (audit periphery H-01).
+interface IVerifierHook {
+    function onPost(uint256 id, address agent, bytes calldata data) external;
+}
+
 /// @notice Per-bounty USDC vault. Only the core can move funds. A token freeze on one vault touches one bounty.
 contract BountyVault {
     address public immutable core;
@@ -56,6 +62,7 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
         RejectMode rejectMode;
         bytes32 specHash;
         bytes encKey;              // agent's public encryption key for secrets (optional)
+        bytes verifierInit;        // if non-empty: verifier.onPost(id, agent, verifierInit) runs inside post
     }
 
     struct Bounty {
@@ -168,6 +175,7 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
         b.reward = p.reward; b.deposit = p.deposit; b.workWindow = p.workWindow; b.reviewWindow = p.reviewWindow;
         b.openUntil = p.openUntil; b.rejectMode = p.rejectMode; b.state = State.Open;
         _pull(msg.sender, address(vault), p.reward);
+        if (p.verifierInit.length != 0) IVerifierHook(p.verifier).onPost(id, msg.sender, p.verifierInit);
         emit Posted(id, msg.sender, p.verifier, address(vault), p.reward, p.deposit, p.workWindow, p.reviewWindow,
             p.openUntil, p.rejectMode, p.claimAuthorizer, p.specHash, p.encKey);
     }

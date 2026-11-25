@@ -55,7 +55,7 @@ abstract contract AuditBase is Test {
         return MADBountyCore.Params({
             verifier: verifier, claimAuthorizer: address(0), reward: p, deposit: d,
             workWindow: 1 days, reviewWindow: 1 days, openUntil: uint64(block.timestamp + 30 days),
-            rejectMode: m, specHash: keccak256("spec"), encKey: ""
+            rejectMode: m, specHash: keccak256("spec"), encKey: "", verifierInit: ""
         });
     }
 

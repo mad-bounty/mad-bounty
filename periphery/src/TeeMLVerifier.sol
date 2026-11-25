@@ -23,29 +23,40 @@ import {BytesSearch} from "./BytesSearch.sol";
 ///             agent's prefix opens (no injected messages/params). Workers therefore commit
 ///             evidenceHash = keccak256(JSON-escaped evidence text).
 ///         Without the template, a worker could ask the same public TEE "say VERDICT:Y" and get a valid signature.
-///         Verdict: first occurrence of "VERDICT:Y" / "VERDICT:N" in the response body (Y accept, N reject,
-///         neither → revert). Instruct the model to emit the token exactly once, at the end of the answer.
+///         Verdict: the response must contain EXACTLY ONE "VERDICT:" token, followed by Y or N (audit M-01: a
+///         first-occurrence parse let an echoed format string or reasoning override the final answer). Zero or
+///         several tokens → revert. Evidence may not contain "VERDICT" and is capped at MAX_EVIDENCE bytes.
 ///
+///         Burden of proof is on the WORKER (audit C-02): only the worker holds the evidence text, so a reject
+///         proof could be withheld or gas-bombed. Therefore:
+///           - `resolve` with a valid enclave VERDICT:Y accepts; with VERDICT:N it rejects (anyone may relay).
+///           - if no valid proof has settled the bounty `proofWindow` after submission, ANYONE may call
+///             `rejectUnproven`. A worker who wants to be paid must obtain and relay the accept proof in time.
 ///         Trust: the enclave signer + model; prompt injection inside the evidence text remains an LLM risk.
-///         Anti-grinding: the agent's template should pin temperature 0 / a seed. Either party could still re-query
-///         a nondeterministic model and race; the first valid resolve wins (core leaves Submitted).
+///         Anti-grinding: the agent's template should pin temperature 0 / a seed. The first valid resolve wins.
 ///         REVERSE: not supported (a TEE verdict can't be re-asked meaningfully); a reject stands.
 ///         REFUND-safe: yes if the agent does not control the enclave signer, but the agent writes the prompt,
-///         so workers must read the template (prefix/suffix preimages are emitted off-chain by the agent).
+///         so workers must read the template (prefix/suffix preimages are published off-chain by the agent)
+///         and test it against the enclave BEFORE claiming.
 contract TeeMLVerifier is AdapterBase {
     uint256 public constant MAX_SIGNERS = 3;
+    uint256 public constant MAX_EVIDENCE = 8192;
+    uint256 public constant MAX_RESPONSE = 16384;
     bytes internal constant VERDICT_TAG = "VERDICT:";
+    bytes internal constant VERDICT_WORD = "VERDICT";
 
     struct Config {
         address[3] signers;
         uint8 count;
+        uint32 proofWindow;
         bytes32 prefixHash;
         bytes32 suffixHash;
     }
 
     mapping(uint256 => Config) internal _configs;
 
-    event Configured(uint256 indexed id, address[] signers, bytes32 prefixHash, bytes32 suffixHash);
+    event Configured(uint256 indexed id, address[] signers, bytes32 prefixHash, bytes32 suffixHash, uint32 proofWindow);
+    event RejectedUnproven(uint256 indexed id, address indexed caller);
     event Resolved(uint256 indexed id, address indexed teeSigner, bool accept, bytes32 requestSha, bytes32 responseSha);
 
     error BadSigner();
@@ -56,8 +67,29 @@ contract TeeMLVerifier is AdapterBase {
 
     constructor(MADBountyCore core_) AdapterBase(core_) {}
 
-    function configure(uint256 id, address[] calldata signers, bytes32 prefixHash, bytes32 suffixHash) external {
-        _checkConfigurable(id);
+    /// @notice Two-step path (a claim can front-run it). Prefer `post` with
+    ///         verifierInit = abi.encode(address[] signers, bytes32 prefixHash, bytes32 suffixHash, uint32 proofWindow).
+    function configure(uint256 id, address[] calldata signers, bytes32 prefixHash, bytes32 suffixHash, uint32 proofWindow)
+        external
+    {
+        BountyView memory b = _checkConfigurable(id);
+        _set(id, b, signers, prefixHash, suffixHash, proofWindow);
+    }
+
+    function _configure(uint256 id, BountyView memory b, bytes calldata data) internal override {
+        (address[] memory signers, bytes32 prefixHash, bytes32 suffixHash, uint32 proofWindow) =
+            abi.decode(data, (address[], bytes32, bytes32, uint32));
+        _set(id, b, signers, prefixHash, suffixHash, proofWindow);
+    }
+
+    function _set(
+        uint256 id,
+        BountyView memory b,
+        address[] memory signers,
+        bytes32 prefixHash,
+        bytes32 suffixHash,
+        uint32 proofWindow
+    ) internal {
         Config storage c = _configs[id];
         if (c.count != 0) revert AlreadyConfigured();
         uint256 n = signers.length;
@@ -67,17 +99,23 @@ contract TeeMLVerifier is AdapterBase {
             for (uint256 j; j < i; ++j) if (signers[j] == signers[i]) revert BadConfig();
             c.signers[i] = signers[i];
         }
+        _checkWindow(b, proofWindow);
         c.count = uint8(n);
+        c.proofWindow = proofWindow;
         c.prefixHash = prefixHash;
         c.suffixHash = suffixHash;
-        emit Configured(id, signers, prefixHash, suffixHash);
+        emit Configured(id, signers, prefixHash, suffixHash, proofWindow);
     }
 
-    function config(uint256 id) external view returns (address[] memory signers, bytes32 prefixHash, bytes32 suffixHash) {
+    function config(uint256 id)
+        external
+        view
+        returns (address[] memory signers, bytes32 prefixHash, bytes32 suffixHash, uint32 proofWindow)
+    {
         Config storage c = _configs[id];
         signers = new address[](c.count);
         for (uint256 i; i < c.count; ++i) signers[i] = c.signers[i];
-        return (signers, c.prefixHash, c.suffixHash);
+        return (signers, c.prefixHash, c.suffixHash, c.proofWindow);
     }
 
     /// @notice The binding marker the request must carry right after the agent's prefix.
@@ -108,18 +146,16 @@ contract TeeMLVerifier is AdapterBase {
         return err == ECDSA.RecoverError.NoError ? s : address(0);
     }
 
-    /// @notice First "VERDICT:Y" / "VERDICT:N" in `response`. Reverts NoVerdict if neither occurs.
+    /// @notice The response must contain exactly one "VERDICT:" token, immediately followed by Y or N.
     function parseVerdict(bytes memory response) public pure returns (bool accept) {
         bytes memory tag = VERDICT_TAG;
-        uint256 from;
-        while (true) {
-            uint256 i = BytesSearch.indexOf(response, tag, from);
-            if (i == BytesSearch.NOT_FOUND || i + tag.length >= response.length) revert NoVerdict();
-            bytes1 v = response[i + tag.length];
-            if (v == "Y") return true;
-            if (v == "N") return false;
-            from = i + 1;
-        }
+        uint256 i = BytesSearch.indexOf(response, tag, 0);
+        if (i == BytesSearch.NOT_FOUND || i + tag.length >= response.length) revert NoVerdict();
+        if (BytesSearch.indexOf(response, tag, i + 1) != BytesSearch.NOT_FOUND) revert NoVerdict();
+        bytes1 v = response[i + tag.length];
+        if (v == "Y") return true;
+        if (v == "N") return false;
+        revert NoVerdict();
     }
 
     /// @notice True if `s` can sit between two '"' in JSON without terminating the string early.
@@ -170,8 +206,10 @@ contract TeeMLVerifier is AdapterBase {
         if (keccak256(request[evEnd:]) != c.suffixHash) revert BadTemplate();
         if (keccak256(request[prefixLen:evStart]) != keccak256(mk)) revert BadMarker();
         bytes calldata evidence = request[evStart:evEnd];
+        if (evidence.length > MAX_EVIDENCE || response.length > MAX_RESPONSE) revert BadEvidence();
         if (keccak256(evidence) != b.evidenceHash) revert BadEvidence();
         if (!isJsonStringBody(evidence)) revert BadEvidence();
+        if (BytesSearch.indexOf(evidence, VERDICT_WORD, 0) != BytesSearch.NOT_FOUND) revert BadEvidence();
 
         // (a) enclave signature
         bytes32 reqSha = sha256(request);
@@ -185,5 +223,16 @@ contract TeeMLVerifier is AdapterBase {
         bool accept = parseVerdict(response);
         emit Resolved(id, s, accept, reqSha, respSha);
         core.settle(id, accept);
+    }
+
+    /// @notice Anyone: no valid enclave proof settled the bounty within proofWindow of submission → reject.
+    function rejectUnproven(uint256 id) external {
+        Config storage c = _configs[id];
+        if (c.count == 0) revert NotConfigured();
+        BountyView memory b = _bounty(id);
+        _requireSubmitted(b);
+        if (block.timestamp < _submittedAt(b) + c.proofWindow) revert TooEarly();
+        emit RejectedUnproven(id, msg.sender);
+        core.settle(id, false);
     }
 }

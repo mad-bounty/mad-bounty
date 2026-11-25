@@ -59,8 +59,8 @@ contract AdapterPoC2Test is CoreHelpers {
         address[] memory sg = new address[](1);
         sg[0] = vm.addr(0xA1);
         vm.prank(agent);
-        tv.configure(id, sg, keccak256(""), keccak256("SUFFIX"));
-        (, bytes32 p, bytes32 s) = tv.config(id);
+        tv.configure(id, sg, keccak256(""), keccak256("SUFFIX"), 6 hours);
+        (, bytes32 p, bytes32 s,) = tv.config(id);
         assertEq(p, keccak256(""));
         assertEq(s, keccak256("SUFFIX"));
     }
@@ -104,7 +104,7 @@ contract AdapterPoC3Test is CoreHelpers {
         vm.etch(pre, hex"00");
         bytes32 expected = keccak256("");
         vm.prank(agent);
-        ocv.configure(id, pre, "", expected);
+        ocv.configure(id, pre, "", expected, 6 hours);
         vm.prank(worker); core.claim(id, 0, "");
         vm.prank(worker); core.submit(id, ev);
         assertTrue(ocv.check(id));

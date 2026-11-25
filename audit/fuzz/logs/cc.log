@@ -1,0 +1,18 @@
+INFO:CryticCompile:'forge config --json' running
+WARNING:CryticCompile:Could not detect solc version from Foundry config. Falling back to system version...
+INFO:CryticCompile:'solc --version' running
+INFO:CryticCompile:'solc @openzeppelin/contracts/=msrc/oz/ mharness/MADFuzzHandler.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes --optimize --optimize-runs 200 --via-ir --evm-version cancun --allow-paths .,/home/garvis108/projects/mad-bounty/audit/fuzz/mharness' running
+INFO:CryticCompile:Compilation warnings/errors on mharness/MADFuzzHandler.sol:
+Warning: Transient storage as defined by EIP-1153 can break the composability of smart contracts: Since transient storage is cleared only at the end of the transaction and not at the end of the outermost call frame to the contract within a transaction, your contract may unintentionally misbehave when invoked multiple times in a complex transaction. To avoid this, be sure to clear all transient storage at the end of any call to your contract. The use of transient storage for reentrancy guards that are cleared at the end of the call is safe.
+   --> msrc/oz/utils/TransientSlot.sol:108:13:
+    |
+108 |             tstore(slot, value)
+    |             ^^^^^^
+
+Warning: Contract code size is 28508 bytes and exceeds 24576 bytes (a limit introduced in Spurious Dragon). This contract may not be deployable on Mainnet. Consider enabling the optimizer (with a low "runs" value!), turning off revert strings, or using libraries.
+  --> mharness/MADFuzzHandler.sol:47:1:
+   |
+47 | contract MADFuzzHandler {
+   | ^ (Relevant source part starts here and spans across multiple lines).
+
+

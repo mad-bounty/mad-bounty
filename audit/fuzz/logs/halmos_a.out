@@ -1,0 +1,30 @@
+== check_feeSplitExact
+         KeyError: 'ast'                                                        
+         KeyError: 'ast'                                                        
+         KeyError: 'ast'                                                        
+
+Running 1 tests for audit/fuzz/test/HalmosFee.t.sol:HalmosFeeTest
+[33m[TIMEOUT][0m check_feeSplitExact(uint96,uint96) (paths: 13, time: 100.76s, bounds: [])
+[36mTimeout queries saved in: /home/garvis108/.hermes/cache/scratch/check_feeSplitExact-1f1b40yd-timeout[0m
+Symbolic test result: 0 passed; 1 failed; time: 101.08s
+dur=144s
+== check_minDeposit
+         KeyError: 'ast'                                                        
+         KeyError: 'ast'                                                        
+         KeyError: 'ast'                                                        
+
+Running 1 tests for audit/fuzz/test/HalmosFee.t.sol:HalmosFeeTest
+[33m[TIMEOUT][0m check_minDeposit(uint256) (paths: 11, time: 100.64s, bounds: [])
+[36mTimeout queries saved in: /home/garvis108/.hermes/cache/scratch/check_minDeposit-vi2f0j92-timeout[0m
+Symbolic test result: 0 passed; 1 failed; time: 100.91s
+dur=151s
+== check_postDepositFloor
+         KeyError: 'ast'                                                        
+         KeyError: 'ast'                                                        
+         KeyError: 'ast'                                                        
+         KeyError: 'ast'                                                        
+
+Running 1 tests for audit/fuzz/test/HalmosFee.t.sol:HalmosFeeTest
+[32m[PASS][0m check_postDepositFloor(uint96,uint96) (paths: 24, time: 1.32s, bounds: [])
+Symbolic test result: 1 passed; 0 failed; time: 1.57s
+dur=49s

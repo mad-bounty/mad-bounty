@@ -644,6 +644,11 @@ export const madBountyCoreAbi = [
             "name": "encKey",
             "type": "bytes",
             "internalType": "bytes"
+          },
+          {
+            "name": "verifierInit",
+            "type": "bytes",
+            "internalType": "bytes"
           }
         ]
       }

@@ -180,6 +180,7 @@ export function createServer(cfg: ServerConfig) {
       spec: z.unknown().optional().describe('Spec JSON (hashed with madb_hash_spec rules) if specHash not given.'),
       claimAuthorizer: addr.optional().describe('If set, this address must sign an EIP-712 Claim for each worker.'),
       encKey: z.string().regex(/^0x([0-9a-fA-F]{64})?$/).optional().describe('Agent x25519 public key for encrypted secrets.'),
+      verifierInit: z.string().regex(/^0x([0-9a-fA-F]{2})*$/).optional().describe('ABI-encoded adapter config. When the verifier is an adapter contract, ALWAYS pass this so the adapter is configured atomically in the same tx (otherwise a worker can claim before configuration). See periphery/README.md for each adapter\'s encoding.'),
     },
     annotations: { destructiveHint: true },
   }, wrap(async (a) => {
@@ -195,6 +196,7 @@ export function createServer(cfg: ServerConfig) {
       rejectMode: a.rejectMode ?? 'Burn', specHash: (a.specHash ?? hashSpec(a.spec)) as Hex,
       claimAuthorizer: a.claimAuthorizer ? getAddress(a.claimAuthorizer) : undefined,
       encKey: (a.encKey ?? '0x') as Hex,
+      verifierInit: (a.verifierInit ?? '0x') as Hex,
     } as const;
     if (!rt.signer) return unsigned([c.txs.approve(c.core, reward), c.txs.post(p)], { params: p });
     const r = await c.post(p);

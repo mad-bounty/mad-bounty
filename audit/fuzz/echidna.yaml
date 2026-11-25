@@ -1,0 +1,14 @@
+testMode: property
+prefix: "property_"
+seqLen: 150
+testLimit: 100000000
+timeout: 1200
+shrinkLimit: 5000
+corpusDir: "corpus/echidna"
+cryticArgs: ["--solc-remaps", "@openzeppelin/contracts/=msrc/oz/", "--solc-args", "--via-ir --optimize --evm-version cancun", "--compile-force-framework", "solc"]
+maxTimeDelay: 604800
+maxBlockDelay: 60480
+codeSize: 0xffffffff
+workers: 3
+format: text
+coverage: true

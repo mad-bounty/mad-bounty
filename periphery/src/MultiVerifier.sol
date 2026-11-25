@@ -2,18 +2,18 @@
 pragma solidity ^0.8.24;
 
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
-import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 import {MADBountyCore} from "../../src/MADBountyCore.sol";
 import {AdapterBase} from "./AdapterBase.sol";
 
 /// @title MultiVerifier (m-of-n)
-/// @notice Per bounty: up to 7 signers (EOA or ERC-1271) and a threshold m. A verdict needs m distinct valid
-///         EIP-712 signatures over this adapter's domain:
+/// @notice Per bounty: up to 7 signers (EOA, EIP-7702 or ERC-1271) and a threshold m. A verdict needs m distinct
+///         valid EIP-712 signatures over this adapter's domain:
 ///         Verdict(uint256 id,address worker,bytes32 evidenceHash,bool accept). Reverse needs m signatures over
 ///         Reverse(uint256 id,address worker,bytes32 evidenceHash).
 ///         Signatures are passed with their signer addresses in strictly ascending order (rules out duplicates).
 ///         If 2m <= n, an accept quorum and a reject quorum can both exist; the first to land wins. Use m > n/2
 ///         for a strict majority. REFUND-safe only if fewer than m signers are controlled by the agent.
+///         A silent panel lets core's timeout pay the worker (verifier silence = accept).
 contract MultiVerifier is AdapterBase, EIP712 {
     bytes32 public constant VERDICT_TYPEHASH =
         keccak256("Verdict(uint256 id,address worker,bytes32 evidenceHash,bool accept)");
@@ -35,9 +35,19 @@ contract MultiVerifier is AdapterBase, EIP712 {
 
     constructor(MADBountyCore core_) AdapterBase(core_) EIP712("MADBountyMultiVerifier", "1") {}
 
-    /// @notice Agent only, while Open, once. `signers` strictly ascending, non-zero; 1 <= m <= n <= 7.
+    /// @notice Two-step path (a claim can front-run it). Prefer `post` with
+    ///         verifierInit = abi.encode(address[] signers, uint8 m). Signers strictly ascending; 1 <= m <= n <= 7.
     function configure(uint256 id, address[] calldata signers, uint8 m) external {
         _checkConfigurable(id);
+        _set(id, signers, m);
+    }
+
+    function _configure(uint256 id, BountyView memory, bytes calldata data) internal override {
+        (address[] memory signers, uint8 m) = abi.decode(data, (address[], uint8));
+        _set(id, signers, m);
+    }
+
+    function _set(uint256 id, address[] memory signers, uint8 m) internal {
         if (threshold[id] != 0) revert AlreadyConfigured();
         uint256 n = signers.length;
         if (n == 0 || n > MAX_SIGNERS || m == 0 || m > n) revert BadConfig();
@@ -91,7 +101,7 @@ contract MultiVerifier is AdapterBase, EIP712 {
             if (s <= prev) revert NotSorted();
             prev = s;
             if (!isSigner[id][s]) revert UnknownSigner();
-            if (!SignatureChecker.isValidSignatureNow(s, digest, sigs[i])) revert BadSig();
+            if (!_validSig(s, digest, sigs[i])) revert BadSig();
         }
     }
 }

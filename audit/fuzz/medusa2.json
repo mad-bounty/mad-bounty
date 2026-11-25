@@ -1,0 +1,73 @@
+{
+  "fuzzing": {
+    "workers": 5,
+    "workerResetLimit": 50,
+    "timeout": 600,
+    "testLimit": 0,
+    "callSequenceLength": 400,
+    "corpusDirectory": "corpus/medusa2",
+    "coverageEnabled": true,
+    "targetContracts": [
+      "MADFuzzHandler"
+    ],
+    "targetContractsBalances": [],
+    "constructorArgs": {},
+    "deployerAddress": "0x30000",
+    "senderAddresses": [
+      "0x10000",
+      "0x20000",
+      "0x30000"
+    ],
+    "blockNumberDelayMax": 60480,
+    "blockTimestampDelayMax": 604800,
+    "blockGasLimit": 300000000,
+    "transactionGasLimit": 120000000,
+    "testing": {
+      "stopOnFailedTest": false,
+      "stopOnFailedContractMatching": false,
+      "stopOnNoTests": true,
+      "testAllContracts": false,
+      "traceAll": false,
+      "assertionTesting": {
+        "enabled": false
+      },
+      "propertyTesting": {
+        "enabled": true,
+        "testPrefixes": [
+          "property_"
+        ]
+      },
+      "optimizationTesting": {
+        "enabled": false
+      }
+    },
+    "chainConfig": {
+      "codeSizeCheckDisabled": true,
+      "cheatCodes": {
+        "cheatCodesEnabled": true,
+        "enableFFI": false
+      }
+    }
+  },
+  "compilation": {
+    "platform": "crytic-compile",
+    "platformConfig": {
+      "target": "mharness/MADFuzzHandler.sol",
+      "solcVersion": "",
+      "exportDirectory": "crytic-export-medusa",
+      "args": [
+        "--solc-remaps",
+        "@openzeppelin/contracts/=msrc/oz/",
+        "--solc-args",
+        "--via-ir --optimize --evm-version cancun",
+        "--compile-force-framework",
+        "solc"
+      ]
+    }
+  },
+  "logging": {
+    "level": "info",
+    "logDirectory": "logs/medusa",
+    "noColor": true
+  }
+}

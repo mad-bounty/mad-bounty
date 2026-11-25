@@ -50,6 +50,8 @@ export interface PostParams {
   specHash: Hex;
   /** agent's x25519 public key (32 bytes hex) for encrypted secrets; '0x' if none. */
   encKey?: Hex;
+  /** ABI-encoded adapter config; core calls verifier.onPost(id, agent, verifierInit) inside post (atomic setup). */
+  verifierInit?: Hex;
 }
 
 export interface Bounty {

@@ -1,0 +1,8 @@
+[profile.default]
+src = "mharness"
+out = "out"
+libs = []
+remappings = ["@openzeppelin/contracts/=msrc/oz/"]
+via_ir = true
+optimizer = true
+evm_version = "cancun"

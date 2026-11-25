@@ -44,10 +44,10 @@ contract FallbackVerifierTest is PeripheryBase {
         uint256 id = _setup(MADBountyCore.RejectMode.Burn);
         bytes memory sig1 = _v(k1, id, false);
         bytes memory sig2 = _v(k2, id, false);
-        vm.expectRevert(FallbackVerifier.TooEarly.selector);
+        vm.expectRevert(AdapterBase.TooEarly.selector);
         fv.resolve(id, false, 1, sig1);
         vm.warp(block.timestamp + step);
-        vm.expectRevert(FallbackVerifier.TooEarly.selector);
+        vm.expectRevert(AdapterBase.TooEarly.selector);
         fv.resolve(id, false, 2, sig2);
         fv.resolve(id, false, 1, sig1);
         assertEq(uint8(_state(id)), uint8(MADBountyCore.State.Rejected));

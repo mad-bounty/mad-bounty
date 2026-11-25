@@ -1,0 +1,12 @@
+⇾ Compiling targets with crytic-compile
+⇾ Running command:
+/home/garvis108/.local/share/uv/tools/slither-analyzer/bin/crytic-compile audit/fuzz/harness/MADFuzzHandler.sol --export-format solc --export-dir audit/fuzz/crytic-export-medusa --solc-remaps @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/ --solc-args --via-ir --optimize --evm-version cancun --compile-force-framework solc
+error Failed to compile target
+‣ error while executing crytic-compile:
+OUTPUT:
+INFO:CryticCompile:'forge config --json' running
+WARNING:CryticCompile:Could not detect solc version from Foundry config. Falling back to system version...
+ERROR:CryticCompile:audit/fuzz/harness/MADFuzzHandler.sol does not exist. Are you in the correct working directory?
+
+ERROR: exit status 255
+
