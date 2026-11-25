@@ -1,0 +1,128 @@
+Impossible to generate IR for MADBountyCore._nonReentrantBefore (lib/openzeppelin-contracts/contracts/utils/ReentrancyGuardTransient.sol#40-48):
+ 'NoneType' object has no attribute 'parameters'
+Impossible to generate IR for MADBountyCore._nonReentrantAfter (lib/openzeppelin-contracts/contracts/utils/ReentrancyGuardTransient.sol#50-52):
+ 'NoneType' object has no attribute 'parameters'
+Impossible to generate IR for MADBountyCore._reentrancyGuardEntered (lib/openzeppelin-contracts/contracts/utils/ReentrancyGuardTransient.sol#58-60):
+ 'NoneType' object has no attribute 'parameters'
+
+Detector: arbitrary-send-erc20
+MADBountyCore._pull(address,address,uint256) (src/MADBountyCore.sol#377-382) uses arbitrary from in transferFrom: ! usdc.transferFrom(from,to,amt) (src/MADBountyCore.sol#380)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#arbitrary-from-in-transferfrom
+
+Detector: uninitialized-state
+MADBountyCore.bounties (src/MADBountyCore.sol#111) is never initialized. It is used in:
+	- MADBountyCore.post(MADBountyCore.Params) (src/MADBountyCore.sol#158-173)
+	- MADBountyCore.cancel(uint256) (src/MADBountyCore.sol#175-182)
+	- MADBountyCore.refundExpired(uint256) (src/MADBountyCore.sol#185-192)
+	- MADBountyCore.extendReview(uint256) (src/MADBountyCore.sol#195-203)
+	- MADBountyCore.claim(uint256,uint256,bytes) (src/MADBountyCore.sol#207-223)
+	- MADBountyCore.submit(uint256,bytes32) (src/MADBountyCore.sol#225-234)
+	- MADBountyCore.reclaimAbandoned(uint256) (src/MADBountyCore.sol#237-246)
+	- MADBountyCore.settle(uint256,bool) (src/MADBountyCore.sol#251-254)
+	- MADBountyCore.settleWithSig(uint256,bool,bytes) (src/MADBountyCore.sol#257-262)
+	- MADBountyCore.reverse(uint256) (src/MADBountyCore.sol#265-268)
+	- MADBountyCore.reverseWithSig(uint256,bytes) (src/MADBountyCore.sol#270-275)
+	- MADBountyCore.payOnTimeout(uint256) (src/MADBountyCore.sol#278-283)
+	- MADBountyCore.finalizeReject(uint256) (src/MADBountyCore.sol#286-301)
+	- MADBountyCore.withdraw(uint256) (src/MADBountyCore.sol#303-309)
+	- MADBountyCore.retryBurn(uint256) (src/MADBountyCore.sol#312-318)
+	- MADBountyCore._settle(uint256,bool) (src/MADBountyCore.sol#338-349)
+	- MADBountyCore._reverse(uint256) (src/MADBountyCore.sol#351-357)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-state-variables
+
+Detector: reentrancy-no-eth
+Reentrancy in MADBountyCore._accept(uint256,MADBountyCore.Bounty,bool) (src/MADBountyCore.sol#359-366):
+	External calls:
+	- _pay(id,b,b.worker,toWorker) (src/MADBountyCore.sol#363)
+		- ! b.vault.send(to,amt) (src/MADBountyCore.sol#371)
+	- _pay(id,b,treasury,fee) (src/MADBountyCore.sol#364)
+		- ! b.vault.send(to,amt) (src/MADBountyCore.sol#371)
+	State variables written after the call(s):
+	- _pay(id,b,treasury,fee) (src/MADBountyCore.sol#364)
+		- owed[id][to] += amt (src/MADBountyCore.sol#372)
+	MADBountyCore.owed (src/MADBountyCore.sol#112) can be used in cross function reentrancies:
+	- MADBountyCore.owed (src/MADBountyCore.sol#112)
+Reentrancy in MADBountyCore.finalizeReject(uint256) (src/MADBountyCore.sol#286-301):
+	External calls:
+	- _burn(id,b,b.deposit) (src/MADBountyCore.sol#292)
+		- ! b.vault.send(BURN,amt) (src/MADBountyCore.sol#325)
+	- _pay(id,b,b.agent,b.reward) (src/MADBountyCore.sol#293)
+		- ! b.vault.send(to,amt) (src/MADBountyCore.sol#371)
+	State variables written after the call(s):
+	- _pay(id,b,b.agent,b.reward) (src/MADBountyCore.sol#293)
+		- owed[id][to] += amt (src/MADBountyCore.sol#372)
+	MADBountyCore.owed (src/MADBountyCore.sol#112) can be used in cross function reentrancies:
+	- MADBountyCore.owed (src/MADBountyCore.sol#112)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-2
+
+Detector: uninitialized-local
+MultiVerifier._checkQuorum(uint256,bytes32,address[],bytes[]).prev (periphery/src/MultiVerifier.sol#88) is a local variable never initialized
+MultiVerifier.configure(uint256,address[],uint8).prev (periphery/src/MultiVerifier.sol#44) is a local variable never initialized
+TeeMLVerifier.resolve(uint256,bytes,uint256,uint256,bytes,bytes).allowed (periphery/src/TeeMLVerifier.sol#180) is a local variable never initialized
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-local-variables
+
+Detector: unused-return
+AdapterBase._bounty(uint256) (periphery/src/AdapterBase.sol#42-61) ignores return value by (agent,verifier,None,worker,None,None,None,None,reviewWindow,None,deadline,extended,None,state,evidenceHash) = core.bounties(id) (periphery/src/AdapterBase.sol#43-59)
+TeeMLVerifier.teeSigner(bytes32,bytes32,bytes) (periphery/src/TeeMLVerifier.sol#105-109) ignores return value by (s,err,None) = ECDSA.tryRecover(h,sig) (periphery/src/TeeMLVerifier.sol#107)
+MADBountyCore._validSig(address,bytes32,bytes) (src/MADBountyCore.sol#332-336) ignores return value by (rec,err,None) = ECDSA.tryRecover(digest,sig) (src/MADBountyCore.sol#333)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
+
+Detector: reentrancy-events
+Reentrancy in MADBountyCore._accept(uint256,MADBountyCore.Bounty,bool) (src/MADBountyCore.sol#359-366):
+	External calls:
+	- _pay(id,b,b.worker,toWorker) (src/MADBountyCore.sol#363)
+		- ! b.vault.send(to,amt) (src/MADBountyCore.sol#371)
+	- _pay(id,b,treasury,fee) (src/MADBountyCore.sol#364)
+		- ! b.vault.send(to,amt) (src/MADBountyCore.sol#371)
+	Event emitted after the call(s):
+	- Owed(id,to,amt) (src/MADBountyCore.sol#373)
+		- _pay(id,b,treasury,fee) (src/MADBountyCore.sol#364)
+	- Paid(id,b.worker,toWorker,fee,byTimeout) (src/MADBountyCore.sol#365)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-4
+
+Detector: timestamp
+FallbackVerifier.resolve(uint256,bool,uint256,bytes) (periphery/src/FallbackVerifier.sol#93-107) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < sub + signerIndex * c.stepTimeout (periphery/src/FallbackVerifier.sol#100)
+MADBountyCore.post(MADBountyCore.Params) (src/MADBountyCore.sol#158-173) uses timestamp for comparisons
+	Dangerous comparisons:
+	- p.openUntil <= block.timestamp || p.openUntil > block.timestamp + MAX_OPEN (src/MADBountyCore.sol#163)
+MADBountyCore.refundExpired(uint256) (src/MADBountyCore.sol#185-192) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.openUntil (src/MADBountyCore.sol#188)
+MADBountyCore.extendReview(uint256) (src/MADBountyCore.sol#195-203) uses timestamp for comparisons
+	Dangerous comparisons:
+	- b.extended || block.timestamp > b.deadline (src/MADBountyCore.sol#199)
+MADBountyCore.claim(uint256,uint256,bytes) (src/MADBountyCore.sol#207-223) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp > b.openUntil (src/MADBountyCore.sol#210)
+	- block.timestamp > authDeadline (src/MADBountyCore.sol#212)
+MADBountyCore.submit(uint256,bytes32) (src/MADBountyCore.sol#225-234) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp > b.deadline (src/MADBountyCore.sol#229)
+MADBountyCore.reclaimAbandoned(uint256) (src/MADBountyCore.sol#237-246) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.deadline (src/MADBountyCore.sol#240)
+MADBountyCore.payOnTimeout(uint256) (src/MADBountyCore.sol#278-283) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.deadline (src/MADBountyCore.sol#281)
+MADBountyCore.finalizeReject(uint256) (src/MADBountyCore.sol#286-301) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.deadline (src/MADBountyCore.sol#289)
+MADBountyCore._settle(uint256,bool) (src/MADBountyCore.sol#338-349) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp > b.deadline (src/MADBountyCore.sol#341)
+MADBountyCore._reverse(uint256) (src/MADBountyCore.sol#351-357) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp > b.deadline (src/MADBountyCore.sol#354)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Detector: low-level-calls
+Low level call in OnchainCheckVerifier.check(uint256) (periphery/src/OnchainCheckVerifier.sol#51-56):
+	- (ok,ret) = c.target.staticcall{gas: CHECK_GAS}(c.data) (periphery/src/OnchainCheckVerifier.sol#54)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+. analyzed (27 contracts with 102 detectors), 23 result(s) found
+INFO:Slither:audit/r2/slither-periphery.json exists already, the overwrite is prevented
+'forge clean' running (wd: /home/garvis108/projects/mad-bounty)
+'forge config --json' running
+'forge build --build-info --deny never --skip ./periphery/test/** ./script/** --force' running (wd: /home/garvis108/projects/mad-bounty)

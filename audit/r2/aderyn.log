@@ -1,0 +1,12 @@
+Root: "/home/garvis108/projects/mad-bounty", Src: Some(["src"]), Include: None, Exclude: Some(["test/", "script/", "lib/"])
+Resolving sources versions by graph ...
+Compiling 19 files with Solc 0.8.34+commit.80d5c536.Linux.gcc
+Get Detectors
+Running 63 detectors
+Detectors run, processing found issues
+Found issues processed. Printing report
+Report printed to audit/r2/aderyn.md
+
+thread 'main' (1807220) panicked at /home/garvis108/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aderyn-0.1.9/src/lib.rs:122:86:
+called `Result::unwrap()` on an `Err` value: Error("unexpected character 'a' while parsing major version number")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
