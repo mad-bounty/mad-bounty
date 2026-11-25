@@ -142,7 +142,7 @@ Time comparisons: "before deadline" means `block.timestamp <= deadline`; "after"
 - Pre: agent approved the CORE (not the vault) for ≥ reward USDC.
 - Effects: `id = nextId++`; clones a vault; stores bounty with state Open; pulls reward into the vault (balance-diff checked → `TransferFailed` on short transfer).
 - Emits `Posted(id, agent, verifier, vault, reward, deposit, workWindow, reviewWindow, openUntil, rejectMode, claimAuthorizer, specHash, encKey)`.
-- Not validated: `rejectMode` (any enum value), `specHash`, `encKey`, `claimAuthorizer`.
+- `rejectMode` must be 0 or 1 (the ABI decoder reverts otherwise). Not validated: `specHash`, `encKey`, `claimAuthorizer`.
 
 ### cancel(uint256 id)                 — agent
 - Pre: state Open (`BadState`), caller is agent (`NotAllowed`).

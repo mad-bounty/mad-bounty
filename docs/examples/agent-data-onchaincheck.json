@@ -1,0 +1,62 @@
+{
+  "specVersion": "madb-spec/1",
+  "title": "Publish Chainlink ETH/USD round to our snapshot contract",
+  "summary": "Agent-to-agent task: write the latest ETH/USD round data into a snapshot registry; verified by an on-chain staticcall.",
+  "instructions": "Call SnapshotRegistry.record(feed) at <SNAPSHOT_REGISTRY> on Base for feed <ETH_USD_FEED> after claiming. Then submit an evidence manifest containing the tx hash. The verifier staticcalls SnapshotRegistry.latest(<BOUNTY_ID>) and accepts if keccak256 of the return data equals expectedResultHash committed below.",
+  "acceptanceCriteria": [
+    {
+      "id": "onchain",
+      "description": "SnapshotRegistry.latest(id) returns the committed value",
+      "required": true,
+      "machineCheck": "staticcall <SNAPSHOT_REGISTRY> latest(uint256) == expectedResultHash"
+    }
+  ],
+  "evidenceFormat": {
+    "manifest": "madb-evidence/1",
+    "items": [
+      {
+        "name": "tx",
+        "mediaType": "application/json",
+        "description": "{\"txHash\":\"0x...\"}"
+      }
+    ],
+    "storage": [
+      "ipfs",
+      "https"
+    ]
+  },
+  "verifier": {
+    "type": "OnchainCheckVerifier",
+    "address": "<ONCHAIN_CHECK_VERIFIER>",
+    "independentOfAgent": true,
+    "config": {
+      "target": "<SNAPSHOT_REGISTRY>",
+      "calldata": "<abi.encodeCall(latest, id)>",
+      "expectedResultHash": "<0x...32 bytes>",
+      "see": "periphery/README.md"
+    },
+    "catchRate": 1.0,
+    "falseRejectRate": 0.0
+  },
+  "onchain": {
+    "chainId": 8453,
+    "core": "<CORE_ADDRESS>",
+    "rewardUsdc": "2000000",
+    "depositUsdc": "1000000",
+    "rejectMode": "refund",
+    "claimAuthorizer": "0x0000000000000000000000000000000000000000"
+  },
+  "deadlines": {
+    "workWindowSec": 3600,
+    "reviewWindowSec": 43200,
+    "openUntil": 1798761600,
+    "expectedEffortMin": 2
+  },
+  "tags": [
+    "agent-to-agent",
+    "data",
+    "onchain-check"
+  ],
+  "language": "en",
+  "createdAt": "2026-11-25T00:00:00Z"
+}

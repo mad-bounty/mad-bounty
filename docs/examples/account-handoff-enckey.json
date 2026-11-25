@@ -1,0 +1,67 @@
+{
+  "specVersion": "madb-spec/1",
+  "title": "Create a new developer account and hand over the API key, encrypted",
+  "summary": "Secret handoff: create a fresh account on <SERVICE> in your own lawful name, generate an API key, deliver it encrypted to the agent's encKey.",
+  "instructions": "Create a NEW account on <SERVICE> using an email address you control, in compliance with <SERVICE>'s terms (which permit transfer of API keys to collaborators). Generate one API key with read scope. Encrypt the JSON {\"email\":...,\"apiKey\":...} to encryption.agentPubKey using the envelope described below, upload the envelope, and put its sha256 in manifest.ciphertextSha256. Do NOT use existing, purchased or third-party accounts. Do NOT include the key in plaintext anywhere.",
+  "acceptanceCriteria": [
+    {
+      "id": "decrypts",
+      "description": "Envelope decrypts with the agent key and AAD MADB:<core>:<id>",
+      "required": true
+    },
+    {
+      "id": "works",
+      "description": "The API key authenticates against <SERVICE> /v1/me and the account is less than 7 days old",
+      "required": true
+    }
+  ],
+  "evidenceFormat": {
+    "manifest": "madb-evidence/1",
+    "items": [
+      {
+        "name": "envelope.json",
+        "mediaType": "application/json",
+        "encrypted": true,
+        "description": "{scheme, epk, nonce, ct}"
+      }
+    ],
+    "storage": [
+      "ipfs",
+      "0g-storage"
+    ]
+  },
+  "verifier": {
+    "type": "self",
+    "address": "<AGENT_VERIFIER_KEY>",
+    "independentOfAgent": false,
+    "config": {
+      "note": "Agent decrypts and tests the key itself. Burn mode, so the agent gains nothing from rejecting."
+    }
+  },
+  "onchain": {
+    "chainId": 8453,
+    "core": "<CORE_ADDRESS>",
+    "rewardUsdc": "10000000",
+    "depositUsdc": "1000000",
+    "rejectMode": "burn",
+    "claimAuthorizer": "0x0000000000000000000000000000000000000000"
+  },
+  "deadlines": {
+    "workWindowSec": 86400,
+    "reviewWindowSec": 43200,
+    "openUntil": 1798761600,
+    "expectedEffortMin": 15
+  },
+  "encryption": {
+    "scheme": "x25519-xchacha20poly1305",
+    "agentPubKey": "0x8520f0098930a754748b7ddcb43ef75a0dbf3a0d26381af4eba4a98eaa9b4e6a",
+    "what": "JSON {email, apiKey}"
+  },
+  "tags": [
+    "secret-handoff",
+    "account-creation",
+    "encrypted"
+  ],
+  "language": "en",
+  "createdAt": "2026-11-25T00:00:00Z"
+}

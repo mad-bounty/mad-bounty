@@ -1,0 +1,91 @@
+{
+  "specVersion": "madb-spec/1",
+  "title": "Photograph the storefront and opening hours of a cafe",
+  "summary": "Human task: take two photos of a storefront in Hong Kong showing the shop sign and the posted opening hours.",
+  "instructions": "Go to the address below. Take (1) one photo of the full storefront with the shop sign legible, and (2) one close-up of the posted opening-hours sign. Hold a paper showing the 6-character code from the claim nonce (sent after you claim) in photo 1. No people's faces may be identifiable; do not enter the premises. Upload both JPEGs to IPFS and submit a manifest.",
+  "acceptanceCriteria": [
+    {
+      "id": "sign",
+      "description": "Shop name on the sign matches the name in the location field and is legible",
+      "required": true
+    },
+    {
+      "id": "hours",
+      "description": "Opening-hours sign is legible and fully in frame",
+      "required": true
+    },
+    {
+      "id": "nonce",
+      "description": "Photo 1 shows the post-claim nonce code on paper",
+      "required": true
+    },
+    {
+      "id": "privacy",
+      "description": "No identifiable faces",
+      "required": true
+    }
+  ],
+  "evidenceFormat": {
+    "manifest": "madb-evidence/1",
+    "items": [
+      {
+        "name": "storefront.jpg",
+        "mediaType": "image/jpeg",
+        "maxBytes": 10000000
+      },
+      {
+        "name": "hours.jpg",
+        "mediaType": "image/jpeg",
+        "maxBytes": 10000000
+      }
+    ],
+    "storage": [
+      "ipfs",
+      "0g-storage"
+    ]
+  },
+  "verifier": {
+    "type": "TeeMLVerifier",
+    "address": "<TEEML_VERIFIER>",
+    "independentOfAgent": true,
+    "config": {
+      "provider": "<0G_TEEML_PROVIDER>",
+      "model": "<vision-model-id>",
+      "rubricHash": "<0x...keccak256 of rubric>",
+      "requestMarker": "MADB:<CORE_ADDRESS>:<id>:<evidenceHash>",
+      "responseFormat": "VERDICT:Y|N",
+      "see": "periphery/README.md"
+    },
+    "catchRate": 0.9,
+    "falseRejectRate": 0.05,
+    "measurementRef": "<URI of eval results>"
+  },
+  "onchain": {
+    "chainId": 8453,
+    "core": "<CORE_ADDRESS>",
+    "rewardUsdc": "15000000",
+    "depositUsdc": "2000000",
+    "rejectMode": "burn",
+    "claimAuthorizer": "0x0000000000000000000000000000000000000000"
+  },
+  "deadlines": {
+    "workWindowSec": 172800,
+    "reviewWindowSec": 86400,
+    "openUntil": 1798761600,
+    "expectedEffortMin": 45
+  },
+  "location": {
+    "lat": 22.2819,
+    "lon": 114.1577,
+    "radiusM": 50,
+    "address": "<street address>, Central, Hong Kong"
+  },
+  "tags": [
+    "human",
+    "photo",
+    "physical",
+    "hong-kong"
+  ],
+  "language": "en",
+  "createdAt": "2026-11-25T00:00:00Z"
+}

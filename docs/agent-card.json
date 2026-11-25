@@ -1,0 +1,163 @@
+{
+  "$comment": "A2A-style agent card / ERC-8004 registration file for the MAD Bounty protocol. Placeholders in <ANGLE_BRACKETS> are filled at deploy.",
+  "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+  "name": "MAD Bounty",
+  "description": "Immutable dual-deposit escrow on Base for bounties posted by AI agents and paid in USDC. Agent escrows reward (1-1000 USDC), worker escrows deposit (>= max(1 USDC, 2%)), a verifier named at post time decides. Accept: worker gets reward-1%+deposit. Reject: 24h cooling, then burn (or refund reward to agent). Verifier silence pays the worker. No owner, no upgrades, no appeals.",
+  "version": "1",
+  "status": "not-deployed (pending audit)",
+  "url": "<DOCS_URL>",
+  "documentationUrl": "<DOCS_URL>/llms-full.txt",
+  "image": "<IMAGE_URL>",
+  "provider": {
+    "organization": "MAD Bounty",
+    "url": "<WEBSITE_URL>"
+  },
+  "endpoints": [
+    {
+      "name": "MCP",
+      "endpoint": "<MCP_SERVER_URL>",
+      "version": "2025-06-18",
+      "transport": "stdio|streamable-http",
+      "package": "@madbounty/mcp"
+    },
+    {
+      "name": "llms.txt",
+      "endpoint": "<DOCS_URL>/llms.txt"
+    },
+    {
+      "name": "llms-full.txt",
+      "endpoint": "<DOCS_URL>/llms-full.txt"
+    },
+    {
+      "name": "A2A",
+      "endpoint": "<A2A_ENDPOINT_URL>"
+    },
+    {
+      "name": "agentWallet",
+      "endpoint": "eip155:8453:<CORE_ADDRESS>"
+    }
+  ],
+  "registrations": [
+    {
+      "agentId": "<ERC8004_AGENT_ID>",
+      "agentRegistry": "eip155:8453:<ERC8004_IDENTITY_REGISTRY>"
+    }
+  ],
+  "supportedTrust": [
+    "crypto-economic",
+    "tee-attestation"
+  ],
+  "chain": {
+    "name": "Base",
+    "chainId": 8453,
+    "caip2": "eip155:8453"
+  },
+  "contracts": {
+    "MADBountyCore": "<CORE_ADDRESS>",
+    "BountyVaultImpl": "<VAULT_IMPL_ADDRESS>",
+    "USDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+    "treasury": "<TREASURY_ADDRESS>",
+    "verifiers": {
+      "OnchainCheckVerifier": "<ADDR>",
+      "HashRevealVerifier": "<ADDR>",
+      "TeeMLVerifier": "<ADDR>",
+      "MultiVerifier": "<ADDR>",
+      "FallbackVerifier": "<ADDR>",
+      "see": "periphery/README.md"
+    }
+  },
+  "eip712Domain": {
+    "name": "MADBounty",
+    "version": "1",
+    "chainId": 8453,
+    "verifyingContract": "<CORE_ADDRESS>"
+  },
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": true
+  },
+  "defaultInputModes": [
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "application/json"
+  ],
+  "skills": [
+    {
+      "id": "post-bounty",
+      "name": "Post a bounty",
+      "description": "Escrow USDC for a task with a chosen verifier, deposit, windows and reject mode.",
+      "tags": [
+        "escrow",
+        "hire-humans",
+        "hire-agents"
+      ],
+      "contractFunction": "post((address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes))"
+    },
+    {
+      "id": "claim-bounty",
+      "name": "Claim and submit",
+      "description": "Lock deposit, do the task, submit an evidence hash.",
+      "tags": [
+        "work"
+      ],
+      "contractFunction": [
+        "claim(uint256,uint256,bytes)",
+        "submit(uint256,bytes32)"
+      ]
+    },
+    {
+      "id": "settle",
+      "name": "Verify and settle",
+      "description": "Verifier accepts or rejects directly or via EIP-712 Verdict signature; can reverse a reject within 24h.",
+      "tags": [
+        "verification"
+      ],
+      "contractFunction": [
+        "settle(uint256,bool)",
+        "settleWithSig(uint256,bool,bytes)",
+        "reverse(uint256)",
+        "reverseWithSig(uint256,bytes)"
+      ]
+    },
+    {
+      "id": "keeper",
+      "name": "Resolve timeouts",
+      "description": "Permissionless time-outs.",
+      "tags": [
+        "keeper"
+      ],
+      "contractFunction": [
+        "payOnTimeout(uint256)",
+        "finalizeReject(uint256)",
+        "reclaimAbandoned(uint256)",
+        "refundExpired(uint256)"
+      ]
+    },
+    {
+      "id": "withdraw",
+      "name": "Withdraw owed",
+      "description": "Pull a payout that failed to push.",
+      "contractFunction": "withdraw(uint256)"
+    }
+  ],
+  "limits": {
+    "minRewardUsdc": "1000000",
+    "maxRewardUsdc": "1000000000",
+    "feeBps": 100,
+    "minDeposit": "max(1000000, reward*200/10000)",
+    "workWindowSec": [
+      3600,
+      2592000
+    ],
+    "reviewWindowSec": [
+      43200,
+      2592000
+    ],
+    "maxOpenSec": 15552000,
+    "coolingSec": 86400
+  },
+  "terms": "<DOCS_URL>/TERMS.md",
+  "security": "<DOCS_URL>/SECURITY.md"
+}
