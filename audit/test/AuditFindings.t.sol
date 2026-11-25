@@ -78,24 +78,22 @@ contract AuditFindingsTest is AuditBase {
     // so one authorized worker can lock an authorizer-gated bounty again and again until
     // authDeadline, and the authorizer cannot revoke an ECDSA authorization.
     // =====================================================================================
-    function test_L01_claimAuthSig_reusableAfterAbandon() public {
+    /// FIXED (L-01): an authorization is single-use per (id, worker).
+    function test_L01_fixed_claimAuthSigSingleUse() public {
         MADBountyCore.Params memory p = _params(verifier, 100e6, 2e6, MADBountyCore.RejectMode.Burn);
         p.claimAuthorizer = vm.addr(ak);
         p.workWindow = 1 hours;
         vm.prank(agent); uint256 id = core.post(p);
-        uint256 dl = block.timestamp + 7 days;              // authorizer intended ONE claim
+        uint256 dl = block.timestamp + 7 days;
         bytes memory sig = _claimSig(ak, id, worker, dl);
-        uint256 t = block.timestamp;
-        for (uint256 i; i < 5; i++) {
-            vm.prank(worker); core.claim(id, dl, sig);       // same signature every time
-            t += 1 hours + 1; vm.warp(t);
-            core.reclaimAbandoned(id);
-        }
         vm.prank(worker); core.claim(id, dl, sig);
+        vm.warp(block.timestamp + 1 hours + 1);
+        core.reclaimAbandoned(id);
+        vm.prank(worker); vm.expectRevert(MADBountyCore.BadSig.selector); core.claim(id, dl, sig);
+        // a fresh authorization for a different worker still works
+        bytes memory sig2 = _claimSig(ak, id, worker2, dl);
+        vm.prank(worker2); core.claim(id, dl, sig2);
         assertEq(uint8(_state(id)), uint8(MADBountyCore.State.Claimed));
-        // a different (authorized-by-nobody) worker is still locked out
-        vm.warp(t + 1 hours + 1); core.reclaimAbandoned(id);
-        vm.prank(worker2); vm.expectRevert(MADBountyCore.BadSig.selector); core.claim(id, dl, sig);
     }
 
     // =====================================================================================
@@ -106,50 +104,54 @@ contract AuditFindingsTest is AuditBase {
     // (economically burned), but indexers/SDK reading events see burns that never happened, and the
     // vault ends with an unaccounted surplus.
     // =====================================================================================
-    function test_L02_reclaimAbandoned_duringPause_silentlySkipsBurn() public {
+    /// FIXED (L-02): a failed burn is recorded as owed[id][BURN] and anyone can retry it.
+    function test_L02_fixed_abandonDuringPause_burnOwedThenRetried() public {
         uint256 id = _post(verifier, 100e6, 10e6, MADBountyCore.RejectMode.Burn);
         vm.prank(worker); core.claim(id, 0, "");
         vm.warp(block.timestamp + 1 days + 1);
         usdc.setPaused(true);
-        vm.expectEmit(true, true, false, true, address(core));
-        emit MADBountyCore.Abandoned(id, worker, 10e6);      // event says 10 USDC burned
         core.reclaimAbandoned(id);
+        assertEq(core.owed(id, BURN), 10e6);
+        vm.expectRevert(MADBountyCore.TransferFailed.selector); core.retryBurn(id); // still paused
         usdc.setPaused(false);
-        assertEq(usdc.balanceOf(BURN), 0);                  // ...nothing burned
-        assertEq(usdc.balanceOf(_vault(id)), 110e6);          // deposit stuck in an Open vault
-        assertEq(core.owed(id, worker), 0);
-        // the bounty proceeds normally; the old deposit is never released to anyone
         _claimSubmit(id, worker2);
         vm.prank(verifier); core.settle(id, true);
-        assertEq(usdc.balanceOf(_vault(id)), 10e6);           // stranded forever
+        assertEq(usdc.balanceOf(_vault(id)), 10e6);       // exactly the owed burn remains
+        core.retryBurn(id);
+        assertEq(usdc.balanceOf(BURN), 10e6);
+        assertEq(usdc.balanceOf(_vault(id)), 0);
+        assertEq(core.owed(id, BURN), 0);
+        vm.expectRevert(MADBountyCore.BadParam.selector); core.retryBurn(id);
     }
 
-    function test_L02_finalizeRejectRefund_duringPause_depositStaysInVault() public {
+    function test_L02_fixed_refundDuringPause_vaultFullyAccounted() public {
         uint256 id = _post(verifier, 100e6, 10e6, MADBountyCore.RejectMode.Refund);
         _claimSubmit(id, worker);
         vm.prank(verifier); core.settle(id, false);
         vm.warp(block.timestamp + 1 days + 1);
         usdc.setPaused(true);
-        core.finalizeReject(id);                              // emits Refunded(id, 100e6, 10e6)
+        core.finalizeReject(id);
         usdc.setPaused(false);
         assertEq(core.owed(id, agent), 100e6);
+        assertEq(core.owed(id, BURN), 10e6);
         vm.prank(agent); core.withdraw(id);
-        assertEq(usdc.balanceOf(BURN), 0);
-        assertEq(usdc.balanceOf(_vault(id)), 10e6);           // "burned" deposit is stuck instead
+        core.retryBurn(id);
+        assertEq(usdc.balanceOf(BURN), 10e6);
+        assertEq(usdc.balanceOf(_vault(id)), 0);
     }
 
-    function test_L02_finalizeRejectBurn_duringPause_reportsBurn() public {
+    function test_L02_fixed_burnDuringPause_owedThenRetried() public {
         uint256 id = _post(verifier, 100e6, 10e6, MADBountyCore.RejectMode.Burn);
         _claimSubmit(id, worker);
         vm.prank(verifier); core.settle(id, false);
         vm.warp(block.timestamp + 1 days + 1);
         usdc.setPaused(true);
-        vm.expectEmit(true, false, false, true, address(core));
-        emit MADBountyCore.Burned(id, 110e6);
         core.finalizeReject(id);
+        assertEq(core.owed(id, BURN), 110e6);
         usdc.setPaused(false);
-        assertEq(usdc.balanceOf(BURN), 0);
-        assertEq(usdc.balanceOf(_vault(id)), 110e6);
+        core.retryBurn(id);
+        assertEq(usdc.balanceOf(BURN), 110e6);
+        assertEq(usdc.balanceOf(_vault(id)), 0);
         assertEq(uint8(_state(id)), uint8(MADBountyCore.State.Burned));
     }
 
@@ -189,16 +191,25 @@ contract AuditFindingsTest is AuditBase {
     // smart wallet deployed later) is checked ONLY via ERC-1271; its ECDSA signatures stop working.
     // If the verifier relied on relayed signatures, silence then pays the worker on timeout.
     // =====================================================================================
-    function test_L03_verifierWithCode_ecdsaSigRejected_timeoutPaysWorker() public {
+    /// FIXED (L-03): the address's own ECDSA key still works after it gains code (7702 delegate).
+    function test_L03_fixed_verifierWithCode_ecdsaRejectLands() public {
         uint256 id = _post(verifier, 100e6, 10e6, MADBountyCore.RejectMode.Burn);
         _claimSubmit(id, worker);
         bytes memory rej = _verdictSig(vk, id, worker, ev, false);
-        vm.etch(verifier, address(new NoSigSupport()).code); // stands in for 7702 delegate code
-        vm.expectRevert(MADBountyCore.BadSig.selector);
-        core.settleWithSig(id, false, rej);                    // valid ECDSA REJECT refused
+        vm.etch(verifier, address(new NoSigSupport()).code);
+        core.settleWithSig(id, false, rej);
+        assertEq(uint8(_state(id)), uint8(MADBountyCore.State.Rejected));
         vm.warp(block.timestamp + 1 days + 1);
-        core.payOnTimeout(id);                                 // worker paid despite the reject
-        assertEq(usdc.balanceOf(worker), 100_000e6 + 99e6);
+        vm.expectRevert(MADBountyCore.BadState.selector); core.payOnTimeout(id);
+    }
+
+    /// L-03 fix must not let a random key sign for a contract verifier.
+    function test_L03_fixed_wrongKeyForContractVerifierRejected() public {
+        uint256 id = _post(verifier, 100e6, 10e6, MADBountyCore.RejectMode.Burn);
+        _claimSubmit(id, worker);
+        vm.etch(verifier, address(new NoSigSupport()).code);
+        bytes memory bad = _verdictSig(ak, id, worker, ev, true);
+        vm.expectRevert(MADBountyCore.BadSig.selector); core.settleWithSig(id, true, bad);
     }
 
     // =====================================================================================

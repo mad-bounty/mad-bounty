@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {SignatureChecker} from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {ReentrancyGuardTransient} from "@openzeppelin/contracts/utils/ReentrancyGuardTransient.sol";
 
@@ -109,6 +110,7 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
     uint256 public nextId = 1;
     mapping(uint256 => Bounty) public bounties;
     mapping(uint256 => mapping(address => uint256)) public owed; // failed pushes, withdrawable
+    mapping(uint256 => mapping(address => bool)) public claimAuthUsed; // claim authorizations are single-use
 
     event Posted(uint256 indexed id, address indexed agent, address indexed verifier, address vault, uint256 reward,
         uint256 deposit, uint32 workWindow, uint32 reviewWindow, uint64 openUntil, RejectMode rejectMode,
@@ -209,7 +211,9 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
         if (b.claimAuthorizer != address(0)) {
             if (block.timestamp > authDeadline) revert TooLate();
             bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(CLAIM_TYPEHASH, id, msg.sender, authDeadline)));
-            if (!SignatureChecker.isValidSignatureNow(b.claimAuthorizer, digest, authSig)) revert BadSig();
+            if (!_validSig(b.claimAuthorizer, digest, authSig)) revert BadSig();
+            if (claimAuthUsed[id][msg.sender]) revert BadSig(); // one claim per authorization (audit L-01)
+            claimAuthUsed[id][msg.sender] = true;
         }
         b.worker = msg.sender;
         b.deadline = uint64(block.timestamp) + b.workWindow;
@@ -237,7 +241,7 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
         address w = b.worker;
         uint256 d = b.deposit;
         b.worker = address(0); b.deadline = 0; b.state = State.Open;
-        b.vault.send(BURN, d);
+        _burn(id, b, d);
         emit Abandoned(id, w, d);
     }
 
@@ -253,7 +257,7 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
     function settleWithSig(uint256 id, bool accept, bytes calldata sig) external nonReentrant {
         Bounty storage b = bounties[id];
         bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(VERDICT_TYPEHASH, id, b.worker, b.evidenceHash, accept)));
-        if (!SignatureChecker.isValidSignatureNow(b.verifier, digest, sig)) revert BadSig();
+        if (!_validSig(b.verifier, digest, sig)) revert BadSig();
         _settle(id, accept);
     }
 
@@ -266,7 +270,7 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
     function reverseWithSig(uint256 id, bytes calldata sig) external nonReentrant {
         Bounty storage b = bounties[id];
         bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(REVERSE_TYPEHASH, id, b.worker, b.evidenceHash)));
-        if (!SignatureChecker.isValidSignatureNow(b.verifier, digest, sig)) revert BadSig();
+        if (!_validSig(b.verifier, digest, sig)) revert BadSig();
         _reverse(id);
     }
 
@@ -285,13 +289,13 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
         if (block.timestamp <= b.deadline) revert TooEarly();
         if (b.rejectMode == RejectMode.Refund) {
             b.state = State.Refunded;
-            b.vault.send(BURN, b.deposit);
+            _burn(id, b, b.deposit);
             _pay(id, b, b.agent, b.reward);
             emit Refunded(id, b.reward, b.deposit);
         } else {
             b.state = State.Burned;
             uint256 amt = uint256(b.reward) + b.deposit;
-            b.vault.send(BURN, amt); // a frozen vault leaves funds locked forever: same economic outcome
+            _burn(id, b, amt);
             emit Burned(id, amt);
         }
     }
@@ -304,7 +308,32 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
         emit Withdrawn(id, msg.sender, amt);
     }
 
+    /// @notice Anyone: retry a burn that failed earlier (token paused / vault frozen). Audit L-02.
+    function retryBurn(uint256 id) external nonReentrant {
+        uint256 amt = owed[id][BURN];
+        if (amt == 0) revert BadParam();
+        owed[id][BURN] = 0;
+        if (!bounties[id].vault.send(BURN, amt)) revert TransferFailed();
+        emit Burned(id, amt);
+    }
+
     // --------------------------------------------------------------- internal
+
+    /// @dev Burn; on failure record owed[id][BURN] so the vault stays fully accounted and anyone can retry.
+    function _burn(uint256 id, Bounty storage b, uint256 amt) internal {
+        if (amt == 0) return;
+        if (!b.vault.send(BURN, amt)) {
+            owed[id][BURN] += amt;
+            emit Owed(id, BURN, amt);
+        }
+    }
+
+    /// @dev ECDSA by the address's own key first, then ERC-1271 if it has code (EIP-7702 safe). Audit L-03.
+    function _validSig(address signer, bytes32 digest, bytes calldata sig) internal view returns (bool) {
+        (address rec, ECDSA.RecoverError err,) = ECDSA.tryRecover(digest, sig);
+        if (err == ECDSA.RecoverError.NoError && rec == signer) return true;
+        return signer.code.length != 0 && SignatureChecker.isValidERC1271SignatureNow(signer, digest, sig);
+    }
 
     function _settle(uint256 id, bool accept) internal {
         Bounty storage b = bounties[id];

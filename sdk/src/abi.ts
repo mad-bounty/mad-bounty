@@ -387,6 +387,30 @@ export const madBountyCoreAbi = [
   },
   {
     "type": "function",
+    "name": "claimAuthUsed",
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "domainSeparator",
     "inputs": [],
     "outputs": [
@@ -649,6 +673,19 @@ export const madBountyCoreAbi = [
   {
     "type": "function",
     "name": "refundExpired",
+    "inputs": [
+      {
+        "name": "id",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "retryBurn",
     "inputs": [
       {
         "name": "id",
