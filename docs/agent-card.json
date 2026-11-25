@@ -59,9 +59,9 @@
     "USDC": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
     "treasury": "0x4a1447FC0466cECFCa2966E1116204E7906B5aF7",
     "verifiers": {
-      "OnchainCheckVerifier": "0x4B745507128353D77F40BDfd2Eba81f49E991bE0",
-      "HashRevealVerifier": "0xCc06084256d8d31d49A52Fdc1860a1f91d3855a9",
-      "TeeMLVerifier": "0x10e9647120716B61aFA933CAea6e2E6ff13319bD",
+      "OnchainCheckVerifier": "0x8Bf16e787b49649C3B6883F727977De5505083D7",
+      "HashRevealVerifier": "0x5554D841e3b7834B4602124B920aFDA6DBD0376C",
+      "TeeMLVerifier": "0xa4Ff0c36036191A64ef9BAD4d58CAD8f611C7899",
       "MultiVerifier": "0x174e9d5B2ff058DF8823855D5C270578E7eB57B2",
       "FallbackVerifier": "0xf2e0Dc57d15BD6440D729bf1dCf7D45ec3028468",
       "see": "periphery/README.md"

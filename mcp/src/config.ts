@@ -10,6 +10,8 @@ export interface ServerConfig {
   usdc: Address;
   privateKey?: Hex;
   knownVerifiers: Address[];
+  adapters?: { fallback?: Address; onchainCheck?: Address; hashReveal?: Address; teeML?: Address; multi?: Address };
+  trustedSigners: Address[];
   manualPath?: string;
   fromBlock: bigint;
 }
@@ -27,6 +29,8 @@ export function configFromEnv(env: NodeJS.ProcessEnv = process.env): ServerConfi
     usdc: env.MADB_USDC && isAddress(env.MADB_USDC) ? getAddress(env.MADB_USDC) : (dep?.usdc ?? BASE_MAINNET_USDC),
     privateKey: pk as Hex | undefined,
     knownVerifiers: [...new Set([...(env.MADB_KNOWN_VERIFIERS ?? '').split(',').map((s) => s.trim()).filter((s): s is Address => isAddress(s)).map((a) => getAddress(a)), ...Object.values(dep?.verifiers ?? {})])],
+    adapters: dep?.verifiers as ServerConfig['adapters'],
+    trustedSigners: (env.MADB_TRUSTED_SIGNERS ?? '').split(',').map((s) => s.trim()).filter((s): s is Address => isAddress(s)).map((a) => getAddress(a)),
     manualPath: env.MADB_MANUAL_PATH,
     fromBlock: env.MADB_FROM_BLOCK ? BigInt(env.MADB_FROM_BLOCK) : (dep?.deployBlock ?? 0n),
   };

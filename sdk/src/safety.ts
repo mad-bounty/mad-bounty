@@ -1,4 +1,4 @@
-import { isAddressEqual, type Address, type PublicClient } from 'viem';
+import { isAddressEqual, parseAbi, type Address, type PublicClient } from 'viem';
 import { CONSTANTS, ZERO_ADDRESS, type Bounty } from './types.js';
 import { acceptPayout, formatUsdc } from './math.js';
 
@@ -17,6 +17,10 @@ export interface SafetyReport {
 export interface SafetyOptions {
   /** Verifier addresses (independent adapters/oracles) the worker trusts. */
   knownSafeVerifiers?: Address[];
+  /** Adapter contracts by kind, so the gate can read the per-bounty config (audit r3 F-1). */
+  adapters?: { fallback?: Address; onchainCheck?: Address; hashReveal?: Address; teeML?: Address; multi?: Address };
+  /** Signer keys the worker trusts as independent of the agent (human verifiers, oracle keys, 0G enclave signers). */
+  trustedSigners?: Address[];
   /** Worker address, to flag self-dealing or already-claimed-by-other. */
   worker?: Address;
   /** Max acceptable deposit/reward ratio before WARN (default 0.25). */
@@ -31,14 +35,63 @@ export interface SafetyOptions {
 
 interface Deps {
   getBounty: (id: bigint) => Promise<Bounty>;
-  publicClient: Pick<PublicClient, 'getCode' | 'getBlock'>;
+  publicClient: Pick<PublicClient, 'getCode' | 'getBlock' | 'readContract'>;
 }
 
+export type AdapterKind = 'fallback' | 'onchainCheck' | 'hashReveal' | 'teeML' | 'multi';
+/** Per-bounty adapter config, as read on-chain. `signers` empty for rule adapters. */
+export interface AdapterConfig { kind: AdapterKind; signers: Address[]; threshold?: number; target?: Address }
+
+const ADAPTER_ABI = parseAbi([
+  'function config(uint256) view returns (address[] signers, uint32 stepTimeout)',
+]);
+const TEE_ABI = parseAbi(['function config(uint256) view returns (address[] signers, bytes32 prefixHash, bytes32 suffixHash, uint32 proofWindow)']);
+const MULTI_ABI = parseAbi(['function signersOf(uint256) view returns (address[])', 'function threshold(uint256) view returns (uint8)']);
+const OC_ABI = parseAbi(['function config(uint256) view returns (address target, bytes data, bytes32 expectedResultHash, uint32 checkWindow)']);
+
 /** Pure check on a decoded bounty. `verifierIsContract` is informational. */
-export function assessBounty(b: Bounty, opts: SafetyOptions & { now: bigint; verifierIsContract?: boolean }): SafetyReport {
+export function assessBounty(
+  b: Bounty,
+  opts: SafetyOptions & { now: bigint; verifierIsContract?: boolean; adapterConfig?: AdapterConfig },
+): SafetyReport {
   const w: SafetyWarning[] = [];
   const add = (severity: Severity, code: string, message: string) => w.push({ severity, code, message });
-  const known = (opts.knownSafeVerifiers ?? []).some((a) => isAddressEqual(a, b.verifier));
+  const ac = opts.adapterConfig;
+  // An adapter is only as independent as the config the agent wrote for THIS bounty (audit r3 F-1). A known adapter
+  // address is "safe" only once its per-bounty config is checked below.
+  const knownAddr = (opts.knownSafeVerifiers ?? []).some((a) => isAddressEqual(a, b.verifier));
+  const trusted = (a: Address) => (opts.trustedSigners ?? []).some((t) => isAddressEqual(t, a));
+  let known = knownAddr;
+  if (knownAddr && ac) {
+    if (ac.kind === 'fallback' || ac.kind === 'teeML') {
+      const bad = ac.signers.filter((s) => !trusted(s));
+      if (bad.length) {
+        known = false;
+        add(b.rejectMode === 'Refund' ? 'DANGER' : 'WARN', 'UNTRUSTED_ADAPTER_SIGNER',
+          `${ac.kind} config for this bounty uses signer(s) not on your trusted list: ${bad.join(', ')}. Any of them could be the agent's own key.`);
+      }
+      if (ac.kind === 'teeML')
+        add('WARN', 'TEEML_TEMPLATE', 'Before claiming, get the prompt prefix/suffix from the agent and check they hash to the on-chain prefixHash/suffixHash and that the rubric is satisfiable. No template = no accept proof = reject.');
+    } else if (ac.kind === 'multi') {
+      const good = ac.signers.filter(trusted).length;
+      if (good < (ac.threshold ?? 1)) {
+        known = false;
+        add(b.rejectMode === 'Refund' ? 'DANGER' : 'WARN', 'MULTI_QUORUM_UNTRUSTED',
+          `Only ${good} of the ${ac.signers.length} panel signers are on your trusted list; threshold is ${ac.threshold}. The agent may control a quorum.`);
+      }
+    } else if (ac.kind === 'onchainCheck') {
+      if (b.rejectMode === 'Refund') {
+        known = false;
+        add('DANGER', 'REFUND_ONCHAIN_CHECK',
+          `REFUND + OnchainCheck: read the target ${ac.target}. If the agent (or anyone) can make the check false after you deliver (e.g. move a delivered NFT), the agent keeps your work and the reward.`);
+      } else add('WARN', 'ONCHAIN_CHECK_TARGET', `Read the check target ${ac.target}: a check anyone can make false after you deliver lets a stranger burn your deposit.`);
+    } else if (ac.kind === 'hashReveal') {
+      add('INFO', 'HASH_REVEAL', 'HashReveal: a REFUND reject requires the agent to open its commitment, so a junk commitment pays you on timeout. Low-entropy answers can be brute-forced by anyone.');
+    }
+  } else if (knownAddr && !ac && opts.verifierIsContract && b.rejectMode === 'Refund') {
+    known = false;
+    add('DANGER', 'ADAPTER_CONFIG_UNCHECKED', 'REFUND bounty on an adapter whose per-bounty config was not checked. Pass `adapters` + `trustedSigners`.');
+  }
   const agentIsVerifier = isAddressEqual(b.agent, b.verifier);
 
   if (b.state === 'None') add('DANGER', 'NOT_FOUND', 'Bounty does not exist.');
@@ -93,15 +146,42 @@ export function assessBounty(b: Bounty, opts: SafetyOptions & { now: bigint; ver
   };
 }
 
+export async function readAdapterConfig(
+  pc: Pick<PublicClient, 'readContract'>, adapters: NonNullable<SafetyOptions['adapters']>, verifier: Address, id: bigint,
+): Promise<AdapterConfig | undefined> {
+  const is = (a?: Address) => !!a && isAddressEqual(a, verifier);
+  if (is(adapters.fallback)) {
+    const [signers] = await pc.readContract({ address: verifier, abi: ADAPTER_ABI, functionName: 'config', args: [id] });
+    return { kind: 'fallback', signers: [...signers] };
+  }
+  if (is(adapters.teeML)) {
+    const [signers] = await pc.readContract({ address: verifier, abi: TEE_ABI, functionName: 'config', args: [id] });
+    return { kind: 'teeML', signers: [...signers] };
+  }
+  if (is(adapters.multi)) {
+    const signers = await pc.readContract({ address: verifier, abi: MULTI_ABI, functionName: 'signersOf', args: [id] });
+    const threshold = await pc.readContract({ address: verifier, abi: MULTI_ABI, functionName: 'threshold', args: [id] });
+    return { kind: 'multi', signers: [...signers], threshold: Number(threshold) };
+  }
+  if (is(adapters.onchainCheck)) {
+    const [target] = await pc.readContract({ address: verifier, abi: OC_ABI, functionName: 'config', args: [id] });
+    return { kind: 'onchainCheck', signers: [], target };
+  }
+  if (is(adapters.hashReveal)) return { kind: 'hashReveal', signers: [] };
+  return undefined;
+}
+
 export async function checkBountyForWorker(deps: Deps, id: bigint, opts: SafetyOptions = {}): Promise<SafetyReport> {
   const b = await deps.getBounty(id);
   const now = opts.now ?? (await deps.publicClient.getBlock()).timestamp;
   let verifierIsContract: boolean | undefined;
+  let adapterConfig: AdapterConfig | undefined;
   if (b.state !== 'None') {
     const code = await deps.publicClient.getCode({ address: b.verifier });
     verifierIsContract = !!code && code !== '0x';
+    if (opts.adapters) adapterConfig = await readAdapterConfig(deps.publicClient, opts.adapters, b.verifier, id);
   }
-  return assessBounty(b, { ...opts, now, verifierIsContract });
+  return assessBounty(b, { ...opts, now, verifierIsContract, adapterConfig });
 }
 
 export { CONSTANTS };

@@ -10,9 +10,9 @@
   "contracts": {
     "MADBountyCore": "0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786",
     "FallbackVerifier": "0xf2e0Dc57d15BD6440D729bf1dCf7D45ec3028468",
-    "OnchainCheckVerifier": "0x4B745507128353D77F40BDfd2Eba81f49E991bE0",
-    "HashRevealVerifier": "0xCc06084256d8d31d49A52Fdc1860a1f91d3855a9",
-    "TeeMLVerifier": "0x10e9647120716B61aFA933CAea6e2E6ff13319bD",
+    "OnchainCheckVerifier": "0x8Bf16e787b49649C3B6883F727977De5505083D7",
+    "HashRevealVerifier": "0x5554D841e3b7834B4602124B920aFDA6DBD0376C",
+    "TeeMLVerifier": "0xa4Ff0c36036191A64ef9BAD4d58CAD8f611C7899",
     "MultiVerifier": "0x174e9d5B2ff058DF8823855D5C270578E7eB57B2"
   },
   "verification": "Sourcify exact_match (creation + runtime) for all six; visible on base-sepolia.blockscout.com",
@@ -24,5 +24,17 @@
     "0x20c775b0139a86a5f34f0c78136c5a32de68b1db918c3fee435530c79cc5bc67",
     "0x7e5279674ce11d12efcd3ffaa378f8670694bef29d06f55c03da9eb3ad17f7f6",
     "0x99561c84023a8a8cfeb7e6e5a168cde4c6929bc424afde7266beb1e9fc3efe5b"
-  ]
+  ],
+  "supersededAdapters": {
+    "note": "Pre-audit-r3 adapter instances (commit 6fd8160). Still bound to the same core; bounties posted against them keep using them. Do not post new bounties to these.",
+    "OnchainCheckVerifier": "0x4B745507128353D77F40BDfd2Eba81f49E991bE0",
+    "HashRevealVerifier": "0xCc06084256d8d31d49A52Fdc1860a1f91d3855a9",
+    "TeeMLVerifier": "0x10e9647120716B61aFA933CAea6e2E6ff13319bD"
+  },
+  "adaptersR3": {
+    "deployedAt": "2026-11-26",
+    "script": "script/DeployAdaptersR3.s.sol",
+    "fixes": "r3 F-1c (HashReveal REFUND reject needs opening), F-2 (rejectUnmet gas guard), I-1 (TeeML refuses \\u escapes of printable ASCII)",
+    "verification": "Sourcify exact_match"
+  }
 }

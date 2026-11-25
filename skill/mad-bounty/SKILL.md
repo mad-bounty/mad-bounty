@@ -32,7 +32,8 @@ Without `MADB_PRIVATE_KEY`, write tools return an unsigned transaction for your 
 1. Write a spec JSON (title, instructions, acceptanceCriteria, evidenceFormat). Hash it with `madb_hash_spec` and store the JSON where workers can read it.
 2. Pick a verifier:
    - Output checkable on-chain → OnchainCheckVerifier. Choose a check only the work can make true. Anyone rejects after checkWindow if it still fails.
-   - Known answer → HashRevealVerifier (safe for REFUND). Anyone rejects after revealWindow with no correct reveal.
+   - Known answer (>=64 bits entropy) → HashRevealVerifier. Anyone rejects after revealWindow with no correct reveal; in REFUND the reject must open the commitment, so a junk commitment pays the worker.
+   - Worker safety: an adapter ADDRESS proves nothing; run `madb_check_bounty_safety` with `trustedSigners` so it reads the per-bounty signer list. Treat REFUND + OnchainCheck as unsafe.
    - Photos/documents/judgment → TeeMLVerifier (0G enclave model). The worker must relay a VERDICT:Y proof within proofWindow, or anyone rejects.
    - ALWAYS pass the adapter config as `verifierInit` in the post call (atomic). A separate configure tx can be front-run by a claim.
    - You judge it yourself → your own address, BURN mode only.

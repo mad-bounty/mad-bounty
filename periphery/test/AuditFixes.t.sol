@@ -120,7 +120,9 @@ contract AuditFixesTest is PeripheryBase {
         uint256 a = _postInit(address(hr), MADBountyCore.RejectMode.Refund, abi.encode(keccak256(abi.encode(answer)), uint32(6 hours)));
         _claimSubmit(a, bytes32(0));
         vm.warp(block.timestamp + 6 hours);
-        hr.rejectUnrevealed(a);
+        vm.expectRevert(HashRevealVerifier.WrongAnswer.selector);
+        hr.rejectUnrevealed(a, bytes("not the answer"));   // r3 F-1c: REFUND reject needs the real opening
+        hr.rejectUnrevealed(a, answer);
         assertEq(uint8(_state(a)), uint8(MADBountyCore.State.Rejected));
         // a correct reveal before the window settles accept, after which rejectUnrevealed fails
         uint256 b = _postInit(address(hr), MADBountyCore.RejectMode.Refund, abi.encode(keccak256(abi.encode(answer)), uint32(6 hours)));
@@ -128,7 +130,7 @@ contract AuditFixesTest is PeripheryBase {
         vm.prank(worker); hr.reveal(b, answer);
         vm.warp(block.timestamp + 6 hours);
         vm.expectRevert(AdapterBase.NotSubmitted.selector);
-        hr.rejectUnrevealed(b);
+        hr.rejectUnrevealed(b, answer);
     }
 
     function test_C01_fixed_windowMustLeaveInclusionMargin() public {
@@ -181,5 +183,13 @@ contract AuditFixesTest is PeripheryBase {
                 }
             }
         }
+    }
+
+    // audit r3 I-1: \u escapes that decode to printable ASCII are refused; non-ASCII/control escapes stay allowed.
+    function test_r3_I1_asciiUnicodeEscape() public view {
+        assertTrue(tv.hasAsciiUnicodeEscape(bytes("x \\u0056ERDICT:Y")));
+        assertTrue(tv.hasAsciiUnicodeEscape(bytes("\\u0041")));
+        assertFalse(tv.hasAsciiUnicodeEscape(bytes("caf\\u00e9 \\u000a \\u4e2d")));
+        assertFalse(tv.hasAsciiUnicodeEscape(bytes("a\\\\u0056"))); // escaped backslash, then literal "u0056"
     }
 }

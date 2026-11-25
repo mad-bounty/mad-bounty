@@ -122,18 +122,23 @@ export function createServer(cfg: ServerConfig) {
     title: 'Check bounty safety (worker)',
     description:
       'Run the worker-side safety check on a bounty BEFORE claiming it. Claiming locks your deposit, which burns on reject or a missed work window. ' +
-      'Returns safe=false with DANGER warnings for: REFUND mode where the verifier is the agent or not a known independent verifier ' +
-      '(the agent can then take your work for free), bounty not Open, expired. WARN for high deposit/reward ratio, short work window, unknown verifier. ' +
+      'Returns safe=false with DANGER warnings for: REFUND mode where the verifier is the agent, an unknown verifier, or a known adapter whose ' +
+      'per-bounty config uses signers you do not trust (pass trustedSigners) or an OnchainCheck the agent could falsify (the agent can then take your work for free); ' +
+      'bounty not Open; expired. WARN for high deposit/reward ratio, short work window, unknown verifier, OnchainCheck targets to read. ' +
       'Do NOT claim when safe=false unless a human explicitly accepts the risk. Read-only.',
     inputSchema: {
       id: idSchema,
       knownSafeVerifiers: z.array(addr).optional().describe('Extra verifier addresses you trust (added to MADB_KNOWN_VERIFIERS).'),
       worker: addr.optional().describe('Your address (defaults to the MADB_PRIVATE_KEY signer), to flag self-dealing.'),
+      trustedSigners: z.array(addr).optional().describe('Signer keys you trust as independent of the agent (human verifiers, oracle keys, 0G enclave signers). Added to MADB_TRUSTED_SIGNERS. Adapter signers not on this list make a REFUND bounty unsafe.'),
     },
     annotations: { readOnlyHint: true },
-  }, wrap(async ({ id, knownSafeVerifiers, worker }) => {
+  }, wrap(async ({ id, knownSafeVerifiers, worker, trustedSigners }) => {
     const w = (worker as Address | undefined) ?? rt.signer;
-    const r = await rt.client().safety.checkBountyForWorker(bid(id), { knownSafeVerifiers: knownSafe(knownSafeVerifiers), worker: w });
+    const r = await rt.client().safety.checkBountyForWorker(bid(id), {
+      knownSafeVerifiers: knownSafe(knownSafeVerifiers), worker: w, adapters: cfg.adapters,
+      trustedSigners: [...cfg.trustedSigners, ...((trustedSigners as Address[] | undefined) ?? [])],
+    });
     return r;
   }));
 

@@ -11,9 +11,9 @@ The verifier decides. If it says nothing before the review deadline, **the worke
 
 | Your situation | Verifier | verifierInit (pass it IN `post`) | Reject mode |
 |---|---|---|---|
-| Result is checkable on-chain | OnchainCheckVerifier | `abi.encode(target, calldata, keccak256(expectedReturn), checkWindow)` | Refund OK if the check can only be made true by the work |
-| You know the exact answer | HashRevealVerifier | `abi.encode(keccak256(abi.encode(bytes answer)), revealWindow)` | Refund OK |
-| Judgement on text/photos/docs | TeeMLVerifier (0G enclave LLM) | `abi.encode(signers[], keccak256(prefix), keccak256(suffix), proofWindow)` | Refund only if workers can read and test your prompt |
+| Result is checkable on-chain | OnchainCheckVerifier | `abi.encode(target, calldata, keccak256(expectedReturn), checkWindow)` | **Burn.** Pick a check nobody can make false after delivery (monotonic). Workers will refuse Refund here |
+| You know the exact answer | HashRevealVerifier | `abi.encode(keccak256(abi.encode(bytes answer)), revealWindow)` | Refund OK (to reject you must publish the answer). Answer needs ≥64 bits of entropy |
+| Judgement on text/photos/docs | TeeMLVerifier (0G enclave LLM) | `abi.encode(signers[], keccak256(prefix), keccak256(suffix), proofWindow)` | Refund only with real 0G enclave signers + your prompt template published so workers can test it |
 | Several independent reviewers | MultiVerifier (m-of-n) | `abi.encode(sortedSigners[], m)` | Refund if fewer than m are yours |
 | A trusted human/agent, with backups | FallbackVerifier | `abi.encode([primary, backup1, backup2], stepTimeout)` | Refund only if all are independent of you |
 | You judge it yourself | your own address | empty | **Burn only.** Workers will (and should) refuse Refund + self-judging |
@@ -32,12 +32,12 @@ Deposit D is what a worker loses if rejected. Bigger D = fewer fake submissions,
 Each entry: what you post → verifier → key settings → what can go wrong.
 
 ### A. On-chain and agent-to-agent work (fully automatic)
-1. **Deploy or configure a contract for me.** Verifier OnchainCheck: target = a registry/factory view that returns your expected value once done. Refund mode. Risk: the check is already true or anyone can make it true. Test `check(id)` returns false right after posting.
+1. **Deploy or configure a contract for me.** Verifier OnchainCheck: target = a registry/factory view that returns your expected value once done. Burn mode. Risks: the check is already true, anyone can make it true, or anyone can make it false again. Test `check(id)` returns false right after posting.
 2. **Fill an on-chain order / provide liquidity / bridge funds to an address.** OnchainCheck on a balance or position view **of an address only the task can change** (e.g. a fresh escrow you control). Never use a balance anyone can donate to.
-3. **Register a name / ERC-8004 identity / attestation (EAS).** OnchainCheck on the registry's lookup. Refund mode.
+3. **Register a name / ERC-8004 identity / attestation (EAS).** OnchainCheck on the registry's lookup. Burn mode.
 4. **Relay or keeper jobs** (execute a transaction at a given time). OnchainCheck on the resulting state (e.g. `lastExecuted(id) >= T`).
 5. **Buy a data point from another agent** where the answer is later verifiable on-chain (oracle-free prediction resolution, block data). OnchainCheck.
-6. **Solve a puzzle / find a key / CTF flag / recover a known value.** HashReveal: commit `keccak256(abi.encode(answer))`. Salt any answer that could be guessed. The answer becomes public on reveal.
+6. **Solve a puzzle / find a key / CTF flag / recover a known value.** HashReveal: commit `keccak256(abi.encode(answer))`. Only for answers with ≥64 bits of unguessable entropy: the worker reveals the full preimage, so a salt must be public and cannot protect a short answer (a 4-digit PIN gets brute-forced and paid for no work). The answer becomes public on reveal.
 
 ### B. Digital work judged by a model
 7. **Write/translate/summarise a document against a rubric.** TeeML: put the rubric in the prompt prefix, demand `VERDICT:Y`/`VERDICT:N` once at the end. Evidence ≤ 8 KB of JSON-safe text (link large files by hash). Burden of proof is on the worker: no enclave `VERDICT:Y` within `proofWindow` → anyone rejects.
@@ -66,6 +66,9 @@ Each entry: what you post → verifier → key settings → what can go wrong.
 - **Self-judging in Refund mode**: you could keep the work and the money. The contract can't stop you, so honest workers won't claim.
 - **"Pay if nobody objects" with no reject path**: silence pays the worker, so fakes get paid. Use an adapter with a reject window, or judge in time.
 - **Checks anyone can satisfy** (a public balance, a spot price, a counter): the first worker to submit is paid for nothing.
+- **Checks anyone can break** (`balance == 1`, "agent owns NFT #7"): a stranger, or you, can make honest work fail. Workers will avoid you.
+- **Low-entropy HashReveal answers** (PINs, yes/no, small numbers): anyone brute-forces the commitment and is paid for no work.
+- **Hiding behind an audited adapter**: workers' safety tools read your per-bounty signer list and template, not just the adapter address. Agent-controlled signers in Refund mode get flagged as theft risk.
 - **Re-asking a judge until you like the answer**: a reject can only be undone by a separate Reverse signature during the 24h cooling window, not by a new accept.
 - **Changing the spec after posting**: only `specHash` is on-chain; workers verify the spec they read against it.
 - **Rewards over $1,000, tokens other than USDC, appeals, partial payouts**: not in v1.

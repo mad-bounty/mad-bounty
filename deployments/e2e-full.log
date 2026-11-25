@@ -182,3 +182,16 @@
 2026-11-25T17:21:52Z ==== LATER done: 4 pass, 0 fail; 7 still pending, next due 2026-11-25 17:22 UTC
 2026-11-25T17:22:47Z ==== LATER phase (7 pending)
 2026-11-25T17:22:47Z ==== LATER done: 0 pass, 0 fail; 7 still pending, next due 2026-11-25 17:22 UTC
+2026-11-25T18:23:54Z ==== LATER phase (7 pending)
+2026-11-25T18:23:55Z PASS #9 reclaimAbandoned  (0x76fbd1c26557abe036518478053ea7a924d7a7caa2b270e16e8a824a9f46cafb)
+2026-11-25T18:23:57Z PASS #9 state Open (reopened)  (Open)
+2026-11-25T18:23:58Z PASS #9 vault holds 1.0 USDC  (1.0)
+2026-11-25T18:24:00Z PASS #9 agent cancels reopened bounty  (0xb04183e7d2d3da3699bfb841ff5b647558bf8d6b6c56eebb3c909c06c804d806)
+2026-11-25T18:24:01Z PASS #9 state Cancelled  (Cancelled)
+2026-11-25T18:24:03Z PASS #17 backup verdict after step  (0xe269217e9cfaab4a2e0b531450b3780e92960ec8bc6bb6a86677a7830be47760)
+2026-11-25T18:24:04Z PASS #17 state Paid  (Paid)
+2026-11-25T18:24:05Z PASS #19 rejectUnmet  (0xf12ebe56381e61bd71b94d25d0607623cdd713a8eaaf93066442cae48981e474)
+2026-11-25T18:24:07Z PASS #19 state Rejected  (Rejected)
+2026-11-25T18:24:08Z PASS #24 rejectUnproven  (0xdd74bdf8d4bf2423a483682a9561955a039f09dc8b1d4d33ef8998f7f6ceb47e)
+2026-11-25T18:24:10Z PASS #24 state Rejected  (Rejected)
+2026-11-25T18:24:10Z ==== LATER done: 11 pass, 0 fail; 5 still pending, next due 2026-11-26 17:19 UTC

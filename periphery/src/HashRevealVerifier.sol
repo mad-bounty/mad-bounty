@@ -9,10 +9,13 @@ import {AdapterBase} from "./AdapterBase.sol";
 ///         calls `reveal(id, answer)` after submitting; a matching answer accepts. If no matching answer is
 ///         revealed within `revealWindow` of submission, ANYONE may call `rejectUnrevealed` (audit C-01: without it
 ///         a zero-work worker was paid by core's silence timeout).
-///         REFUND-safe: the agent cannot block a correct reveal, so in REFUND mode the agent only recovers the
-///         reward when no correct answer was revealed in time. Workers must still check the commitment is answerable.
-///         WARNING: the answer becomes public on reveal (calldata + event). Low-entropy answers can be brute-forced
-///         from the commitment; salt them. Front-running is harmless: only `bounty.worker` may reveal.
+///         REFUND mode (audit r3 F-1c): rejecting requires the OPENING (the committed answer). An agent who committed
+///         to junk bytes it cannot open can never reject, so silence pays the worker. BURN mode needs no opening.
+///         WARNING: the answer becomes public on reveal (calldata + event). It must be high-entropy: anyone can
+///         brute-force a low-entropy answer from the commitment, and a "salt" does not help because the worker has to
+///         reveal the full preimage, so the salt must be published with the task (r3 I-2). Use HashReveal only for
+///         answers with >= 64 bits of unguessable entropy (keys, long codes, hidden strings).
+///         Front-running is harmless: only `bounty.worker` may reveal.
 contract HashRevealVerifier is AdapterBase {
     mapping(uint256 => bytes32) public commitment;
     mapping(uint256 => uint32) public revealWindow;
@@ -63,11 +66,14 @@ contract HashRevealVerifier is AdapterBase {
     }
 
     /// @notice Anyone: no correct reveal within revealWindow of submission → reject.
-    function rejectUnrevealed(uint256 id) external {
-        if (commitment[id] == bytes32(0)) revert NotConfigured();
+    /// @param opening the committed answer; required (must match) in REFUND mode, ignored in BURN mode.
+    function rejectUnrevealed(uint256 id, bytes calldata opening) external {
+        bytes32 c = commitment[id];
+        if (c == bytes32(0)) revert NotConfigured();
         BountyView memory b = _bounty(id);
         _requireSubmitted(b);
         if (block.timestamp < _submittedAt(b) + revealWindow[id]) revert TooEarly();
+        if (b.rejectMode == MADBountyCore.RejectMode.Refund && keccak256(abi.encode(opening)) != c) revert WrongAnswer();
         emit RejectedUnrevealed(id, msg.sender);
         core.settle(id, false);
     }

@@ -160,6 +160,12 @@ contract TeeMLVerifier is AdapterBase {
 
     /// @notice True if `s` can sit between two '"' in JSON without terminating the string early.
     function isJsonStringBody(bytes calldata s) public pure returns (bool) {
+        return _jsonBody(s, false);
+    }
+
+    /// @dev JSON string-body check; with `noAsciiEscape`, also refuses `\u00HH` escapes of printable ASCII
+    ///      (audit r3 I-1: "\u0056ERDICT" decodes to VERDICT inside the model). One pass over the evidence.
+    function _jsonBody(bytes calldata s, bool noAsciiEscape) internal pure returns (bool) {
         uint256 n = s.length;
         for (uint256 i; i < n; ++i) {
             bytes1 ch = s[i];
@@ -173,6 +179,10 @@ contract TeeMLVerifier is AdapterBase {
                         bytes1 h = s[i + k];
                         if (!((h >= "0" && h <= "9") || (h >= "a" && h <= "f") || (h >= "A" && h <= "F"))) return false;
                     }
+                    if (noAsciiEscape && s[i + 1] == "0" && s[i + 2] == "0") {
+                        uint8 v = (_hex(s[i + 3]) << 4) | _hex(s[i + 4]);
+                        if (v >= 0x20 && v <= 0x7E) return false;
+                    }
                     i += 4;
                 } else if (!(e == '"' || e == "\\" || e == "/" || e == "b" || e == "f" || e == "n" || e == "r" || e == "t")) {
                     return false;
@@ -180,6 +190,32 @@ contract TeeMLVerifier is AdapterBase {
             }
         }
         return true;
+    }
+
+    /// @notice True if `s` contains a JSON escape `\u00HH` that decodes to printable ASCII (0x20..0x7E). Such escapes
+    ///         are never needed and can smuggle "VERDICT" past the byte filter (audit r3 I-1). Escapes for control
+    ///         characters and non-ASCII (e.g. `\u00e9`) stay allowed. Assumes `s` already passed isJsonStringBody.
+    function hasAsciiUnicodeEscape(bytes calldata s) public pure returns (bool) {
+        uint256 n = s.length;
+        for (uint256 i; i + 1 < n; ++i) {
+            if (s[i] != "\\") continue;
+            if (s[i + 1] != "u") { ++i; continue; }
+            if (i + 5 >= n) return false;
+            if (s[i + 2] == "0" && s[i + 3] == "0") {
+                uint8 v = (_hex(s[i + 4]) << 4) | _hex(s[i + 5]);
+                if (v >= 0x20 && v <= 0x7E) return true;
+            }
+            i += 5;
+        }
+        return false;
+    }
+
+    function _hex(bytes1 c) private pure returns (uint8) {
+        uint8 x = uint8(c);
+        if (x >= 0x30 && x <= 0x39) return x - 0x30;
+        if (x >= 0x61 && x <= 0x66) return x - 0x57;
+        if (x >= 0x41 && x <= 0x46) return x - 0x37;
+        return 0;
     }
 
     /// @param prefixLen length of the agent's prefix inside `request`
@@ -208,7 +244,7 @@ contract TeeMLVerifier is AdapterBase {
         bytes calldata evidence = request[evStart:evEnd];
         if (evidence.length > MAX_EVIDENCE || response.length > MAX_RESPONSE) revert BadEvidence();
         if (keccak256(evidence) != b.evidenceHash) revert BadEvidence();
-        if (!isJsonStringBody(evidence)) revert BadEvidence();
+        if (!_jsonBody(evidence, true)) revert BadEvidence();
         if (BytesSearch.indexOf(evidence, VERDICT_WORD, 0) != BytesSearch.NOT_FOUND) revert BadEvidence();
 
         // (a) enclave signature

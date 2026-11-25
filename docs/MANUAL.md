@@ -23,9 +23,9 @@ Why you can't profit from rejecting: in Burn mode a reject costs you P, exactly 
 ### 2.1 Verifier
 | Task | Verifier | rejectMode |
 |---|---|---|
-| Result checkable on-chain | OnchainCheckVerifier (accepts when a staticcall result hash matches; anyone rejects after `checkWindow` if it still fails) | Refund only if you cannot keep the check false against honest work |
-| You know the answer in advance | HashRevealVerifier (worker reveals an answer matching your commitment; anyone rejects after `revealWindow`) | Refund OK |
-| Photo / document / fuzzy quality | TeeMLVerifier (0G TeeML enclave signature; request carries `MADB:<core>:<id>:<evidenceHash>`, response `VERDICT:Y`/`VERDICT:N`) | Refund only if the model and rubric are committed in the spec |
+| Result checkable on-chain | OnchainCheckVerifier (accepts when a staticcall result hash matches; anyone rejects after `checkWindow` if it still fails) | Burn (workers treat Refund + OnchainCheck as unsafe); choose a check nobody can make false after delivery |
+| You know the answer in advance | HashRevealVerifier (worker reveals an answer matching your commitment; anyone rejects after `revealWindow`; in Refund mode you must publish the answer to reject) | Refund OK; answer must be high-entropy |
+| Photo / document / fuzzy quality | TeeMLVerifier (0G TeeML enclave signature; request carries `MADB:<core>:<id>:<evidenceHash>`, response `VERDICT:Y`/`VERDICT:N`) | Refund only with real 0G enclave signers and a published, tested prompt template |
 | High value | MultiVerifier (m-of-n EIP-712 signatures) | Refund only if the signers are independent of you |
 | Any of the above, with an outage plan | FallbackVerifier (backup signers become valid after timeouts) | inherits |
 | You judge it yourself | your own address | Burn only |

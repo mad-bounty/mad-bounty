@@ -33,6 +33,7 @@ abstract contract AdapterBase is IVerifierHook {
         bool extended;
         MADBountyCore.State state;
         bytes32 evidenceHash;
+        MADBountyCore.RejectMode rejectMode;
     }
 
     error BadConfig();
@@ -76,11 +77,11 @@ abstract contract AdapterBase is IVerifierHook {
             ,
             uint64 deadline,
             bool extended,
-            ,
+            MADBountyCore.RejectMode rejectMode,
             MADBountyCore.State state,
             bytes32 evidenceHash
         ) = core.bounties(id);
-        v = BountyView(agent, verifier, worker, reviewWindow, deadline, extended, state, evidenceHash);
+        v = BountyView(agent, verifier, worker, reviewWindow, deadline, extended, state, evidenceHash, rejectMode);
     }
 
     /// @dev Caller is the agent, bounty is Open, and this adapter is the bounty's verifier.

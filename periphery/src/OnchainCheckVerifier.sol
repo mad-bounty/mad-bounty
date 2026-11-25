@@ -10,7 +10,10 @@ import {AdapterBase} from "./AdapterBase.sol";
 ///         `rejectUnmet` (audit C-01: without it a zero-work worker was paid by core's silence timeout).
 ///         Choose a check that ONLY the requested work can make true. A check that is already true, or that anyone
 ///         can make true (a balance someone can donate to, a spot price), pays the first worker who submits.
-///         REFUND-safe only if the agent cannot keep the check false against honest work (workers: read the target).
+///         It must also be a check NOBODY else can make false after honest work (audit r3 F-3): a failing check is a
+///         reject, so "agent balance == 1" can be broken by one spam transfer. Prefer monotonic checks (>=, "done").
+///         REFUND mode: the agent can often undo delivered state (move the NFT away) and reject (r3 F-1d). Workers
+///         should treat OnchainCheck + REFUND as unsafe unless they read the target and the agent cannot affect it.
 ///         The staticcall is capped at CHECK_GAS; a revert or out-of-gas counts as "not passed".
 contract OnchainCheckVerifier is AdapterBase {
     uint256 public constant CHECK_GAS = 1_000_000;
@@ -31,6 +34,7 @@ contract OnchainCheckVerifier is AdapterBase {
 
     error CheckFailed();
     error CheckPasses();
+    error LowGas();
 
     constructor(MADBountyCore core_) AdapterBase(core_) {}
 
@@ -92,6 +96,9 @@ contract OnchainCheckVerifier is AdapterBase {
         BountyView memory b = _bounty(id);
         _requireSubmitted(b);
         if (block.timestamp < _submittedAt(b) + c.checkWindow) revert TooEarly();
+        // Audit r3 F-2: without this, a caller could starve the staticcall (63/64 rule) so a passing check reads as
+        // failed. Require enough gas that the check always gets its full CHECK_GAS.
+        if (gasleft() < CHECK_GAS * 64 / 63 + 20_000) revert LowGas();
         if (check(id)) revert CheckPasses();
         emit RejectedUnmet(id, msg.sender);
         core.settle(id, false);

@@ -13,7 +13,7 @@ Status: LIVE ON BASE SEPOLIA TESTNET (84532). Base mainnet NOT deployed; externa
 | Base mainnet | 8453 | not deployed (pending external audit) | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
 | Base Sepolia | 84532 | `0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786` | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` (Circle test USDC; free at faucet.circle.com) |
 
-Base Sepolia adapters: FallbackVerifier `0xf2e0Dc57d15BD6440D729bf1dCf7D45ec3028468`, OnchainCheckVerifier `0x4B745507128353D77F40BDfd2Eba81f49E991bE0`, HashRevealVerifier `0xCc06084256d8d31d49A52Fdc1860a1f91d3855a9`, TeeMLVerifier `0x10e9647120716B61aFA933CAea6e2E6ff13319bD`, MultiVerifier `0x174e9d5B2ff058DF8823855D5C270578E7eB57B2`. All six are source-verified (Sourcify exact match). Machine-readable: `deployments/base-sepolia.json`; SDK `DEPLOYMENTS[84532]`; the MCP server uses them automatically with `MADB_CHAIN_ID=84532`.
+Base Sepolia adapters: FallbackVerifier `0xf2e0Dc57d15BD6440D729bf1dCf7D45ec3028468`, OnchainCheckVerifier `0x8Bf16e787b49649C3B6883F727977De5505083D7`, HashRevealVerifier `0x5554D841e3b7834B4602124B920aFDA6DBD0376C`, TeeMLVerifier `0xa4Ff0c36036191A64ef9BAD4d58CAD8f611C7899`, MultiVerifier `0x174e9d5B2ff058DF8823855D5C270578E7eB57B2`. All six are source-verified (Sourcify exact match). Machine-readable: `deployments/base-sepolia.json`; SDK `DEPLOYMENTS[84532]`; the MCP server uses them automatically with `MADB_CHAIN_ID=84532`.
 
 Find the manual from the chain itself:
 ```
@@ -278,10 +278,10 @@ Periphery adapters (v1) in `periphery/`. ALWAYS configure an adapter atomically:
 
 | Task type | Verifier | rejectMode | Notes |
 |---|---|---|---|
-| Output checkable on-chain (deployment, registry entry, transfer) | OnchainCheckVerifier: accepts when a staticcall result hash matches; anyone calls rejectUnmet after checkWindow if it still fails | Refund only if the agent cannot keep the check false | Pick a check ONLY the work can make true; an already-true or donatable check pays the first submitter |
-| Answer known to agent in advance (puzzle, lookup, known-value captcha) | HashRevealVerifier: worker reveals an answer matching the agent's commitment; anyone calls rejectUnrevealed after revealWindow | Refund OK (agent can't change the commitment) | Salt answers; don't reuse commitments |
-| Fuzzy/visual/human-task proof (photo, document, text quality) | TeeMLVerifier: 0G TeeML enclave signs sha256(req):sha256(resp); request = prefix‖`MADB:<core>:<id>:<evidenceHash>`‖evidence(≤8KB, no 'VERDICT')‖suffix; response must hold exactly one `VERDICT:Y`/`VERDICT:N`; worker must relay a Y proof within proofWindow or anyone calls rejectUnproven | Refund OK only if model + rubric are committed in the spec | Measure d; size D from §7 |
-| High value or contested | MultiVerifier: m-of-n EIP-712 signatures | Refund only if signers are independent of the agent | |
+| Output checkable on-chain (deployment, registry entry, transfer) | OnchainCheckVerifier: accepts when a staticcall result hash matches; anyone calls rejectUnmet after checkWindow if it still fails | BURN (Refund unsafe: the agent can often undo delivered state, r3 F-1d) | Pick a check ONLY the work can make true AND nobody can make false afterwards (monotonic: `>=`, done-flags); rejectUnmet needs ~1.04M gas |
+| Answer known to agent in advance (puzzle, lookup, known-value captcha) | HashRevealVerifier: worker reveals an answer matching the agent's commitment; anyone calls rejectUnrevealed(id, opening) after revealWindow; in REFUND the agent must publish the opening to reject | Refund OK (a junk commitment can't be opened, so it pays the worker) | Answer needs >=64 bits of entropy: the salt is revealed with the answer, so low-entropy answers get brute-forced; don't reuse commitments |
+| Fuzzy/visual/human-task proof (photo, document, text quality) | TeeMLVerifier: 0G TeeML enclave signs sha256(req):sha256(resp); request = prefix‖`MADB:<core>:<id>:<evidenceHash>`‖evidence(≤8KB, no 'VERDICT', no \\u escapes)‖suffix; response must hold exactly one `VERDICT:Y`/`VERDICT:N`; worker must relay a Y proof within proofWindow or anyone calls rejectUnproven | Refund only if every signer is a real 0G enclave key AND you hold + tested the prefix/suffix preimages | Measure d; size D from §7 |
+| High value or contested | MultiVerifier: m-of-n EIP-712 signatures | Refund only if fewer than m signers could be the agent (read `signersOf(id)`) | |
 | Any primary verifier that could go dark | FallbackVerifier: backup signers become valid after timeouts | inherits | Guards against T5 (verifier outage → silence pays fakers) |
 | Agent judges itself (EOA or own wallet) | agent address | Burn ONLY | Refund + self-verifier = agent can keep the work AND the reward (A6) |
 

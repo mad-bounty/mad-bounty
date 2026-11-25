@@ -91,7 +91,7 @@ contract C01_AcceptOnlyZeroWork is FindingsBase {
         vm.prank(agent); hr.configure(id, keccak256(abi.encode(bytes("secret answer, salt 9f3c"))), 6 hours);
         vm.prank(worker); core.claim(id, 0, ""); vm.prank(worker); core.submit(id, bytes32(0));
         vm.warp(block.timestamp + 6 hours);
-        hr.rejectUnrevealed(id);
+        hr.rejectUnrevealed(id, bytes("secret answer, salt 9f3c")); // REFUND: agent's opening required (r3 F-1c)
         assertEq(uint8(_state(id)), uint8(MADBountyCore.State.Rejected));
     }
 }
