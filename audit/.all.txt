@@ -1,0 +1,225 @@
+Compiling 41 files with Solc 0.8.34
+Solc 0.8.34 finished in 20.83s
+Compiler run successful!
+
+Ran 15 tests for audit/test/AuditFindings.t.sol:AuditFindingsTest
+[PASS] test_L01_claimAuthSig_reusableAfterAbandon() (gas: 460871)
+[PASS] test_L02_finalizeRejectBurn_duringPause_reportsBurn() (gas: 336930)
+[PASS] test_L02_finalizeRejectRefund_duringPause_depositStaysInVault() (gas: 343857)
+[PASS] test_L02_gasStarvedBurn_probe() (gas: 60626694)
+Logs:
+  reclaimAbandoned burn skippable at gas (0 = never): 0
+  finalizeReject burn skippable at gas (0 = never): 0
+
+[PASS] test_L02_reclaimAbandoned_duringPause_silentlySkipsBurn() (gas: 399457)
+[PASS] test_L03_verifierWithCode_ecdsaSigRejected_timeoutPaysWorker() (gas: 384425)
+[PASS] test_R_1271ReentrancyBlocked() (gas: 510752)
+[PASS] test_R_A2_gasGrief_allEntrypoints() (gas: 287321201)
+[PASS] test_R_cloneImmutables() (gas: 252166)
+[PASS] test_R_deadlineBoundaries() (gas: 394828)
+[PASS] test_R_extendAfterDeadlineBlocked() (gas: 331474)
+[PASS] test_R_hookTokenReentrancy() (gas: 3465806)
+[PASS] test_R_owedIsolationAndSingleWithdraw() (gas: 623053)
+[PASS] test_R_sigMalleabilityAndCrossType() (gas: 2654154)
+[PASS] test_R_withdrawRetryableAfterFreeze() (gas: 358517)
+Suite result: ok. 15 passed; 0 failed; 0 skipped; finished in 71.78s (48.62s CPU time)
+
+Ran 5 tests for audit/test/AuditInvariant.t.sol:AuditInvariantTest
+[PASS] invariant_conservation() (runs: 256, calls: 51200, reverts: 0)
+
+╭-------------+------------------+-------+---------+----------╮
+| Contract    | Selector         | Calls | Reverts | Discards |
++=============================================================+
+| CoreHandler | cancel           | 3341  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | claim            | 3450  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | extendReview     | 3379  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | finalizeReject   | 3435  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | payOnTimeout     | 3465  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | post             | 3359  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | reclaimAbandoned | 3433  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | refundExpired    | 3336  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | reverse          | 3411  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | settle           | 3400  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | submit           | 3485  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | toggleBlacklist  | 3404  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | warp             | 3435  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | warpToDeadline   | 3395  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | withdraw         | 3472  | 0       | 0        |
+╰-------------+------------------+-------+---------+----------╯
+
+Logs:
+  COV warpDl=3660 post=10277 claim=3238 submit=1536 settle=430 settleSig=429 reverse=100 reverseSig=119 payOnTimeout=486 finalizeReject=164 reclaimAbandoned=1284 cancel=4418 refundExpired=2043 extendReview=541 withdraw=160 blacklist=17092 warp=16969 terminalBounties=7695
+
+[PASS] invariant_owedOnlyParties() (runs: 256, calls: 51200, reverts: 0)
+
+╭-------------+------------------+-------+---------+----------╮
+| Contract    | Selector         | Calls | Reverts | Discards |
++=============================================================+
+| CoreHandler | cancel           | 3334  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | claim            | 3461  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | extendReview     | 3318  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | finalizeReject   | 3399  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | payOnTimeout     | 3415  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | post             | 3366  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | reclaimAbandoned | 3460  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | refundExpired    | 3543  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | reverse          | 3430  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | settle           | 3435  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | submit           | 3325  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | toggleBlacklist  | 3377  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | warp             | 3313  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | warpToDeadline   | 3454  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | withdraw         | 3570  | 0       | 0        |
+╰-------------+------------------+-------+---------+----------╯
+
+Logs:
+  COV warpDl=2835 post=7969 claim=2519 submit=1197 settle=334 settleSig=335 reverse=78 reverseSig=85 payOnTimeout=379 finalizeReject=131 reclaimAbandoned=999 cancel=3435 refundExpired=1567 extendReview=419 withdraw=122 blacklist=13159 warp=13024 terminalBounties=5951
+
+[PASS] invariant_terminalIsFinal() (runs: 256, calls: 51200, reverts: 0)
+
+╭-------------+------------------+-------+---------+----------╮
+| Contract    | Selector         | Calls | Reverts | Discards |
++=============================================================+
+| CoreHandler | cancel           | 3385  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | claim            | 3420  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | extendReview     | 3475  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | finalizeReject   | 3440  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | payOnTimeout     | 3450  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | post             | 3422  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | reclaimAbandoned | 3446  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | refundExpired    | 3362  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | reverse          | 3349  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | settle           | 3393  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | submit           | 3354  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | toggleBlacklist  | 3321  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | warp             | 3448  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | warpToDeadline   | 3447  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | withdraw         | 3488  | 0       | 0        |
+╰-------------+------------------+-------+---------+----------╯
+
+Logs:
+  COV warpDl=1737 post=4908 claim=1511 submit=738 settle=189 settleSig=212 reverse=45 reverseSig=47 payOnTimeout=233 finalizeReject=73 reclaimAbandoned=572 cancel=2104 refundExpired=1008 extendReview=250 withdraw=77 blacklist=7810 warp=7942 terminalBounties=3672
+
+[PASS] invariant_treasuryFee() (runs: 256, calls: 51200, reverts: 0)
+
+╭-------------+------------------+-------+---------+----------╮
+| Contract    | Selector         | Calls | Reverts | Discards |
++=============================================================+
+| CoreHandler | cancel           | 3450  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | claim            | 3376  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | extendReview     | 3462  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | finalizeReject   | 3415  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | payOnTimeout     | 3423  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | post             | 3446  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | reclaimAbandoned | 3348  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | refundExpired    | 3399  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | reverse          | 3321  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | settle           | 3425  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | submit           | 3418  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | toggleBlacklist  | 3509  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | warp             | 3372  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | warpToDeadline   | 3436  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | withdraw         | 3400  | 0       | 0        |
+╰-------------+------------------+-------+---------+----------╯
+
+Logs:
+  COV warpDl=2622 post=7321 claim=2312 submit=1105 settle=300 settleSig=317 reverse=73 reverseSig=81 payOnTimeout=347 finalizeReject=122 reclaimAbandoned=911 cancel=3157 refundExpired=1441 extendReview=384 withdraw=112 blacklist=12141 warp=12019 terminalBounties=5468
+
+[PASS] invariant_vaultMatchesState() (runs: 256, calls: 51200, reverts: 0)
+
+╭-------------+------------------+-------+---------+----------╮
+| Contract    | Selector         | Calls | Reverts | Discards |
++=============================================================+
+| CoreHandler | cancel           | 3451  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | claim            | 3498  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | extendReview     | 3438  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | finalizeReject   | 3526  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | payOnTimeout     | 3405  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | post             | 3405  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | reclaimAbandoned | 3482  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | refundExpired    | 3288  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | reverse          | 3324  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | settle           | 3340  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | submit           | 3377  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | toggleBlacklist  | 3427  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | warp             | 3348  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | warpToDeadline   | 3431  | 0       | 0        |
+|-------------+------------------+-------+---------+----------|
+| CoreHandler | withdraw         | 3460  | 0       | 0        |
+╰-------------+------------------+-------+---------+----------╯
+
+Logs:
+  COV warpDl=2942 post=8255 claim=2615 submit=1234 settle=341 settleSig=345 reverse=82 reverseSig=86 payOnTimeout=398 finalizeReject=135 reclaimAbandoned=1042 cancel=3554 refundExpired=1627 extendReview=429 withdraw=127 blacklist=13678 warp=13518 terminalBounties=6166
+
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 121.88s (341.83s CPU time)
+
+Ran 2 test suites in 121.89s (193.66s CPU time): 20 tests passed, 0 failed, 0 skipped (20 total tests)

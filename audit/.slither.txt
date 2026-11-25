@@ -1,0 +1,167 @@
+'forge clean' running (wd: /home/garvis108/projects/mad-bounty)
+'forge config --json' running
+'forge build --build-info --deny never --skip ./test/** ./script/** --force' running (wd: /home/garvis108/projects/mad-bounty)
+Impossible to generate IR for MADBountyCore._nonReentrantBefore (lib/openzeppelin-contracts/contracts/utils/ReentrancyGuardTransient.sol#40-48):
+ 'NoneType' object has no attribute 'parameters'
+Impossible to generate IR for MADBountyCore._nonReentrantAfter (lib/openzeppelin-contracts/contracts/utils/ReentrancyGuardTransient.sol#50-52):
+ 'NoneType' object has no attribute 'parameters'
+Impossible to generate IR for MADBountyCore._reentrancyGuardEntered (lib/openzeppelin-contracts/contracts/utils/ReentrancyGuardTransient.sol#58-60):
+ 'NoneType' object has no attribute 'parameters'
+
+Detector: arbitrary-send-erc20
+MADBountyCore._pull(address,address,uint256) (src/MADBountyCore.sol#348-353) uses arbitrary from in transferFrom: ! usdc.transferFrom(from,to,amt) (src/MADBountyCore.sol#351)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#arbitrary-from-in-transferfrom
+
+Detector: uninitialized-state
+MADBountyCore.bounties (src/MADBountyCore.sol#110) is never initialized. It is used in:
+	- MADBountyCore.post(MADBountyCore.Params) (src/MADBountyCore.sol#156-171)
+	- MADBountyCore.cancel(uint256) (src/MADBountyCore.sol#173-180)
+	- MADBountyCore.refundExpired(uint256) (src/MADBountyCore.sol#183-190)
+	- MADBountyCore.extendReview(uint256) (src/MADBountyCore.sol#193-201)
+	- MADBountyCore.claim(uint256,uint256,bytes) (src/MADBountyCore.sol#205-219)
+	- MADBountyCore.submit(uint256,bytes32) (src/MADBountyCore.sol#221-230)
+	- MADBountyCore.reclaimAbandoned(uint256) (src/MADBountyCore.sol#233-242)
+	- MADBountyCore.settle(uint256,bool) (src/MADBountyCore.sol#247-250)
+	- MADBountyCore.settleWithSig(uint256,bool,bytes) (src/MADBountyCore.sol#253-258)
+	- MADBountyCore.reverse(uint256) (src/MADBountyCore.sol#261-264)
+	- MADBountyCore.reverseWithSig(uint256,bytes) (src/MADBountyCore.sol#266-271)
+	- MADBountyCore.payOnTimeout(uint256) (src/MADBountyCore.sol#274-279)
+	- MADBountyCore.finalizeReject(uint256) (src/MADBountyCore.sol#282-297)
+	- MADBountyCore.withdraw(uint256) (src/MADBountyCore.sol#299-305)
+	- MADBountyCore._settle(uint256,bool) (src/MADBountyCore.sol#309-320)
+	- MADBountyCore._reverse(uint256) (src/MADBountyCore.sol#322-328)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-state-variables
+
+Detector: divide-before-multiply
+MADBounty.requiredDeposit(uint256,address) (src/MADBounty.sol#98-102) performs a multiplication on the result of a division:
+	- base = uint256(b.reward) * b.depositBps / 10_000 (src/MADBounty.sol#100)
+	- base * 10 / (10 + workerStats[worker].paid) (src/MADBounty.sol#101)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#divide-before-multiply
+
+Detector: reentrancy-no-eth
+Reentrancy in MADBountyCore._accept(uint256,MADBountyCore.Bounty,bool) (src/MADBountyCore.sol#330-337):
+	External calls:
+	- _pay(id,b,b.worker,toWorker) (src/MADBountyCore.sol#334)
+		- ! b.vault.send(to,amt) (src/MADBountyCore.sol#342)
+	- _pay(id,b,treasury,fee) (src/MADBountyCore.sol#335)
+		- ! b.vault.send(to,amt) (src/MADBountyCore.sol#342)
+	State variables written after the call(s):
+	- _pay(id,b,treasury,fee) (src/MADBountyCore.sol#335)
+		- owed[id][to] += amt (src/MADBountyCore.sol#343)
+	MADBountyCore.owed (src/MADBountyCore.sol#111) can be used in cross function reentrancies:
+	- MADBountyCore.owed (src/MADBountyCore.sol#111)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-2
+
+Detector: unused-return
+MADBountyCore.reclaimAbandoned(uint256) (src/MADBountyCore.sol#233-242) ignores return value by b.vault.send(BURN,d) (src/MADBountyCore.sol#240)
+MADBountyCore.finalizeReject(uint256) (src/MADBountyCore.sol#282-297) ignores return value by b.vault.send(BURN,b.deposit) (src/MADBountyCore.sol#288)
+MADBountyCore.finalizeReject(uint256) (src/MADBountyCore.sol#282-297) ignores return value by b.vault.send(BURN,amt) (src/MADBountyCore.sol#294)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
+
+Detector: reentrancy-events
+Reentrancy in MADBountyCore._accept(uint256,MADBountyCore.Bounty,bool) (src/MADBountyCore.sol#330-337):
+	External calls:
+	- _pay(id,b,b.worker,toWorker) (src/MADBountyCore.sol#334)
+		- ! b.vault.send(to,amt) (src/MADBountyCore.sol#342)
+	- _pay(id,b,treasury,fee) (src/MADBountyCore.sol#335)
+		- ! b.vault.send(to,amt) (src/MADBountyCore.sol#342)
+	Event emitted after the call(s):
+	- Owed(id,to,amt) (src/MADBountyCore.sol#344)
+		- _pay(id,b,treasury,fee) (src/MADBountyCore.sol#335)
+	- Paid(id,b.worker,toWorker,fee,byTimeout) (src/MADBountyCore.sol#336)
+Reentrancy in MADBounty._pay(uint256,MADBounty.Bounty) (src/MADBounty.sol#181-189):
+	External calls:
+	- _send(b.worker,toWorker) (src/MADBounty.sol#186)
+		- (ok,None) = to.call{value: amt}() (src/MADBounty.sol#192)
+	- _send(b.agent,b.agentBond) (src/MADBounty.sol#187)
+		- (ok,None) = to.call{value: amt}() (src/MADBounty.sol#192)
+	Event emitted after the call(s):
+	- Paid(id,b.worker,toWorker) (src/MADBounty.sol#188)
+Reentrancy in MADBounty.finalizeBurn(uint256) (src/MADBounty.sol#167-177):
+	External calls:
+	- _send(SINK,amt) (src/MADBounty.sol#175)
+		- (ok,None) = to.call{value: amt}() (src/MADBounty.sol#192)
+	Event emitted after the call(s):
+	- Burned(id,amt) (src/MADBounty.sol#176)
+Reentrancy in MADBounty.reclaimAbandoned(uint256) (src/MADBounty.sol#125-134):
+	External calls:
+	- _send(SINK,dep) (src/MADBounty.sol#132)
+		- (ok,None) = to.call{value: amt}() (src/MADBounty.sol#192)
+	Event emitted after the call(s):
+	- Burned(id,dep) (src/MADBounty.sol#133)
+Reentrancy in MADBounty.refundExpired(uint256) (src/MADBounty.sol#85-93):
+	External calls:
+	- _send(b.agent,amt) (src/MADBounty.sol#91)
+		- (ok,None) = to.call{value: amt}() (src/MADBounty.sol#192)
+	Event emitted after the call(s):
+	- Refunded(id,amt) (src/MADBounty.sol#92)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-4
+
+Detector: timestamp
+MADBounty.post(address,bytes32,bytes32,uint128,uint16,uint32,uint32,uint64) (src/MADBounty.sol#69-82) uses timestamp for comparisons
+	Dangerous comparisons:
+	- expiry <= block.timestamp || workWindow == 0 || reviewWindow == 0 (src/MADBounty.sol#74)
+MADBounty.refundExpired(uint256) (src/MADBounty.sol#85-93) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.expiry (src/MADBounty.sol#88)
+MADBounty.claim(uint256) (src/MADBounty.sol#104-112) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp > b.expiry (src/MADBounty.sol#107)
+MADBounty.submit(uint256,bytes32) (src/MADBounty.sol#114-122) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp > b.deadline (src/MADBounty.sol#118)
+MADBounty.reclaimAbandoned(uint256) (src/MADBounty.sol#125-134) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.deadline (src/MADBounty.sol#128)
+MADBounty.settle(uint256,bool,uint8,bytes32,bytes32) (src/MADBounty.sol#138-156) uses timestamp for comparisons
+	Dangerous comparisons:
+	- b.state == State.Submitted && block.timestamp > b.deadline (src/MADBounty.sol#142)
+	- reversal && block.timestamp > b.deadline (src/MADBounty.sol#143)
+MADBounty.payOnTimeout(uint256) (src/MADBounty.sol#159-164) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.deadline (src/MADBounty.sol#162)
+MADBounty.finalizeBurn(uint256) (src/MADBounty.sol#167-177) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.deadline (src/MADBounty.sol#170)
+MADBountyCore.post(MADBountyCore.Params) (src/MADBountyCore.sol#156-171) uses timestamp for comparisons
+	Dangerous comparisons:
+	- p.openUntil <= block.timestamp || p.openUntil > block.timestamp + MAX_OPEN (src/MADBountyCore.sol#161)
+MADBountyCore.refundExpired(uint256) (src/MADBountyCore.sol#183-190) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.openUntil (src/MADBountyCore.sol#186)
+MADBountyCore.extendReview(uint256) (src/MADBountyCore.sol#193-201) uses timestamp for comparisons
+	Dangerous comparisons:
+	- b.extended || block.timestamp > b.deadline (src/MADBountyCore.sol#197)
+MADBountyCore.claim(uint256,uint256,bytes) (src/MADBountyCore.sol#205-219) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp > b.openUntil (src/MADBountyCore.sol#208)
+	- block.timestamp > authDeadline (src/MADBountyCore.sol#210)
+MADBountyCore.submit(uint256,bytes32) (src/MADBountyCore.sol#221-230) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp > b.deadline (src/MADBountyCore.sol#225)
+MADBountyCore.reclaimAbandoned(uint256) (src/MADBountyCore.sol#233-242) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.deadline (src/MADBountyCore.sol#236)
+MADBountyCore.payOnTimeout(uint256) (src/MADBountyCore.sol#274-279) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.deadline (src/MADBountyCore.sol#277)
+MADBountyCore.finalizeReject(uint256) (src/MADBountyCore.sol#282-297) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp <= b.deadline (src/MADBountyCore.sol#285)
+MADBountyCore._settle(uint256,bool) (src/MADBountyCore.sol#309-320) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp > b.deadline (src/MADBountyCore.sol#312)
+MADBountyCore._reverse(uint256) (src/MADBountyCore.sol#322-328) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp > b.deadline (src/MADBountyCore.sol#325)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Detector: low-level-calls
+Low level call in MADBounty._send(address,uint256) (src/MADBounty.sol#191-194):
+	- (ok,None) = to.call{value: amt}() (src/MADBounty.sol#192)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+
+Detector: naming-convention
+Variable MADBounty.DOMAIN_SEPARATOR (src/MADBounty.sol#38) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+. analyzed (21 contracts with 102 detectors), 32 result(s) found
