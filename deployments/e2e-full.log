@@ -398,3 +398,63 @@
 2026-11-26T06:36:04Z ==== LATER done: 5 pass, 2 fail; 4 still pending, next due 2026-11-27 05:26 UTC
 2026-11-26T06:36:04Z ==== LATER phase (6 pending)
 2026-11-26T06:36:04Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-26T07:36:54Z ==== LATER phase (4 pending)
+2026-11-26T07:36:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T07:36:54Z ==== LATER phase (6 pending)
+2026-11-26T07:36:54Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-26T08:37:55Z ==== LATER phase (4 pending)
+2026-11-26T08:37:55Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T08:37:55Z ==== LATER phase (6 pending)
+2026-11-26T08:37:57Z PASS #26 payOnTimeout (junk commitment -> worker paid)  (0xaf3455f2af9270d4285a7486c4cf4df72995f4bc86aa63af950ee7255a2e9e67)
+2026-11-26T08:37:59Z PASS #26 state Paid  (Paid)
+2026-11-26T08:38:00Z PASS #26 worker paid reward-fee+deposit
+2026-11-26T08:38:00Z ==== LATER done: 3 pass, 0 fail; 5 still pending, next due 2026-11-26 17:19 UTC
+2026-11-26T09:38:54Z ==== LATER phase (4 pending)
+2026-11-26T09:38:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T09:38:54Z ==== LATER phase (5 pending)
+2026-11-26T09:38:54Z ==== LATER done: 0 pass, 0 fail; 5 still pending, next due 2026-11-26 17:19 UTC
+2026-11-26T10:39:54Z ==== LATER phase (4 pending)
+2026-11-26T10:39:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T10:39:54Z ==== LATER phase (5 pending)
+2026-11-26T10:39:54Z ==== LATER done: 0 pass, 0 fail; 5 still pending, next due 2026-11-26 17:19 UTC
+2026-11-26T11:40:55Z ==== LATER phase (4 pending)
+2026-11-26T11:40:55Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T11:40:55Z ==== LATER phase (5 pending)
+2026-11-26T11:40:55Z ==== LATER done: 0 pass, 0 fail; 5 still pending, next due 2026-11-26 17:19 UTC
+2026-11-26T12:41:54Z ==== LATER phase (4 pending)
+2026-11-26T12:41:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T12:41:54Z ==== LATER phase (5 pending)
+2026-11-26T12:41:54Z ==== LATER done: 0 pass, 0 fail; 5 still pending, next due 2026-11-26 17:19 UTC
+2026-11-26T13:42:54Z ==== LATER phase (4 pending)
+2026-11-26T13:42:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T13:42:54Z ==== LATER phase (5 pending)
+2026-11-26T13:42:54Z ==== LATER done: 0 pass, 0 fail; 5 still pending, next due 2026-11-26 17:19 UTC
+2026-11-26T14:43:54Z ==== LATER phase (4 pending)
+2026-11-26T14:43:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T14:43:54Z ==== LATER phase (5 pending)
+2026-11-26T14:43:54Z ==== LATER done: 0 pass, 0 fail; 5 still pending, next due 2026-11-26 17:19 UTC
+2026-11-26T15:44:54Z ==== LATER phase (4 pending)
+2026-11-26T15:44:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T15:44:54Z ==== LATER phase (5 pending)
+2026-11-26T15:44:54Z ==== LATER done: 0 pass, 0 fail; 5 still pending, next due 2026-11-26 17:19 UTC
+2026-11-26T16:45:55Z ==== LATER phase (4 pending)
+2026-11-26T16:45:55Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T16:45:55Z ==== LATER phase (5 pending)
+2026-11-26T16:45:55Z ==== LATER done: 0 pass, 0 fail; 5 still pending, next due 2026-11-26 17:19 UTC
+2026-11-26T17:46:54Z ==== LATER phase (4 pending)
+2026-11-26T17:46:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T17:46:54Z ==== LATER phase (5 pending)
+2026-11-26T17:46:55Z PASS #12 late verdict reverts TooLate
+2026-11-26T17:46:57Z PASS #12 payOnTimeout  (0xaacdb1a1b57fd2721212048520af50626b530cfe0cebb6daff6a65d9d6462924)
+2026-11-26T17:46:58Z PASS #12 state Paid  (Paid)
+2026-11-26T17:46:59Z PASS #12 vault holds 0.0 USDC  (0.0)
+2026-11-26T17:47:00Z PASS #13 reverse after cooling reverts TooLate
+2026-11-26T17:47:02Z PASS #13 finalizeReject REFUND  (0x7ba186544c810c55ffe75f54641d53e28b0f227b3e4634ee7d452039dd0ae6a0)
+2026-11-26T17:47:04Z PASS #13 state Refunded  (Refunded)
+2026-11-26T17:47:04Z PASS #13 agent refunded reward
+2026-11-26T17:47:06Z PASS #13 vault holds 0.0 USDC  (0.0)
+2026-11-26T17:47:08Z PASS #14 finalizeReject BURN  (0x11021f331921d0f4c5eb7a1efd7b16151f419490b349f7be695e0d935ac88e56)
+2026-11-26T17:47:09Z PASS #14 state Burned  (Burned)
+2026-11-26T17:47:10Z PASS #14 2 USDC sent to 0x…dEaD
+2026-11-26T17:47:12Z PASS #14 vault holds 0.0 USDC  (0.0)
+2026-11-26T17:47:12Z ==== LATER done: 13 pass, 0 fail; 2 still pending, next due 2026-11-26 18:26 UTC

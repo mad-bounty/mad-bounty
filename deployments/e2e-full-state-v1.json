@@ -1,21 +1,6 @@
 {
  "pending": [
   {
-   "due": 1795713588,
-   "action": "timeout_after_extend",
-   "id": 12
-  },
-  {
-   "due": 1795713596,
-   "action": "finalize_refund",
-   "id": 13
-  },
-  {
-   "due": 1795713603,
-   "action": "finalize_burn",
-   "id": 14
-  },
-  {
    "due": 1795717567,
    "action": "finalize_burn",
    "id": 19
@@ -24,11 +9,6 @@
    "due": 1795717570,
    "action": "finalize_burn",
    "id": 24
-  },
-  {
-   "due": 1795679804,
-   "action": "r3_junk_pays_worker",
-   "id": 26
   }
  ],
  "started": 1795626983,
