@@ -11,6 +11,7 @@ export interface ServerConfig {
   privateKey?: Hex;
   knownVerifiers: Address[];
   adapters?: { fallback?: Address; onchainCheck?: Address; hashReveal?: Address; teeML?: Address; multi?: Address };
+  reputation?: { receipts?: Address; attest?: Address };
   trustedSigners: Address[];
   manualPath?: string;
   fromBlock: bigint;
@@ -30,6 +31,11 @@ export function configFromEnv(env: NodeJS.ProcessEnv = process.env): ServerConfi
     privateKey: pk as Hex | undefined,
     knownVerifiers: [...new Set([...(env.MADB_KNOWN_VERIFIERS ?? '').split(',').map((s) => s.trim()).filter((s): s is Address => isAddress(s)).map((a) => getAddress(a)), ...Object.values(dep?.verifiers ?? {})])],
     adapters: dep?.verifiers as ServerConfig['adapters'],
+    reputation: (dep as { reputation?: { receipts?: Address; attest?: Address } } | undefined)?.reputation ??
+      (env.MADB_RECEIPTS || env.MADB_ATTEST ? {
+        receipts: env.MADB_RECEIPTS && isAddress(env.MADB_RECEIPTS) ? getAddress(env.MADB_RECEIPTS) : undefined,
+        attest: env.MADB_ATTEST && isAddress(env.MADB_ATTEST) ? getAddress(env.MADB_ATTEST) : undefined,
+      } : undefined),
     trustedSigners: (env.MADB_TRUSTED_SIGNERS ?? '').split(',').map((s) => s.trim()).filter((s): s is Address => isAddress(s)).map((a) => getAddress(a)),
     manualPath: env.MADB_MANUAL_PATH,
     fromBlock: env.MADB_FROM_BLOCK ? BigInt(env.MADB_FROM_BLOCK) : (dep?.deployBlock ?? 0n),

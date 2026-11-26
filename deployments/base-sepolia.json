@@ -57,5 +57,20 @@
       "HashRevealVerifier": "0xCc06084256d8d31d49A52Fdc1860a1f91d3855a9",
       "TeeMLVerifier": "0x10e9647120716B61aFA933CAea6e2E6ff13319bD"
     }
+  },
+  "reputation": {
+    "deployedAt": "2026-11-26",
+    "commit": "pending",
+    "note": "MADReceipts: permissionless outcome tally from core storage; MADAttest: party ratings, [-2,2], 30d window, contradicted flag = agent rates worker negative on a Paid bounty. No bonds; sybil cost = real fee + escrow.",
+    "MADReceipts": "0x676394E710B21d2886FE33d323eeF99a1e586172",
+    "MADAttest": "0x6E8402A1aCCC228F46968B646d9fB3726bEBC2Cf",
+    "verification": "Sourcify exact_match (both)",
+    "deployScript": "script/DeployReputation.s.sol",
+    "liveCheck": {
+      "recorded": "bounties 1-18 terminal subset via recordMany",
+      "agentStats": "(posted=12, paid=9, cancelled=3, volumePaid=9 USDC, distinctWorkers=1)",
+      "workerStats": "(paid=9, earned=8.55 = 9 x $1 minus 5% fee)",
+      "attestations": "bounty 3: agent +2 on worker, worker +1 on agent; aggregates correct; Cancelled guard fired on bounty 1 as designed"
+    }
   }
 }

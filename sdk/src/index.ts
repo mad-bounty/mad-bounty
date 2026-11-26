@@ -6,3 +6,5 @@ export * from './crypto.js';
 export * from './encode.js';
 export * from './safety.js';
 export { createClient, decodeBounty, EIP712_TYPES, type MADBountyClient, type MADBountyClientConfig, type WriteResult } from './client.js';
+export { createReputation, MADRECEIPTS_ABI, MADATTEST_ABI, scoreAddress } from './reputation.js';
+export type { AgentStats, WorkerStats, SubjectStats, ScoreInput } from './reputation.js';

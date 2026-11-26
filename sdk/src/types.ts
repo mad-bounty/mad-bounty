@@ -124,5 +124,9 @@ export const DEPLOYMENTS = {
       teeML: '0xEDB11405cAd79464331D835748DB09Aa843f039C',
       multi: '0xA0526b60E273c0b58402E3283e1a31593B2d0fCc',
     },
+    reputation: {
+      receipts: '0x676394E710B21d2886FE33d323eeF99a1e586172',
+      attest: '0x6E8402A1aCCC228F46968B646d9fB3726bEBC2Cf',
+    },
   },
-} as const satisfies Record<number, { core: Address; deployBlock: bigint; usdc: Address; verifiers: Record<string, Address> }>;
+} as const satisfies Record<number, { core: Address; deployBlock: bigint; usdc: Address; verifiers: Record<string, Address>; reputation?: { receipts: Address; attest: Address } }>;

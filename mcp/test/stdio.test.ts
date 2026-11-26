@@ -49,7 +49,7 @@ afterAll(async () => {
 });
 
 const EXPECTED_TOOLS = [
-  'madb_get_manual', 'madb_list_open_bounties', 'madb_get_bounty', 'madb_check_bounty_safety', 'madb_post_bounty',
+  'madb_get_manual', 'madb_list_open_bounties', 'madb_get_bounty', 'madb_check_bounty_safety', 'madb_post_bounty', 'madb_reputation', 'madb_record_receipts',
   'madb_claim', 'madb_submit', 'madb_settle', 'madb_keeper_sweep', 'madb_withdraw', 'madb_hash_spec', 'madb_encrypt_for_agent',
 ];
 

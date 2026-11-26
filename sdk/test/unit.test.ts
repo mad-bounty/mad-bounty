@@ -79,3 +79,31 @@ describe('safety gate reads adapter config (r3 F-1)', () => {
     expect(assessBounty(b, { ...base, adapterConfig: { kind: 'hashReveal', signers: [] } }).safe).toBe(true);
   });
 });
+
+// reputation reference scorer
+import { scoreAddress } from '../src/reputation.js';
+import type { AgentStats, WorkerStats, SubjectStats } from '../src/reputation.js';
+describe('reputation scorer', () => {
+  it('neutral with no data', () => {
+    expect(scoreAddress({})).toBe(50);
+  });
+  it('all-paid worker with clean attestations scores high', () => {
+    const w = { paid: 10n, burned: 0n, refunded: 0n, distinctAgents: 6n, selfDeals: 0n, earned: 95n, firstAt: 0n, lastAt: 0n } as WorkerStats;
+    const att = { count: 6n, sumRating: 12n, contradictedCount: 0n } as SubjectStats;
+    expect(scoreAddress({ asWorker: w, attestations: att })).toBeGreaterThanOrEqual(75);
+  });
+  it('mostly-burned worker scores low', () => {
+    const w = { paid: 1n, burned: 8n, refunded: 1n, distinctAgents: 4n, selfDeals: 0n, earned: 1n, firstAt: 0n, lastAt: 0n } as WorkerStats;
+    expect(scoreAddress({ asWorker: w })).toBeLessThanOrEqual(35);
+  });
+  it('agent scoring uses agent stats', () => {
+    const a = { posted: 5n, paid: 5n, burned: 0n, refunded: 0n, cancelled: 0n, distinctWorkers: 3n, selfDeals: 0n, volumePaid: 500n, firstAt: 0n, lastAt: 0n } as AgentStats;
+    expect(scoreAddress({ asAgent: a })).toBeGreaterThan(50);
+  });
+  it('contradicted attestations reduce the score', () => {
+    const w = { paid: 5n, burned: 0n, refunded: 0n, distinctAgents: 5n, selfDeals: 0n, earned: 5n, firstAt: 0n, lastAt: 0n } as WorkerStats;
+    const clean = { count: 5n, sumRating: 10n, contradictedCount: 0n } as SubjectStats;
+    const dirty = { count: 5n, sumRating: 6n, contradictedCount: 4n } as SubjectStats;
+    expect(scoreAddress({ asWorker: w, attestations: dirty })).toBeLessThan(scoreAddress({ asWorker: w, attestations: clean }));
+  });
+});

@@ -114,3 +114,16 @@ signatures. `reverse` needs m Reverse signatures. If the panel is silent, the wo
 
 `FOUNDRY_TEST=periphery/test forge test` (80 tests, including `AuditFixes.t.sol`, one regression test per audit
 finding). Audit PoCs: `FOUNDRY_TEST=audit/periphery/test forge test`.
+
+## Reputation periphery
+
+- `MADReceipts` (Base Sepolia `0x676394E710B21d2886FE33d323eeF99a1e586172`): permissionless `record(id)` / `recordMany(ids)`.
+  Seals a terminal bounty's outcome into per-address tallies read straight from core storage: agent (posted/paid/burned/
+  refunded/cancelled, distinctWorkers, selfDeals, volumePaid), worker (paid/burned/refunded, distinctAgents, earned),
+  verifier (accepted/rejected). Anyone may record; each bounty exactly once. Objective facts only — scoring is off-chain.
+- `MADAttest` (Base Sepolia `0x6E8402A1aCCC228F46968B646d9fB3726bEBC2Cf`): `attest(id, rating in [-2,2], noteHash)`.
+  Only the agent or worker of a recorded, non-Cancelled terminal bounty, once each, within 30 days of the record.
+  Aggregates per subject (count, sumRating, contradictedCount). `contradicted` = the agent rates the worker negative
+  on a bounty the agent's own verifier accepted and paid — the chain itself contradicts the rating; scorers discount it.
+- No bonds anywhere. Sybil cost of a fake rating pair = the real reward escrowed plus the fee paid on that bounty.
+- Deploy: `MADB_CORE=<core> forge script script/DeployReputation.s.sol --rpc-url ... --broadcast`. Both immutable, no owner.

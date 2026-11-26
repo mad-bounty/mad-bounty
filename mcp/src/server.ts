@@ -6,7 +6,9 @@ import { z } from 'zod';
 import { getAddress, isAddress, type Address, type Hex } from 'viem';
 import {
   EIP712_TYPES, encryptForAgent, hashEvidence, formatUsdc, hashSpec, minDepositFor, parseUsdc, type UnsignedTx,
+  createReputation, MADRECEIPTS_ABI,
 } from '@madbounty/sdk';
+import { encodeFunctionData } from 'viem';
 import { makeRuntime, type Runtime, type ServerConfig } from './config.js';
 
 export const VERSION = '0.1.0';
@@ -118,6 +120,43 @@ export function createServer(cfg: ServerConfig) {
     inputSchema: { id: idSchema },
     annotations: { readOnlyHint: true },
   }, wrap(async ({ id }) => bountyView(bid(id))));
+  const reputationOf = async (address: string) => {
+    const rc = cfg.reputation?.receipts; const at = cfg.reputation?.attest;
+    if (!rc && !at) throw new Error('reputation contracts not configured for this chain (MADB_RECEIPTS / MADB_ATTEST or DEPLOYMENTS)');
+    const rep = createReputation({ publicClient: rt.client().publicClient as never, receipts: rc!, attest: at! });
+    const [agentStats, workerStats, attestStats] = await Promise.all([
+      rc ? rep.agentStats(getAddress(address)) : Promise.resolve(null),
+      rc ? rep.workerStats(getAddress(address)) : Promise.resolve(null),
+      at ? rep.attestStats(getAddress(address)) : Promise.resolve(null),
+    ]);
+    return { address: getAddress(address), asAgent: agentStats, asWorker: workerStats, attestations: attestStats,
+      note: 'facts are objective on-chain tallies; any scorer may interpret them' };
+  };
+
+  server.registerTool('madb_reputation', {
+    title: 'Reputation of an address',
+    description:
+      'Objective on-chain record for any address: bounties posted/paid/burned/refunded/cancelled, distinct counterparties, ' +
+      'self-deals flagged, volume paid or earned, and party-to-party attestation aggregates (count, sum, contradicted). ' +
+      'These are FACTS read from MADReceipts/MADAttest, not opinions; compute your own score from them. Read-only.',
+    inputSchema: { address: z.string().describe('The address to look up.') },
+    annotations: { readOnlyHint: true },
+  }, wrap(async ({ address }) => reputationOf(address)));
+
+  server.registerTool('madb_record_receipts', {
+    title: 'Record terminal bounties — writes onchain',
+    description:
+      'Call MADReceipts.recordMany(ids) to seal the outcome tally for terminal bounties (Paid/Burned/Refunded/Cancelled). ' +
+      'Permissionless keeper action: anyone may record; each bounty is recorded exactly once. Without MADB_PRIVATE_KEY returns an unsigned transaction.',
+    inputSchema: { ids: z.array(z.number().int().positive()).min(1).max(200).describe('Bounty ids to record.') },
+  }, wrap(async ({ ids }) => {
+    const rc = cfg.reputation?.receipts;
+    if (!rc) throw new Error('MADB_RECEIPTS not configured');
+    const data = encodeFunctionData({ abi: MADRECEIPTS_ABI, functionName: 'recordMany', args: [ids.map(BigInt)] });
+    // permissionless keeper action: return the tx for any wallet to broadcast (even with a signer configured)
+    return unsigned([{ to: rc, data, value: 0n }], { ids });
+  }));
+
 
   server.registerTool('madb_check_bounty_safety', {
     title: 'Check bounty safety (worker)',

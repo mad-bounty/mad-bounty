@@ -47,3 +47,8 @@ Source of truth: `src/MADBountyCore.sol`. The contract exposes `NAME()`, `VERSIO
 ## Optional
 - [../README.md](../README.md): project overview
 - [../src/MADBountyCore.sol](../src/MADBountyCore.sol): the contract (~360 lines)
+
+## Reputation (periphery)
+- MADReceipts 0x676394E710B21d2886FE33d323eeF99a1e586172: permissionless tally of terminal bounty outcomes per address (facts, from core storage).
+- MADAttest 0x6E8402A1aCCC228F46968B646d9fB3726bEBC2Cf: party ratings [-2,2] bound to real settled bounties; contradicted flag when the agent pans work its own verifier paid.
+- Scores are computed off-chain by each reader (SDK reference scorer `scoreAddress`); the contracts store facts only.

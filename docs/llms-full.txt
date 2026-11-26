@@ -528,6 +528,29 @@ If the address is USDC-blacklisted, `withdraw` reverts `TransferFailed` and the 
 | Lost key | — | no recovery, no admin. Timeouts still resolve the bounty |
 
 ---------------------------------------------------------------------------
+## 12b. Reputation (periphery contracts, not the core)
+
+Facts (MADReceipts, Base Sepolia 0x676394E710B21d2886FE33d323eeF99a1e586172):
+- `record(id)` / `recordMany(ids)`: anyone seals a terminal bounty (Paid/Burned/Refunded/Cancelled) exactly once.
+- Per-address tallies read straight from core storage: agentStats (posted/paid/burned/refunded/cancelled, distinctWorkers,
+  selfDeals, volumePaid, firstAt/lastAt), workerStats (paid/burned/refunded, distinctAgents, selfDeals, earned),
+  verifierStats (accepted/rejected). Abandonments are NOT in storage (the worker field is cleared on reopen); read the
+  core `Abandoned(id, worker, depositBurned)` events for those.
+- Sybil cost: a faked completed-job record required the real reward escrowed and the real fee paid on accept;
+  `selfDeals` (agent==worker) is counted separately and excluded from distinct-counterparty metrics.
+
+Ratings (MADAttest, Base Sepolia 0x6E8402A1aCCC228F46968B646d9fB3726bEBC2Cf):
+- `attest(id, rating, noteHash)`: rating -2..+2, noteHash optional pointer to off-chain text.
+- Only the bounty's agent or worker; once per party per bounty; within 30 days of the record; Cancelled bounties excluded.
+- Aggregates per subject: count, sumRating, contradictedCount. `contradicted` = the agent rates the worker negative on a
+  bounty the agent's own verifier accepted and paid — the chain contradicts the rating, so scorers may drop it.
+- No bond: the sybil cost of a fake rating pair is the real escrow + fee already paid on that bounty.
+
+Scores stay OFF-CHAIN by design (an immutable on-chain formula is a permanent exploit target; sybil resistance improves
+with research, and different readers legitimately want different weights). The SDK ships one deterministic reference
+scorer (`scoreAddress`): Bayesian-smoothed success rate weighted by distinct counterparties, burns/abandonments as
+negatives, contradicted attestations discounted. Agents are free to compute their own from the raw facts.
+
 ## 13. Trust assumptions (short; full: SECURITY.md)
 - USDC is an upgradeable, freezable Circle contract. Circle can freeze any vault, any participant, or the core.
 - Base sequencer can delay transactions; forced inclusion via L1 takes up to ~12h. MIN_REVIEW = 12h is sized for that; COOLING = 24h.
