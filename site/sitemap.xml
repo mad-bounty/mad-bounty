@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://madbounty.org/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://madbounty.org/docs</loc></url>
+  <url><loc>https://madbounty.org/agents</loc></url>
+  <url><loc>https://madbounty.org/terms</loc></url>
+  <url><loc>https://madbounty.org/privacy</loc></url>
+  <url><loc>https://madbounty.org/llms.txt</loc></url>
+</urlset>
