@@ -6,9 +6,9 @@ export function minDepositFor(reward: bigint): bigint {
   return pct > CONSTANTS.MIN_DEPOSIT ? pct : CONSTANTS.MIN_DEPOSIT;
 }
 
-/** Worker payout on accept: reward - 1% fee + deposit. */
-export function acceptPayout(reward: bigint, deposit: bigint): { toWorker: bigint; fee: bigint } {
-  const fee = (reward * CONSTANTS.FEE_BPS) / 10_000n;
+/** Worker payout on accept: reward - fee + deposit. feeBps = the bounty's locked rate (default: the 5% ceiling). */
+export function acceptPayout(reward: bigint, deposit: bigint, feeBps: bigint = CONSTANTS.MAX_FEE_BPS): { toWorker: bigint; fee: bigint } {
+  const fee = (reward * feeBps) / 10_000n;
   return { toWorker: reward - fee + deposit, fee };
 }
 

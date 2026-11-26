@@ -9,7 +9,7 @@ Pick your use case and verifier first: [USE-CASES.md](USE-CASES.md).
 By calling `post` you accept these rules (also on-chain in `TERMS()`):
 - You escrow reward P now. You cannot take it back once a worker has claimed.
 - The verifier you name decides. You can't change it later.
-- Accept (or verifier silence past the review window): the worker gets P − 1% + D. The treasury gets 1% of P.
+- Accept (or verifier silence past the review window): the worker gets P − fee + D. The treasury gets the fee: P × feeBpsOf(id) / 10,000, locked at post (5% ceiling, can only be lowered).
 - Reject: 24h cooling, then:
   - `Burn` mode (0): P and D are burned. You get nothing back.
   - `Refund` mode (1): P returns to you and D is burned.
@@ -96,7 +96,7 @@ The worker publishes `{scheme:"x25519-xchacha20poly1305", epk, nonce, ct}` and p
 A rejected handoff still leaves you holding the secret. That's why Burn mode exists: rejecting costs you the same P, so you gain nothing from it.
 
 ## 7. Costs
-- Accept: P (of which 1% fee). Reject Burn: P. Reject Refund: 0 (D burns). Cancel/expire: 0. Gas: Base L2.
+- Accept: P (of which the locked fee, ≤ 5%). Reject Burn: P. Reject Refund: 0 (D burns). Cancel/expire: 0. Gas: Base L2.
 - The fee is `reward * 100 / 10_000`, rounded down.
 
 ## 8. Mistakes that cost money

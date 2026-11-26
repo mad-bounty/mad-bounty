@@ -26,19 +26,20 @@ contract HalmosFeeTest is Test {
     // -------- split arithmetic checks (smaller SMT queries), over the reachable range reward <= MAX_REWARD
     function check_feeSum(uint96 reward, uint96 deposit) public pure {
         vm.assume(reward <= 1_000e6 && deposit <= reward);
-        uint256 fee = uint256(reward) * 100 / 10_000;
+        uint256 fee = uint256(reward) * 500 / 10_000;
         uint256 toWorker = uint256(reward) - fee + deposit;
         assert(toWorker + fee == uint256(reward) + deposit);
     }
     function check_feeFloor(uint96 reward) public pure {
         vm.assume(reward <= 1_000e6);
-        uint256 fee = uint256(reward) * 100 / 10_000;
-        assert(fee * 100 <= reward);
-        assert(reward < fee * 100 + 100);
+        uint256 fee = uint256(reward) * 500 / 10_000;
+        assert(fee * 20 <= reward);
+        assert(reward < fee * 20 + 20);
     }
     function check_feeVsCore(uint96 reward) public view {
         vm.assume(reward <= 1_000e6);
-        assert(uint256(reward) * core.FEE_BPS() / 10_000 == uint256(reward) / 100);
+        assert(core.MAX_FEE_BPS() == 500 && core.feeBps() == 500);
+        assert(uint256(reward) * core.feeBps() / 10_000 == uint256(reward) / 20);
     }
     function check_minDepositSplit(uint32 reward) public view {
         vm.assume(reward <= 1_000e6);
@@ -49,11 +50,11 @@ contract HalmosFeeTest is Test {
 
     // -------- pure arithmetic over the full uint96 reward range the struct allows
     function check_feeSplitExact(uint96 reward, uint96 deposit) public pure {
-        uint256 fee = uint256(reward) * 100 / 10_000;
+        uint256 fee = uint256(reward) * 500 / 10_000;
         uint256 toWorker = uint256(reward) - fee + deposit;
         assert(toWorker + fee == uint256(reward) + deposit);   // no dust created or lost
-        assert(fee <= uint256(reward) / 100);                  // rounds down, never above 1%
-        assert(fee * 100 <= reward && reward - fee * 100 < 100); // floor exactness
+        assert(fee <= uint256(reward) / 20);                   // rounds down, never above 5%
+        assert(fee * 20 <= reward && reward - fee * 20 < 20);  // floor exactness
         assert(toWorker <= uint256(reward) - fee + deposit);
     }
 
@@ -83,7 +84,7 @@ contract HalmosFeeTest is Test {
         vm.assume(deposit >= core.minDeposit(reward) && deposit <= reward);
         uint256 id = _toSubmitted(reward, deposit);
         vm.prank(verifier); core.settle(id, true);
-        uint256 fee = uint256(reward) / 100;
+        uint256 fee = uint256(reward) * 500 / 10_000;
         assert(usdc.balanceOf(treasury) == fee);
         assert(usdc.balanceOf(worker) == 2_000e6 - deposit + (uint256(reward) - fee + deposit));
         assert(usdc.balanceOf(worker) + usdc.balanceOf(treasury) - (2_000e6 - deposit) == uint256(reward) + deposit);

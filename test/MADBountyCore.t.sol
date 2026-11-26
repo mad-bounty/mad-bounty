@@ -92,11 +92,11 @@ contract MADBountyCoreTest is CoreHelpers {
 
     // ---- happy paths
 
-    function test_accept_paysWorker_1pctFee() public {
+    function test_accept_paysWorker_5pctFee() public {
         uint256 id = _post(100e6, 25e6); _claimSubmit(id);
         core.settleWithSig(id, true, _verdictSig(vk, id, worker, ev, true));
-        assertEq(usdc.balanceOf(worker), 100_000e6 + 99e6);
-        assertEq(usdc.balanceOf(treasury), 1e6);
+        assertEq(usdc.balanceOf(worker), 100_000e6 + 95e6);
+        assertEq(usdc.balanceOf(treasury), 5e6);
         assertEq(usdc.balanceOf(agent), 100_000e6 - 100e6);
     }
 
@@ -129,7 +129,7 @@ contract MADBountyCoreTest is CoreHelpers {
         bytes memory acc = _verdictSig(vk, id, worker, ev, true);
         vm.expectRevert(MADBountyCore.BadState.selector); core.settleWithSig(id, true, acc);
         core.reverseWithSig(id, _reverseSig(vk, id, worker, ev));
-        assertEq(usdc.balanceOf(worker), 100_000e6 + 99e6);
+        assertEq(usdc.balanceOf(worker), 100_000e6 + 95e6);
     }
 
     function test_reverseDirect_onlyVerifier() public {
@@ -137,7 +137,7 @@ contract MADBountyCoreTest is CoreHelpers {
         vm.prank(verifier); core.settle(id, false);
         vm.prank(agent); vm.expectRevert(MADBountyCore.NotAllowed.selector); core.reverse(id);
         vm.prank(verifier); core.reverse(id);
-        assertEq(usdc.balanceOf(worker), 100_000e6 + 99e6);
+        assertEq(usdc.balanceOf(worker), 100_000e6 + 95e6);
     }
 
     function test_noReverseAfterCooling() public {
@@ -151,7 +151,7 @@ contract MADBountyCoreTest is CoreHelpers {
         uint256 id = _post(100e6, 25e6); _claimSubmit(id);
         vm.warp(block.timestamp + 1 days + 1);
         core.payOnTimeout(id);
-        assertEq(usdc.balanceOf(worker), 100_000e6 + 99e6);
+        assertEq(usdc.balanceOf(worker), 100_000e6 + 95e6);
     }
 
     function test_lateVerdictRejected_afterReview() public {
@@ -250,8 +250,8 @@ contract MADBountyCoreTest is CoreHelpers {
         uint256 id = _post(100e6, 25e6); _claimSubmit(id);
         usdc.blacklist(worker);
         vm.prank(verifier); core.settle(id, true);
-        assertEq(usdc.balanceOf(treasury), 1e6);
-        assertEq(core.owed(id, worker), 124e6);
+        assertEq(usdc.balanceOf(treasury), 5e6);
+        assertEq(core.owed(id, worker), 120e6);
         vm.prank(worker); vm.expectRevert(MADBountyCore.TransferFailed.selector); core.withdraw(id);
     }
 
@@ -259,8 +259,8 @@ contract MADBountyCoreTest is CoreHelpers {
         uint256 id = _post(100e6, 25e6); _claimSubmit(id);
         usdc.blacklist(treasury);
         vm.prank(verifier); core.settle(id, true);
-        assertEq(usdc.balanceOf(worker), 100_000e6 + 99e6);
-        assertEq(core.owed(id, treasury), 1e6);
+        assertEq(usdc.balanceOf(worker), 100_000e6 + 95e6);
+        assertEq(core.owed(id, treasury), 5e6);
     }
 
     function test_T6_blacklistedAgent_refundModeCreditsOwed() public {
@@ -279,7 +279,7 @@ contract MADBountyCoreTest is CoreHelpers {
         usdc.blacklist(_vault(a));
         vm.prank(verifier); core.settle(a, true);
         vm.prank(verifier); core.settle(b, true);
-        assertEq(usdc.balanceOf(worker), 100_000e6 - 50e6 + 124e6);
+        assertEq(usdc.balanceOf(worker), 100_000e6 - 50e6 + 120e6);
     }
 
     // ---- fuzz: conservation. Every unit escrowed ends in exactly one sink.
@@ -295,7 +295,59 @@ contract MADBountyCoreTest is CoreHelpers {
         uint256 total = usdc.balanceOf(agent) + usdc.balanceOf(worker) + usdc.balanceOf(treasury) + usdc.balanceOf(BURN);
         assertEq(total, 200_000e6);
         assertEq(usdc.balanceOf(_vault(id)), 0);
-        if (path < 2) assertEq(usdc.balanceOf(treasury), uint256(p) / 100);
+        if (path < 2) assertEq(usdc.balanceOf(treasury), uint256(p) * 5 / 100);
         if (path == 3) assertEq(usdc.balanceOf(BURN), d);
+    }
+    // ---- fee ratchet: starts 5%, treasury may only lower, each bounty keeps its post-time fee.
+
+    function test_feeStartsAtMax() public view {
+        assertEq(core.MAX_FEE_BPS(), 500);
+        assertEq(core.feeBps(), 500);
+    }
+
+    function test_lowerFee_onlyTreasury_onlyDown() public {
+        vm.expectRevert(MADBountyCore.NotAllowed.selector);
+        vm.prank(agent); core.lowerFee(100);
+        vm.prank(treasury); vm.expectRevert(MADBountyCore.BadParam.selector); core.lowerFee(500);   // equal
+        vm.prank(treasury); vm.expectRevert(MADBountyCore.BadParam.selector); core.lowerFee(501);   // raise
+        vm.prank(treasury); core.lowerFee(300);
+        assertEq(core.feeBps(), 300);
+        vm.prank(treasury); vm.expectRevert(MADBountyCore.BadParam.selector); core.lowerFee(400);   // back up
+        vm.prank(treasury); core.lowerFee(0);
+        assertEq(core.feeBps(), 0);
+        vm.prank(treasury); vm.expectRevert(MADBountyCore.BadParam.selector); core.lowerFee(0);
+    }
+
+    function test_feeLockedAtPost() public {
+        uint256 a = _post(100e6, 5e6);                       // posted at 5%
+        vm.prank(treasury); core.lowerFee(100);              // cut to 1%
+        uint256 b = _post(100e6, 5e6);                       // posted at 1%
+        assertEq(core.feeBpsOf(a), 500); assertEq(core.feeBpsOf(b), 100);
+        _claimSubmit(a); _claimSubmit(b);
+        uint256 w0 = usdc.balanceOf(worker);
+        vm.prank(verifier); core.settle(a, true);
+        assertEq(usdc.balanceOf(treasury), 5e6);
+        assertEq(usdc.balanceOf(worker) - w0, 100e6 - 5e6 + 5e6);
+        vm.prank(verifier); core.settle(b, true);
+        assertEq(usdc.balanceOf(treasury), 6e6);
+    }
+
+    function test_zeroFeePaysWorkerAll() public {
+        vm.prank(treasury); core.lowerFee(0);
+        uint256 id = _post(10e6, 1e6); _claimSubmit(id);
+        uint256 w0 = usdc.balanceOf(worker);
+        vm.prank(verifier); core.settle(id, true);
+        assertEq(usdc.balanceOf(treasury), 0);
+        assertEq(usdc.balanceOf(worker) - w0, 11e6);
+    }
+
+    function testFuzz_feeNeverExceedsLocked(uint96 p, uint16 cut) public {
+        p = uint96(bound(p, 1e6, 1_000e6));
+        uint256 id = _post(p, uint96(core.minDeposit(p)));
+        cut = uint16(bound(cut, 0, 499));
+        vm.prank(treasury); core.lowerFee(cut);
+        _claimSubmit(id);
+        vm.prank(verifier); core.settle(id, true);
+        assertEq(usdc.balanceOf(treasury), uint256(p) * 500 / 10_000);
     }
 }

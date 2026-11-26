@@ -49,7 +49,7 @@ contract PoC_FallbackRevertingSignerDoS is Base {
         vm.warp(subAt + 1 days + 1);
         core.payOnTimeout(id);
         assertEq(uint8(_state(id)), uint8(MADBountyCore.State.Paid));
-        assertEq(usdc.balanceOf(worker), 1_000_000e6 - 10e6 + 99e6 + 10e6);
+        assertEq(usdc.balanceOf(worker), 1_000_000e6 - 10e6 + 95e6 + 10e6);
     }
 }
 
@@ -92,7 +92,7 @@ contract PoC_M2_OnchainCheckNeedsSubmitted is Base {
         vm.prank(worker); core.submit(id, bytes32(0)); // evidenceHash is irrelevant to this adapter
         oc.resolve(id);
         assertEq(uint8(_state(id)), uint8(MADBountyCore.State.Paid));
-        assertEq(usdc.balanceOf(worker), 1_000_000e6 - 10e6 + 99e6 + 10e6);
+        assertEq(usdc.balanceOf(worker), 1_000_000e6 - 10e6 + 95e6 + 10e6);
     }
 }
 
@@ -162,13 +162,13 @@ contract PoC_WithdrawNoLossOnBlocked is Base {
         // raw signature accept
         bytes memory sig = _vSig(key, id, worker, ev, true);
         core.settleWithSig(id, true, sig);
-        assertEq(core.owed(id, worker), 99e6 + 10e6);
+        assertEq(core.owed(id, worker), 95e6 + 10e6);
 
         // still blocked -> withdraw reverts, owed restored
         vm.prank(worker);
         vm.expectRevert(MADBountyCore.TransferFailed.selector);
         core.withdraw(id);
-        assertEq(core.owed(id, worker), 99e6 + 10e6);
+        assertEq(core.owed(id, worker), 95e6 + 10e6);
     }
 }
 

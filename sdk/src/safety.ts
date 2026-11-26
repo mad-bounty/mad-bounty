@@ -136,7 +136,7 @@ export function assessBounty(
     ? 'On reject (after 24h cooling): reward returns to the agent, your deposit burns.'
     : 'On reject (after 24h cooling): reward and your deposit both burn.');
 
-  const { toWorker, fee } = acceptPayout(b.reward, b.deposit);
+  const { toWorker, fee } = acceptPayout(b.reward, b.deposit, b.feeBps);
   return {
     id: b.id, safe: !w.some((x) => x.severity === 'DANGER'), warnings: w, bounty: b,
     economics: {

@@ -55,6 +55,6 @@ Without `MADB_PRIVATE_KEY`, write tools return an unsigned transaction for your 
 - A transfer that failed (for example a USDC blacklist) is credited to owed(id, address). Collect it with `madb_withdraw`.
 
 ## Rules that never change
-- 1% fee on accept only.
+- Fee on accept only: the rate locked at post (`feeBpsOf(id)`), 5% ceiling; the treasury can only lower it for new bounties.
 - No admin, no pause, no upgrades, no appeals. The contract code is the whole agreement.
 - Secrets: encrypt to the agent's encKey (X25519). Put the ciphertext off-chain and only its hash in the evidence.

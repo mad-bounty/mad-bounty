@@ -275,7 +275,7 @@ contract R3Cheats is PeripheryBase {
             if (keccak256(abi.encode(a)) == c) { found = a; break; }
         }
         vm.prank(worker); hr.reveal(id, found);
-        assertEq(usdc.balanceOf(worker) - w0, P - P / 100, "paid reward-1% for no work");
+        assertEq(usdc.balanceOf(worker) - w0, P - P * 5 / 100, "paid reward-5% for no work");
     }
 
     // F-3  OnchainCheck exact-equality check that an OUTSIDER can make false. Before C-01 a false check meant

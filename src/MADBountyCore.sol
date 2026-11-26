@@ -41,7 +41,8 @@ contract BountyVault {
 /// @notice Immutable dual-deposit (MAD) escrow for agent-posted bounties. No owner, no proxy, no pause.
 ///         Terms (accepted by calling post / claim):
 ///         - The agent escrows reward P. The worker escrows deposit D (>= max(1 USDC, 2% of P)) on claim.
-///         - The named verifier decides. ACCEPT: worker gets P - 1% fee + D.
+///         - The named verifier decides. ACCEPT: worker gets P - fee + D. The fee is the rate in force when the
+///           bounty was posted (starts at 5%, can only ever be lowered by the treasury, never raised).
 ///         - REJECT starts a 24h cooling window. The verifier may undo it only with a separate Reverse intent.
 ///           After cooling: BURN mode burns P + D. REFUND mode returns P to the agent and burns D.
 ///           REFUND mode is only fair with a verifier independent of the agent; workers must check the verifier.
@@ -83,7 +84,7 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
         bytes32 evidenceHash;
     }
 
-    uint256 public constant FEE_BPS = 100;                 // 1% of reward, on accept only
+    uint256 public constant MAX_FEE_BPS = 500;             // 5% of reward, on accept only: permanent ceiling
     uint256 public constant MIN_REWARD = 1e6;              // $1
     uint256 public constant MAX_REWARD = 1_000e6;          // v1 cap: $1,000 (USDC 6 decimals)
     uint256 public constant MIN_DEPOSIT = 1e6;             // $1 floor (kills free claim-lock griefing, A1)
@@ -104,7 +105,8 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
     string public constant NAME = "MADBounty";
     string public constant VERSION = "1";
     string public constant TERMS =
-        "Agent escrows reward; worker escrows deposit on claim. Named verifier decides. Accept: worker gets reward-1%+deposit. "
+        "Agent escrows reward; worker escrows deposit on claim. Named verifier decides. Accept: worker gets reward-fee+deposit. "
+        "Fee = feeBps at post time, locked per bounty (feeBpsOf); starts at 5%, treasury may only lower it, never raise. "
         "Reject: 24h cooling (verifier may Reverse), then BURN (reward+deposit burned) or REFUND (reward to agent, deposit burned). "
         "Verifier silence pays worker. Missed work window burns deposit. No admin, no upgrades, no appeals.";
 
@@ -115,6 +117,10 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
     string public manualURI;               // set once in the constructor (e.g. ipfs://<cid>/llms.txt)
 
     uint256 public nextId = 1;
+    /// @notice Fee for NEW bounties, in basis points of reward. Starts at MAX_FEE_BPS; can only go down.
+    uint256 public feeBps = MAX_FEE_BPS;
+    /// @notice Fee locked into each bounty when it was posted. Later fee cuts never change an existing bounty.
+    mapping(uint256 => uint256) public feeBpsOf;
     mapping(uint256 => Bounty) public bounties;
     mapping(uint256 => mapping(address => uint256)) public owed; // failed pushes, withdrawable
     mapping(uint256 => mapping(address => bool)) public claimAuthUsed; // claim authorizations are single-use
@@ -135,6 +141,7 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
     event Abandoned(uint256 indexed id, address indexed worker, uint256 depositBurned);
     event Owed(uint256 indexed id, address indexed to, uint256 amount);
     event Withdrawn(uint256 indexed id, address indexed to, uint256 amount);
+    event FeeLowered(uint256 oldBps, uint256 newBps);
 
     error BadParam();
     error BadState();
@@ -160,6 +167,17 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
         return pct > MIN_DEPOSIT ? pct : MIN_DEPOSIT;
     }
 
+    // ------------------------------------------------------------------ fee
+
+    /// @notice Treasury only: lower the fee for bounties posted from now on. Strictly decreasing; there is no
+    ///         path that raises it, so MAX_FEE_BPS and every past value are permanent ceilings.
+    function lowerFee(uint256 newBps) external {
+        if (msg.sender != treasury) revert NotAllowed();
+        if (newBps >= feeBps) revert BadParam();
+        emit FeeLowered(feeBps, newBps);
+        feeBps = newBps;
+    }
+
     // ------------------------------------------------------------------ agent
 
     function post(Params calldata p) external nonReentrant returns (uint256 id) {
@@ -174,6 +192,7 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
         b.agent = msg.sender; b.verifier = p.verifier; b.claimAuthorizer = p.claimAuthorizer; b.vault = vault;
         b.reward = p.reward; b.deposit = p.deposit; b.workWindow = p.workWindow; b.reviewWindow = p.reviewWindow;
         b.openUntil = p.openUntil; b.rejectMode = p.rejectMode; b.state = State.Open;
+        feeBpsOf[id] = feeBps;
         _pull(msg.sender, address(vault), p.reward);
         if (p.verifierInit.length != 0) IVerifierHook(p.verifier).onPost(id, msg.sender, p.verifierInit);
         emit Posted(id, msg.sender, p.verifier, address(vault), p.reward, p.deposit, p.workWindow, p.reviewWindow,
@@ -366,7 +385,7 @@ contract MADBountyCore is EIP712, ReentrancyGuardTransient {
 
     function _accept(uint256 id, Bounty storage b, bool byTimeout) internal {
         b.state = State.Paid;
-        uint256 fee = uint256(b.reward) * FEE_BPS / 10_000;
+        uint256 fee = uint256(b.reward) * feeBpsOf[id] / 10_000;
         uint256 toWorker = uint256(b.reward) - fee + b.deposit;
         _pay(id, b, b.worker, toWorker);
         _pay(id, b, treasury, fee);

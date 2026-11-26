@@ -74,7 +74,7 @@ contract AttacksTest is CoreHelpers {
         vm.prank(worker); core.claim(id, 0, "");
         vm.prank(worker); core.submit(id, keccak256("fake"));
         vm.prank(worker); core.settleWithSig(id, true, hex"00");
-        assertEq(usdc.balanceOf(worker), 10_000e6 + 99e6);
+        assertEq(usdc.balanceOf(worker), 10_000e6 + 95e6);
     }
 
     /// A4 FIXED: a second (ground) ACCEPT signature can't flip a REJECT. Only a Reverse intent can.

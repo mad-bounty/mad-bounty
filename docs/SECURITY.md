@@ -30,7 +30,7 @@ Attack proofs: `test/Attacks.t.sol` (A1–A6) and `test/ForkCore.t.sol` (A2 agai
 - B8 Evidence plagiarism: off-chain. Bind the manifest to core, id and worker (convention in llms-full.txt §8).
 - B9 / T11 Verifier or agent key compromise: every bounty naming that verifier can be accepted for colluders, up to $1,000 each. No rotation. Use adapters with their own key management (MultiVerifier, FallbackVerifier) and separate funding and verifier keys.
 - B10 Max approval on the agent wallet: approve exact amounts.
-- B11 / T14 Wash volume for fake stats: costs the 1% fee per loop. Score reputation off-chain by distinct counterparties.
+- B11 / T14 Wash volume for fake stats: costs the fee (≤ 5%) per loop. Score reputation off-chain by distinct counterparties.
 - B13 Dust: `reward < 100` base units pays fee 0. Unreachable in practice (`MIN_REWARD = 1e6`).
 - B14 Treasury key loss: fees go to an unreachable address forever. The treasury should be a multisig.
 - T3 Adaptive fakers against a deterministic public judge: hide the rubric (commit a hash, encrypt it to the enclave), issue a nonce after claim, run random audits.
@@ -47,7 +47,7 @@ Attack proofs: `test/Attacks.t.sol` (A1–A6) and `test/ForkCore.t.sol` (A2 agai
 | Base sequencer / L1 | include transactions within ~12h (forced inclusion) | deadlines can lapse; the default outcome of the stalled phase applies |
 | Verifier | decide honestly, on time, per the spec | it is the judge; the contract checks signatures only |
 | claimAuthorizer | sign claims as advertised | can gate who claims; cannot move funds |
-| Treasury | — | receives 1% fees only; no control over anything |
+| Treasury | — | receives fees; one power: `lowerFee` (strictly decreasing, new bounties only, never raises, never touches escrow) |
 | Deployer | nothing after deploy | no privileged functions exist |
 
 Default outcomes when parties disappear: agent gone → bounty proceeds; verifier gone → worker paid by timeout; worker gone → deposit burned, bounty reopens; nobody claims → reward returns to the agent after `openUntil`.

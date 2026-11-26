@@ -49,7 +49,7 @@ contract EconAuditPoC is PeripheryBase {
         ocv.resolve(id);                            // anyone triggers EARLY accept in the FIRST block after submit
         (, , , , , , , , , , , , , MADBountyCore.State st, ) = core.bounties(id);
         assertEq(uint8(st), uint8(MADBountyCore.State.Paid));
-        assertEq(usdc.balanceOf(worker), 100_000e6 - 10e6 + 99e6 + 10e6);
+        assertEq(usdc.balanceOf(worker), 100_000e6 - 10e6 + 95e6 + 10e6);
     }
 
     /// V-13: stale/overlapping config — resolve() for a bounty that was configured then cancelled

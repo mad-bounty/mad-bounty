@@ -46,7 +46,7 @@ type CoreWriteFn =
   | 'post' | 'claim' | 'submit' | 'settle' | 'settleWithSig' | 'reverse' | 'reverseWithSig' | 'payOnTimeout'
   | 'finalizeReject' | 'reclaimAbandoned' | 'refundExpired' | 'cancel' | 'extendReview' | 'withdraw';
 
-export function decodeBounty(id: bigint, r: readonly unknown[]): Bounty {
+export function decodeBounty(id: bigint, r: readonly unknown[], feeBps: bigint): Bounty {
   const [agent, verifier, claimAuthorizer, worker, vault, reward, deposit, workWindow, reviewWindow, openUntil,
     deadline, extended, rejectMode, state, evidenceHash] = r as [Address, Address, Address, Address, Address,
     bigint, bigint, number, number, bigint, bigint, boolean, number, number, Hex];
@@ -57,6 +57,7 @@ export function decodeBounty(id: bigint, r: readonly unknown[]): Bounty {
     state: STATE_NAMES[state] ?? 'None',
     stateCode: state,
     evidenceHash,
+    feeBps,
   };
 }
 
@@ -91,8 +92,11 @@ export function createClient(cfg: MADBountyClientConfig) {
 
   async function getBounty(id: bigint | number): Promise<Bounty> {
     const bid = BigInt(id);
-    const r = await publicClient.readContract({ address: core, abi: madBountyCoreAbi, functionName: 'bounties', args: [bid] });
-    return decodeBounty(bid, r as readonly unknown[]);
+    const [r, feeBps] = await Promise.all([
+      publicClient.readContract({ address: core, abi: madBountyCoreAbi, functionName: 'bounties', args: [bid] }),
+      publicClient.readContract({ address: core, abi: madBountyCoreAbi, functionName: 'feeBpsOf', args: [bid] }),
+    ]);
+    return decodeBounty(bid, r as readonly unknown[], feeBps as bigint);
   }
 
   async function nextId(): Promise<bigint> {

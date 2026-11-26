@@ -26,11 +26,6 @@
    "id": 24
   },
   {
-   "due": 1795636544,
-   "action": "r3_junk_reject_blocked",
-   "id": 26
-  },
-  {
    "due": 1795679804,
    "action": "r3_junk_pays_worker",
    "id": 26
@@ -41,5 +36,6 @@
  "fb_backup": {
   "id": 17,
   "sig": "0xd8b4d7ff9d6a7aad7442d7e9768a53103497cdcfd93bdbce0a46ebc5916383146b59babfc0c646c2ad19d0064ea6e13e3b7416969123cc408b5cec716f7fad441c"
- }
+ },
+ "core": "0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786"
 }

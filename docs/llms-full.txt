@@ -29,7 +29,7 @@ Verify: the testnet deployment pinned `sha256(llms-full.txt)` at commit e8f4138 
 ## 1. Concepts
 
 - Agent: the address that calls `post`. Pays reward P up front. Gets P back only via `cancel` (while Open), `refundExpired` (Open past `openUntil`), or `finalizeReject` in Refund mode.
-- Worker: the address that calls `claim`. Locks deposit D. Gets P − 1% + D on accept or on verifier timeout. Loses D on final reject or a missed work window.
+- Worker: the address that calls `claim`. Locks deposit D. Gets P − fee + D on accept or on verifier timeout. Loses D on final reject or a missed work window.
 - Verifier: any address set at post time: EOA, ERC-1271 smart wallet, or adapter contract. It alone decides ACCEPT/REJECT. It cannot be changed after posting.
 - claimAuthorizer: optional address. If non-zero, every claim needs its EIP-712 `Claim` signature (allow-lists, reputation gates).
 - Keeper: anyone. Calls the permissionless time-outs: `payOnTimeout`, `finalizeReject`, `reclaimAbandoned`, `refundExpired`.
@@ -38,7 +38,7 @@ Verify: the testnet deployment pinned `sha256(llms-full.txt)` at commit e8f4138 
 - evidenceHash: bytes32 the worker commits on `submit` (by convention keccak256 of the evidence manifest). Verdict signatures are bound to it.
 - Vault: each bounty gets its own `BountyVault` minimal-proxy clone holding its USDC. A USDC freeze on one vault touches one bounty only.
 - owed: if a payout push fails (e.g. recipient blacklisted by USDC), the amount is credited to `owed[id][recipient]` and claimed later via `withdraw(id)`.
-- Fee: 1% of reward (`FEE_BPS = 100`), charged on accept only, sent to the immutable `treasury`. No fee on reject, cancel, refund or expiry.
+- Fee: `feeBpsOf(id)` basis points of reward, charged on accept only, sent to the immutable `treasury`. No fee on reject, cancel, refund or expiry. The rate is copied from `feeBps` when the bounty is posted and never changes for that bounty. `feeBps` starts at `MAX_FEE_BPS` = 500 (5%). The treasury can call `lowerFee(newBps)` with `newBps < feeBps`; nothing can raise it. So 5% (and any lower rate once set) is a permanent ceiling.
 - Burn: `BURN = 0x000000000000000000000000000000000000dEaD`.
 
 Why it is fair by construction: the agent is money-neutral on a reject (Burn mode: P is burned, nothing returns), so it can never profit from rejecting good work. A worker who fakes pays D with probability d (verifier catch rate), so faking loses money when D is priced right (§7).
@@ -48,7 +48,7 @@ Why it is fair by construction: the agent is money-neutral on a reject (Burn mod
 
 | Name | Value | Meaning |
 |---|---|---|
-| `FEE_BPS` | 100 | 1% of reward, on accept only |
+| `MAX_FEE_BPS` | 500 | 5% fee ceiling, permanent. Live rate: `feeBps()` (new bounties); per bounty: `feeBpsOf(id)` |
 | `MIN_REWARD` | 1e6 | $1 (USDC has 6 decimals) |
 | `MAX_REWARD` | 1_000e6 | $1,000 v1 cap |
 | `MIN_DEPOSIT` | 1e6 | $1 deposit floor |
@@ -198,20 +198,24 @@ Time comparisons: "before deadline" means `block.timestamp <= deadline`; "after"
 - Burn mode: state Burned; reward+deposit → BURN; emits `Burned(id, amount)`.
 - Refund mode: state Refunded; deposit → BURN; reward → agent (or `owed`); emits `Refunded(id, toAgent, depositBurned)`.
 
+### lowerFee(uint256 newBps)           — treasury only
+- Pre: `msg.sender == treasury` (`NotAllowed`); `newBps < feeBps` (`BadParam`).
+- Effects: `feeBps = newBps` for bounties posted afterwards. Existing bounties keep `feeBpsOf(id)`. Emits `FeeLowered(oldBps, newBps)`.
+
 ### withdraw(uint256 id)               — any address with owed[id][caller] > 0
 - Pre: `owed[id][msg.sender] > 0` (`BadParam`).
 - Effects: zero the credit, vault sends to caller; reverts `TransferFailed` if the send still fails (credit restored by revert). Emits `Withdrawn(id, to, amount)`.
 
 ### Views
-`minDeposit(uint256 reward)`, `domainSeparator()`, `bounties(uint256)`, `owed(uint256,address)`, `nextId()`, `usdc()`, `treasury()`, `vaultImpl()`, `manualURI()`, `manualHash()`, constants above.
+`minDeposit(uint256 reward)`, `domainSeparator()`, `bounties(uint256)`, `owed(uint256,address)`, `nextId()`, `usdc()`, `treasury()`, `vaultImpl()`, `manualURI()`, `manualHash()`, `feeBps()`, `feeBpsOf(uint256)`, constants above.
 
 ### Payout on accept / reverse / timeout
 ```
-fee      = reward * 100 / 10_000          (rounds down; reward < 100 units → fee 0)
+fee      = reward * feeBpsOf(id) / 10_000   (rounds down; locked at post, ≤ 500)
 toWorker = reward - fee + deposit
 ```
 Push to worker, then to treasury; each failed push is credited to `owed` with `Owed(id, to, amount)`. Emits `Paid(id, worker, toWorker, fee, byTimeout)`.
-Example: reward 100e6, deposit 10e6 → worker 109e6, treasury 1e6.
+Example at 5%: reward 100e6, deposit 10e6 → worker 105e6, treasury 5e6.
 
 ### Events
 ```
@@ -231,6 +235,7 @@ Refunded(uint256 indexed id, uint256 toAgent, uint256 depositBurned)
 Abandoned(uint256 indexed id, address indexed worker, uint256 depositBurned)
 Owed(uint256 indexed id, address indexed to, uint256 amount)
 Withdrawn(uint256 indexed id, address indexed to, uint256 amount)
+FeeLowered(uint256 oldBps, uint256 newBps)
 ```
 
 ---------------------------------------------------------------------------
@@ -257,7 +262,7 @@ Warning to verifiers: a REJECT signature is a bearer instrument. Anyone holding 
 
 Faking is unprofitable when the expected loss exceeds the expected gain:
 ```
-(1 − d) · P · 0.99  <  d · D      ⇒   D / P  ≥  (1 − d) / d
+(1 − d) · P · (1 − f)  <  d · D   (f = fee rate; D/P ≥ (1−d)/d is the safe bound for any f)      ⇒   D / P  ≥  (1 − d) / d
 ```
 d = verifier catch rate on fakes (measure it; do not guess).
 
@@ -271,7 +276,7 @@ d = verifier catch rate on fakes (measure it; do not guess).
 | 0.50 | 100% (max allowed: D ≤ P) |
 
 Below d = 0.5 no legal deposit deters faking: use a better verifier.
-Honest-worker side: with false-reject rate r, honest EV = (1 − r)·0.99·P − r·D − effort. A huge D scares honest workers off. Use the smallest D that satisfies the inequality.
+Honest-worker side: with false-reject rate r, honest EV = (1 − r)·(1 − f)·P − r·D − effort. A huge D scares honest workers off. Use the smallest D that satisfies the inequality.
 
 ### Which verifier
 Periphery adapters (v1) in `periphery/`. ALWAYS configure an adapter atomically: `post(Params{..., verifierInit: abi.encode(<config>)})` makes core call `adapter.onPost(id, agent, verifierInit)` in the same tx. Encodings and windows (each window ≥1h and ≤ reviewWindow−12h): `periphery/README.md`.

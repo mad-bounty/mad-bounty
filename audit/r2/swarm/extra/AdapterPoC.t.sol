@@ -67,7 +67,7 @@ contract AdapterPoCTest is CoreHelpers {
     }
 
     function _paidWorker() internal view {
-        assertEq(usdc.balanceOf(worker), 100_000e6 - 10e6 + 99e6 + 10e6);
+        assertEq(usdc.balanceOf(worker), 100_000e6 - 10e6 + 95e6 + 10e6);
     }
 
     function _sign(uint256 key, bytes32 digest) internal pure returns (bytes memory) {

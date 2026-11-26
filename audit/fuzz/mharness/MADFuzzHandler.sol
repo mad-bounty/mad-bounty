@@ -176,7 +176,7 @@ contract MADFuzzHandler {
         MADBountyCore.Bounty memory ba = _b(id);
         MADBountyCore.State S = bp.state;
         MADBountyCore.State A = ba.state;
-        uint256 fee = uint256(bp.reward) / 100;
+        uint256 fee = uint256(bp.reward) * core.feeBpsOf(id) / 10_000;
 
         // ---- (2)/(4)/(7) transition table per entry point
         bool okT;
@@ -248,7 +248,7 @@ contract MADFuzzHandler {
             if (wi < 9) workerGain[id] += uint256(int256(pst.bal[wi]) - int256(pre.bal[wi]) + int256(pst.owed[j][wi]) - int256(pre.owed[j][wi]));
             treasuryGain[id] += uint256(int256(pst.bal[7]) - int256(pre.bal[7]) + int256(pst.owed[j][7]) - int256(pre.owed[j][7]));
             if (workerGain[id] > uint256(bp.reward) - fee + bp.deposit) _fail("worker overpaid", id);
-            if (treasuryGain[id] != fee) _fail("fee != 1%", id);
+            if (treasuryGain[id] != fee) _fail("fee != locked feeBps", id);
         }
     }
 
@@ -279,9 +279,11 @@ contract MADFuzzHandler {
             specHash: bytes32(uint256(reward)), encKey: "", verifierInit: ""
         });
         uint256 b0 = usdc.balanceOf(agent);
+        uint256 fb = core.feeBps();                        // read BEFORE prank: a call in between eats it
         vm.prank(agent);
         try core.post(p) returns (uint256 id) {
             ids.push(id);
+            if (core.feeBpsOf(id) != fb) _fail("fee not locked at post", id);
             MADBountyCore.Bounty memory b = _b(id);
             if (usdc.balanceOf(address(b.vault)) != reward || b0 - usdc.balanceOf(agent) != reward) _fail("post flow", id);
             if (b.state != MADBountyCore.State.Open || b.worker != address(0)) _fail("post state", id);
@@ -411,6 +413,18 @@ contract MADFuzzHandler {
     }
 
     // ================================================================ environment
+    /// Fee ratchet: treasury may only lower; anyone else / any raise must revert; locked bounties unaffected.
+    function lowerFee(uint256 newBps, bool asTreasury) public {
+        uint256 before = core.feeBps();
+        newBps = newBps % (before + 2);                     // includes equal and +1 (must revert)
+        address c = asTreasury ? treasury : T[4];
+        vm.prank(c);
+        (bool ok,) = address(core).call(abi.encodeCall(MADBountyCore.lowerFee, (newBps)));
+        bool valid = asTreasury && newBps < before;
+        if (ok != valid) _fail("lowerFee ratchet", 0);
+        if (core.feeBps() > before || core.feeBps() > core.MAX_FEE_BPS()) _fail("fee rose", 0);
+    }
+
     function togglePause(uint8 x) public { if (usdc.paused() || x % 4 == 0) usdc.setPaused(!usdc.paused()); }
     function toggleBlacklist(uint256 who, bool doIt) public {
         address a;
@@ -457,12 +471,12 @@ contract MADFuzzHandler {
         return true;
     }
 
-    /// (3) treasury gets exactly 1% of reward per Paid bounty, nothing otherwise; worker cap.
+    /// (3) treasury gets exactly reward*feeBpsOf/1e4 per Paid bounty, nothing otherwise; worker cap.
     function checkFees() public view returns (bool) {
         uint256 expT; uint256 owedT;
         for (uint256 j; j < ids.length; j++) {
             MADBountyCore.Bounty memory b = _b(ids[j]);
-            uint256 fee = uint256(b.reward) / 100;
+            uint256 fee = uint256(b.reward) * core.feeBpsOf(ids[j]) / 10_000;
             if (b.state == MADBountyCore.State.Paid) { expT += fee; if (treasuryGain[ids[j]] != fee) return false; }
             else if (treasuryGain[ids[j]] != 0) return false;
             if (workerGain[ids[j]] > uint256(b.reward) - fee + b.deposit) return false;

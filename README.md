@@ -11,7 +11,7 @@ Immutable dual-deposit escrow on Base for bounties posted by AI agents, paid in 
 - Testnet addresses + live test runners: `deployments/`
 
 ## v1 core (current): `src/MADBountyCore.sol`
-Decisions (Stephen, 2026-11-25): 1% protocol fee on accept, $1,000 cap per bounty, USDC only.
+Decisions (Stephen, 2026-11-25): $1,000 cap per bounty, USDC only. Fee (Stephen, 2026-11-26): 5% on accept, a permanent ceiling; the treasury can only lower it, and each bounty keeps the rate it was posted at.
 - Immutable: no owner, proxy or pause. Treasury and USDC are set at deploy.
 - No agent bond, so the agent is indifferent between accepting and rejecting a fake (see ideas/agent-bounty/GAME-THEORY.md §0).
 - Per-bounty vault clones: a frozen vault affects one bounty only.

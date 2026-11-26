@@ -32,8 +32,8 @@ contract ForkCoreTest is CoreHelpers {
     function test_realUSDC_accept() public {
         uint256 id = _job(MADBountyCore.RejectMode.Burn);
         vm.prank(verifier); core.settle(id, true);
-        assertEq(usdc.balanceOf(worker), 1_099e6);
-        assertEq(usdc.balanceOf(treasury), 1e6);
+        assertEq(usdc.balanceOf(worker), 1_095e6);
+        assertEq(usdc.balanceOf(treasury), 5e6);
     }
 
     function test_realUSDC_rejectBurn() public {
@@ -59,8 +59,8 @@ contract ForkCoreTest is CoreHelpers {
         uint256 id = _job(MADBountyCore.RejectMode.Burn);
         vm.prank(IUSDCAdmin(address(usdc)).blacklister()); IUSDCAdmin(address(usdc)).blacklist(worker);
         vm.prank(verifier); core.settle(id, true);
-        assertEq(core.owed(id, worker), 124e6);
-        assertEq(usdc.balanceOf(treasury), 1e6);
+        assertEq(core.owed(id, worker), 120e6);
+        assertEq(usdc.balanceOf(treasury), 5e6);
     }
 
     /// A2 on real USDC: try to starve the inner transfer so the payout is diverted. Passes if NOT griefable.

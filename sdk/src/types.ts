@@ -15,7 +15,8 @@ export const RejectMode = { Burn: 0, Refund: 1 } as const;
 
 /** Protocol constants mirrored from MADBountyCore (v1). Amounts are USDC base units (6 decimals). */
 export const CONSTANTS = {
-  FEE_BPS: 100n,
+  /** Fee ceiling (5%). The live rate for new bounties is core.feeBps(); each bounty's rate is core.feeBpsOf(id). */
+  MAX_FEE_BPS: 500n,
   MIN_REWARD: 1_000_000n,
   MAX_REWARD: 1_000_000_000n,
   MIN_DEPOSIT: 1_000_000n,
@@ -73,6 +74,8 @@ export interface Bounty {
   state: StateName;
   stateCode: number;
   evidenceHash: Hex;
+  /** Fee in basis points locked into this bounty at post time (core.feeBpsOf). */
+  feeBps: bigint;
 }
 
 export interface PostedInfo {

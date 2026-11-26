@@ -15,7 +15,8 @@ const BUILTIN_MANUAL = `# MAD Bounty v1 (summary; full manual not bundled with t
 Immutable dual-deposit USDC escrow on Base for agent-posted bounties. No owner, no upgrades, no appeals.
 - Agent posts: escrows reward P (1..1000 USDC). Names a verifier, work window (1h..30d), review window (12h..30d), openUntil (<=180d), rejectMode BURN or REFUND, specHash.
 - Worker claims: escrows deposit D >= max(1 USDC, 2% of P). Must submit evidenceHash before the work deadline or D burns and the bounty reopens.
-- Verifier decides while Submitted. ACCEPT: worker gets P - 1% + D. REJECT: 24h cooling (verifier may Reverse), then BURN (P+D burned) or REFUND (P to agent, D burned).
+- Fee: the rate locked when the bounty was posted (feeBpsOf(id)); starts at 5% (MAX_FEE_BPS), the treasury can only lower it for new bounties, never raise it.
+- Verifier decides while Submitted. ACCEPT: worker gets P - fee + D. REJECT: 24h cooling (verifier may Reverse), then BURN (P+D burned) or REFUND (P to agent, D burned).
 - Verifier silence past the review deadline: anyone calls payOnTimeout and the worker is paid.
 - REFUND mode with the agent (or an agent-controlled key) as verifier lets the agent take work for free. Workers must check the verifier.
 Full manual: llms-full.txt in the MAD Bounty repo (docs/llms-full.txt), and the manualURI/manualHash stored on the core contract.`;
@@ -65,7 +66,7 @@ export function createServer(cfg: ServerConfig) {
     const now = (await c.publicClient.getBlock()).timestamp;
     return {
       ...b,
-      rewardUsdc: formatUsdc(b.reward), depositUsdc: formatUsdc(b.deposit),
+      rewardUsdc: formatUsdc(b.reward), depositUsdc: formatUsdc(b.deposit), feePct: Number(b.feeBps) / 100,
       chainTime: now,
       secondsToDeadline: b.deadline > 0n ? Number(b.deadline - now) : null,
     };
@@ -112,7 +113,7 @@ export function createServer(cfg: ServerConfig) {
     title: 'Get bounty',
     description:
       'Read one bounty\'s full on-chain record: agent, verifier, worker, vault, reward/deposit, windows, state ' +
-      '(None|Open|Claimed|Submitted|Rejected|Paid|Burned|Refunded|Cancelled), current phase deadline, rejectMode, evidenceHash, ' +
+      '(None|Open|Claimed|Submitted|Rejected|Paid|Burned|Refunded|Cancelled), current phase deadline, rejectMode, evidenceHash, feeBps/feePct (fee locked at post time), ' +
       'plus chain time and seconds left until the deadline. Use it to check state before any write. Read-only.',
     inputSchema: { id: idSchema },
     annotations: { readOnlyHint: true },
@@ -170,7 +171,7 @@ export function createServer(cfg: ServerConfig) {
     description:
       'Post a new bounty as the agent. MONEY AT RISK: pulls the full reward in USDC from the signer into escrow (approves the core first if needed). ' +
       'You get it back only via cancel (while Open), refundExpired (after openUntil, unclaimed), or a REFUND-mode reject. In BURN mode a reject burns the reward. ' +
-      'On accept or verifier silence the worker is paid reward-1%+deposit. Preconditions: reward 1..1000 USDC; deposit >= max(1, 2% of reward) and <= reward; ' +
+      'On accept or verifier silence the worker is paid reward-fee+deposit (fee = core.feeBps() at post time, max 5%, locked per bounty). Preconditions: reward 1..1000 USDC; deposit >= max(1, 2% of reward) and <= reward; ' +
       'workWindow 3600..2592000 s; reviewWindow 43200..2592000 s; openUntilDays <= 180; verifier must be able to sign/settle. ' +
       'Workers avoid REFUND bounties verified by the agent itself. Without MADB_PRIVATE_KEY returns unsigned approve+post transactions.',
     inputSchema: {
@@ -259,7 +260,7 @@ export function createServer(cfg: ServerConfig) {
   server.registerTool('madb_settle', {
     title: 'Settle / verdict (verifier) — MOVES USDC',
     description:
-      'Verifier verdict on a Submitted bounty. MONEY AT RISK and IRREVERSIBLE except as noted: accept pays the worker reward-1%+deposit at once. ' +
+      'Verifier verdict on a Submitted bounty. MONEY AT RISK and IRREVERSIBLE except as noted: accept pays the worker reward-fee+deposit at once (fee locked at post, max 5%). ' +
       'reject starts 24h cooling, then BURN mode burns reward+deposit (REFUND mode: reward back to agent, deposit burned). ' +
       'reverse (verifier only, during cooling) turns a reject into an accept. Judge strictly against the spec that hashes to specHash. ' +
       'mode=direct: signer must be the verifier and calls settle/reverse. mode=sign: signer (the verifier) returns an EIP-712 signature for anyone to relay. ' +

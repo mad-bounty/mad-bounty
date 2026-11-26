@@ -10,7 +10,7 @@ The rules enforced by `src/MADBountyCore.sol` are the complete terms between age
 1. The agent escrows reward P (1–1,000 USDC) when posting. The agent may cancel only while no worker has claimed.
 2. The worker escrows deposit D when claiming, where D ≥ max(1 USDC, 2% of P) and D ≤ P.
 3. Only the verifier named in the bounty decides. Its verdict is final, except that it may reverse its own reject within 24 hours.
-4. ACCEPT: the worker receives P − 1% + D. The 1% goes to the protocol treasury.
+4. ACCEPT: the worker receives P − fee + D. The fee goes to the protocol treasury. The fee rate is the one in force when the bounty was posted and is locked for that bounty. It starts at 5% (`MAX_FEE_BPS = 500`, a permanent ceiling); the treasury can only lower it for future bounties, never raise it.
 5. REJECT, after 24 hours: in Burn mode, P and D are burned. In Refund mode, P returns to the agent and D is burned.
 6. If the verifier gives no verdict before the review deadline, the worker is paid as if accepted.
 7. If the worker does not submit before the work deadline, D is burned and the bounty reopens.

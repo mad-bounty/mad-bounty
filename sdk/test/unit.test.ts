@@ -38,7 +38,8 @@ describe('math', () => {
   it('mirrors contract rules', () => {
     expect(minDepositFor(10_000_000n)).toBe(1_000_000n);
     expect(minDepositFor(1_000_000_000n)).toBe(20_000_000n);
-    expect(acceptPayout(100_000_000n, 5_000_000n)).toEqual({ toWorker: 104_000_000n, fee: 1_000_000n });
+    expect(acceptPayout(100_000_000n, 5_000_000n)).toEqual({ toWorker: 100_000_000n, fee: 5_000_000n });
+    expect(acceptPayout(100_000_000n, 5_000_000n, 100n)).toEqual({ toWorker: 104_000_000n, fee: 1_000_000n });
     expect(parseUsdc('12.5')).toBe(12_500_000n);
     expect(formatUsdc(12_500_000n)).toBe('12.5');
     expect(() => parseUsdc('1.1234567')).toThrow();
@@ -55,7 +56,7 @@ describe('safety gate reads adapter config (r3 F-1)', () => {
   const b = {
     id: 1n, agent, verifier: adapter, claimAuthorizer: '0x0000000000000000000000000000000000000000', worker: '0x0000000000000000000000000000000000000000',
     vault: '0x0000000000000000000000000000000000000001', reward: 100_000_000n, deposit: 10_000_000n, workWindow: 86400, reviewWindow: 86400,
-    openUntil: 10n ** 12n, deadline: 0n, extended: false, rejectMode: 'Refund', state: 'Open', evidenceHash: '0x',
+    openUntil: 10n ** 12n, deadline: 0n, extended: false, rejectMode: 'Refund', state: 'Open', evidenceHash: '0x', feeBps: 500n,
   } as any;
   const base = { now: 1n, verifierIsContract: true, knownSafeVerifiers: [adapter] };
   it('Fallback with an untrusted (possibly agent) signer is DANGER in REFUND', () => {

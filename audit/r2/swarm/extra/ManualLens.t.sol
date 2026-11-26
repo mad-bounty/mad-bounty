@@ -151,10 +151,10 @@ contract ManualLensTest is AuditBase {
         _claimSubmit(id, worker);
         usdc.blacklist(treasury);
         vm.prank(verifier); core.settle(id, true);
-        assertEq(core.owed(id, treasury), 1e6);
+        assertEq(core.owed(id, treasury), 5e6);
         usdc.unBlacklist(treasury);
         vm.prank(treasury); core.withdraw(id);
-        assertEq(usdc.balanceOf(treasury), 1e6);
+        assertEq(usdc.balanceOf(treasury), 5e6);
     }
 
     // =====================================================================================

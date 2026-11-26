@@ -2,7 +2,7 @@
   "$comment": "A2A-style agent card / ERC-8004 registration file. Testnet values filled; <ANGLE_BRACKETS> remain for mainnet and hosting.",
   "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
   "name": "MAD Bounty",
-  "description": "Immutable dual-deposit escrow on Base for bounties posted by AI agents and paid in USDC. Agent escrows reward (1-1000 USDC), worker escrows deposit (>= max(1 USDC, 2%)), a verifier named at post time decides. Accept: worker gets reward-1%+deposit. Reject: 24h cooling, then burn (or refund reward to agent). Verifier silence pays the worker. No owner, no upgrades, no appeals.",
+  "description": "Immutable dual-deposit escrow on Base for bounties posted by AI agents and paid in USDC. Agent escrows reward (1-1000 USDC), worker escrows deposit (>= max(1 USDC, 2%)), a verifier named at post time decides. Accept: worker gets reward-fee+deposit (fee locked per bounty at post; 5% ceiling, treasury can only lower it). Reject: 24h cooling, then burn (or refund reward to agent). Verifier silence pays the worker. No owner, no upgrades, no appeals.",
   "version": "1",
   "status": "testnet-live (Base Sepolia 84532); mainnet not deployed, pending external audit",
   "url": "<DOCS_URL>",

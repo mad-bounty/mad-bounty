@@ -60,8 +60,9 @@ describe('lifecycle on anvil', () => {
     await keeper.settleWithSig(id, true, sig); // anyone relays
     b = await agent.getBounty(id);
     expect(b.state).toBe('Paid');
-    expect(await worker.usdcBalance(W)).toBe(w0 - DEPOSIT + REWARD - 1_000_000n + DEPOSIT);
-    expect(await agent.usdcBalance(chain.treasury)).toBe(1_000_000n);
+    expect(await worker.usdcBalance(W)).toBe(w0 - DEPOSIT + REWARD - 5_000_000n + DEPOSIT);
+    expect(await agent.usdcBalance(chain.treasury)).toBe(5_000_000n);
+    expect(b.feeBps).toBe(500n);
     expect(await agent.usdcBalance(b.vault)).toBe(0n);
     expect((await worker.listOpenBounties()).map((o) => o.id)).not.toContain(id);
   });
@@ -124,7 +125,7 @@ describe('lifecycle on anvil', () => {
     expect(sweep.found.payOnTimeout).toContain(id);
     expect(sweep.results.find((r) => r.id === id)?.hash).toBeTruthy();
     expect((await agent.getBounty(id)).state).toBe('Paid');
-    expect(await worker.usdcBalance(W)).toBe(w0 + REWARD - 1_000_000n + DEPOSIT);
+    expect(await worker.usdcBalance(W)).toBe(w0 + REWARD - 5_000_000n + DEPOSIT);
   });
 
   it('direct payOnTimeout and reclaimAbandoned / refundExpired via findTimeouts', async () => {
@@ -182,7 +183,7 @@ describe('lifecycle on anvil', () => {
     expect(codes).toContain('HIGH_DEPOSIT');
     expect(codes).toContain('SHORT_WORK_WINDOW');
     expect(r.safe).toBe(true);
-    expect(r.economics.payoutOnAccept).toBe('149');
+    expect(r.economics.payoutOnAccept).toBe('145');
 
     r = await worker.safety.checkBountyForWorker(9999n);
     expect(r.warnings.map((w) => w.code)).toContain('NOT_FOUND');

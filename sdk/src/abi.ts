@@ -67,7 +67,7 @@ export const madBountyCoreAbi = [
   },
   {
     "type": "function",
-    "name": "FEE_BPS",
+    "name": "MAX_FEE_BPS",
     "inputs": [],
     "outputs": [
       {
@@ -480,10 +480,55 @@ export const madBountyCoreAbi = [
   },
   {
     "type": "function",
+    "name": "feeBps",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "feeBpsOf",
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "finalizeReject",
     "inputs": [
       {
         "name": "id",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "lowerFee",
+    "inputs": [
+      {
+        "name": "newBps",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -939,6 +984,25 @@ export const madBountyCoreAbi = [
         "name": "id",
         "type": "uint256",
         "indexed": true,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "FeeLowered",
+    "inputs": [
+      {
+        "name": "oldBps",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "newBps",
+        "type": "uint256",
+        "indexed": false,
         "internalType": "uint256"
       }
     ],

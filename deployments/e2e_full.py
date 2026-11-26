@@ -33,6 +33,11 @@ def bal(a): return int(first(call(USDC, "balanceOf(address)(uint256)", a)))
 def b(i): return call(CORE, BOUNTY, str(i)).split("\n")
 def state(i): return int(first(b(i)[13]))
 def vault(i): return first(b(i)[4])
+def fee_bps(i):
+    # v1.1 core locks a rate per bounty; the pre-ratchet core (no feeBpsOf) was a flat 1%
+    r = cast("call", CORE, "feeBpsOf(uint256)(uint256)", str(i), "--rpc-url", R, check=False)
+    return int(first(r.stdout.strip())) if r.returncode == 0 else 100
+def fee(i, amt=ONE): return amt * fee_bps(i) // 10_000
 def kk(*parts): return out("keccak", *parts)
 def enc(sig, *args): return out("abi-encode", sig, *args)
 def sel(err): return out("sig", err)[:10].lower()
@@ -94,7 +99,7 @@ def later_add(st, due_in, action, **kw):
 
 # --------------------------------------------------------------------------- now
 def now_phase():
-    st = {"pending": [], "started": int(time.time())}
+    st = {"pending": [], "started": int(time.time()), "core": CORE}
     log(f"==== NOW phase. agent {A} worker {W} verifier {V}")
     # funding
     if float(out("balance", V, "--ether", "--rpc-url", R)) < 0.0003: tx("fund verifier ETH", AG, V, value="0.0006ether")
@@ -113,7 +118,11 @@ def now_phase():
     check("manualHash()", first(call(CORE, "manualHash()(bytes32)")) == D["manualHash"])
     check("treasury()", first(call(CORE, "treasury()(address)")).lower() == TREAS.lower())
     check("usdc()", first(call(CORE, "usdc()(address)")).lower() == USDC.lower())
-    check("FEE_BPS == 100", first(call(CORE, "FEE_BPS()(uint256)")) == "100")
+    check("MAX_FEE_BPS == 500", first(call(CORE, "MAX_FEE_BPS()(uint256)")) == "500")
+    check("feeBps == 500 (5%)", first(call(CORE, "feeBps()(uint256)")) == "500")
+    reverts("lowerFee by non-treasury", A, CORE, "lowerFee(uint256)", ["100"], "NotAllowed()")
+    reverts("lowerFee raise by treasury", TREAS, CORE, "lowerFee(uint256)", ["501"], "BadParam()")
+    reverts("lowerFee equal by treasury", TREAS, CORE, "lowerFee(uint256)", ["500"], "BadParam()")
     check("minDeposit($2) = $1 floor", first(call(CORE, "minDeposit(uint256)(uint256)", str(2 * ONE))) == str(ONE))
     check("minDeposit($100) = $2 (2%)", first(call(CORE, "minDeposit(uint256)(uint256)", str(100 * ONE))) == str(2 * ONE))
 
@@ -163,8 +172,9 @@ def now_phase():
     reverts(f"#{i} extendReview by worker", W, CORE, "extendReview(uint256)", [str(i)], "NotAllowed()")
     w0, t0 = bal(W), bal(TREAS)
     tx(f"#{i} verifier settle(accept) directly", VK, CORE, "settle(uint256,bool)", str(i), "true"); expect_state(i, 5)
-    check(f"#{i} worker +1.99 (reward-1% + deposit)", bal(W) - w0 == ONE - ONE // 100 + ONE, f"{(bal(W)-w0)/1e6}")
-    check(f"#{i} treasury +0.01 fee", bal(TREAS) - t0 == ONE // 100); vault_holds(i, 0)
+    check(f"#{i} feeBpsOf locked at 500", fee_bps(i) == 500)
+    check(f"#{i} worker +1.95 (reward-5% + deposit)", bal(W) - w0 == ONE - fee(i) + ONE, f"{(bal(W)-w0)/1e6}")
+    check(f"#{i} treasury +0.05 fee", bal(TREAS) - t0 == fee(i)); vault_holds(i, 0)
     reverts(f"#{i} settle twice", V, CORE, "settle(uint256,bool)", [str(i), "false"], "BadState()")
 
     # ---- C4 abandoned claim -> reclaimAbandoned after 1h
@@ -179,7 +189,7 @@ def now_phase():
     reverts(f"#{i} reverse by non-verifier", A, CORE, "reverse(uint256)", [str(i)], "NotAllowed()")
     w0 = bal(W)
     tx(f"#{i} verifier reverse()", VK, CORE, "reverse(uint256)", str(i)); expect_state(i, 5)
-    check(f"#{i} worker paid after reverse", bal(W) - w0 == 2 * ONE - ONE // 100); vault_holds(i, 0)
+    check(f"#{i} worker paid after reverse", bal(W) - w0 == 2 * ONE - fee(i)); vault_holds(i, 0)
 
     # ---- C6 settleWithSig reject relayed, replay guards, reverseWithSig
     i = post("sig reject+reverseWithSig", params(V)); claim(i); ev = "0x" + "c6" * 32; submit(i, ev)
@@ -332,7 +342,9 @@ def part2(st):
 
 # ------------------------------------------------------------------------- later
 def later_phase():
+    global CORE
     st = json.load(open(STATE)); now = int(time.time()); keep = []
+    CORE = st.get("core", CORE)
     log(f"==== LATER phase ({len(st['pending'])} pending)")
     for p in st["pending"]:
         if p["due"] > now: keep.append(p); continue
@@ -365,7 +377,7 @@ def later_phase():
                         "rejectUnrevealed(uint256,bytes)", [str(i), "0x"], "WrongAnswer()")
             elif act == "r3_junk_pays_worker":
                 w0 = bal(W); tx(f"#{i} payOnTimeout (junk commitment -> worker paid)", AG, CORE, "payOnTimeout(uint256)", str(i))
-                expect_state(i, 5); check(f"#{i} worker paid 1.99", bal(W) - w0 == 2 * ONE - ONE // 100)
+                expect_state(i, 5); check(f"#{i} worker paid reward-fee+deposit", bal(W) - w0 == 2 * ONE - fee(i))
             elif act == "reject_unproven":
                 tx(f"#{i} rejectUnproven", AG, p.get("adapter", "0x10e9647120716B61aFA933CAea6e2E6ff13319bD"), "rejectUnproven(uint256)", str(i)); expect_state(i, 4)
                 later_add_keep(keep, 86400 + 120, "finalize_burn", i)
