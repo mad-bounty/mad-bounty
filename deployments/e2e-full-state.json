@@ -1,16 +1,6 @@
 {
  "pending": [
   {
-   "due": 1795670725,
-   "action": "expired",
-   "id": 2
-  },
-  {
-   "due": 1795674266,
-   "action": "abandoned",
-   "id": 4
-  },
-  {
    "due": 1795757174,
    "action": "timeout_after_extend",
    "id": 7
@@ -26,18 +16,8 @@
    "id": 9
   },
   {
-   "due": 1795670824,
-   "action": "fallback_backup",
-   "id": 10
-  },
-  {
-   "due": 1795670848,
-   "action": "fallback_backup",
-   "id": 12
-  },
-  {
-   "due": 1795674411,
-   "action": "reject_unproven",
+   "due": 1795761719,
+   "action": "finalize_burn",
    "id": 17
   }
  ],

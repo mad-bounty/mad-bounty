@@ -370,16 +370,16 @@ def later_phase():
             elif act == "fallback_backup":
                 tx(f"#{i} backup verdict after step", AG, FB, "resolve(uint256,bool,uint256,bytes)", str(i), "true", "1", st["fb_backup"]["sig"]); expect_state(i, 5)
             elif act == "reject_unmet":
-                tx(f"#{i} rejectUnmet", AG, p.get("adapter", "0x4B745507128353D77F40BDfd2Eba81f49E991bE0"), "rejectUnmet(uint256)", str(i)); expect_state(i, 4)
+                tx(f"#{i} rejectUnmet", AG, p.get("adapter", TV), "rejectUnmet(uint256)", str(i)); expect_state(i, 4)
                 later_add_keep(keep, 86400 + 120, "finalize_burn", i)
             elif act == "r3_junk_reject_blocked":   # audit r3 F-1c live: REFUND + junk commitment cannot be rejected
-                reverts(f"#{i} rejectUnrevealed without opening (REFUND, junk)", A, "0x5554D841e3b7834B4602124B920aFDA6DBD0376C",
+                reverts(f"#{i} rejectUnrevealed without opening (REFUND, junk)", A, HR,
                         "rejectUnrevealed(uint256,bytes)", [str(i), "0x"], "WrongAnswer()")
             elif act == "r3_junk_pays_worker":
                 w0 = bal(W); tx(f"#{i} payOnTimeout (junk commitment -> worker paid)", AG, CORE, "payOnTimeout(uint256)", str(i))
                 expect_state(i, 5); check(f"#{i} worker paid reward-fee+deposit", bal(W) - w0 == 2 * ONE - fee(i))
             elif act == "reject_unproven":
-                tx(f"#{i} rejectUnproven", AG, p.get("adapter", "0x10e9647120716B61aFA933CAea6e2E6ff13319bD"), "rejectUnproven(uint256)", str(i)); expect_state(i, 4)
+                tx(f"#{i} rejectUnproven", AG, p.get("adapter", TV), "rejectUnproven(uint256)", str(i)); expect_state(i, 4)
                 later_add_keep(keep, 86400 + 120, "finalize_burn", i)
         except Exception as e:
             check(f"#{i} {act}", False, str(e)[:200])

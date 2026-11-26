@@ -375,3 +375,26 @@
 2026-11-26T05:25:50Z PASS #17 submit  (0xd73a508ad597d5e3a085acf231b01a8daf5d022213437a064ae566e75cd2f88f)
 2026-11-26T05:25:51Z PASS #17 rejectUnproven early reverts TooEarly
 2026-11-26T05:25:51Z ==== NOW done: 157 pass, 0 fail; 8 pending timed actions
+2026-11-26T05:34:54Z ==== LATER phase (8 pending)
+2026-11-26T05:34:55Z PASS #2 claim after openUntil reverts TooLate
+2026-11-26T05:34:57Z PASS #2 stranger refundExpired  (0xf77ce85c641c4078c7cb56c422f7f6caca3d37a7288ad53157e665ff7ba063b8)
+2026-11-26T05:34:59Z PASS #2 state Cancelled  (Cancelled)
+2026-11-26T05:34:59Z PASS #2 agent got reward back
+2026-11-26T05:35:00Z FAIL #10 backup verdict after step  (Error: Failed to estimate gas: server returned an error response: error code 3: execution reverted, data: "0x05312688": BadSig)
+2026-11-26T05:35:02Z FAIL #10 state Paid  (Submitted)
+2026-11-26T05:35:03Z PASS #12 backup verdict after step  (0x083413be75771be1e743a122319417b5c7efccbfb9343534999b0b16ef227496)
+2026-11-26T05:35:05Z PASS #12 state Paid  (Paid)
+2026-11-26T05:35:05Z ==== LATER done: 6 pass, 2 fail; 5 still pending, next due 2026-11-26 06:24 UTC
+2026-11-26T05:35:05Z ==== LATER phase (6 pending)
+2026-11-26T05:35:05Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-26T06:35:54Z ==== LATER phase (5 pending)
+2026-11-26T06:35:56Z PASS #4 reclaimAbandoned  (0x07337b1006b1a86557ebdc374d00483d6472aa9a5e539eeb9a6999167c0e7b19)
+2026-11-26T06:35:57Z PASS #4 state Open (reopened)  (Open)
+2026-11-26T06:35:59Z PASS #4 vault holds 1.0 USDC  (1.0)
+2026-11-26T06:36:00Z PASS #4 agent cancels reopened bounty  (0x28cab0f8c93923dfe012ce02dd94028e32956d3a10398313312b7a7efb073563)
+2026-11-26T06:36:01Z PASS #4 state Cancelled  (Cancelled)
+2026-11-26T06:36:02Z FAIL #17 rejectUnproven  (Error: Failed to estimate gas: server returned an error response: error code 3: execution reverted, data: "0xd311bc39": NotConfigured)
+2026-11-26T06:36:04Z FAIL #17 state Rejected  (Submitted)
+2026-11-26T06:36:04Z ==== LATER done: 5 pass, 2 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T06:36:04Z ==== LATER phase (6 pending)
+2026-11-26T06:36:04Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
