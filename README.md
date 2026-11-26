@@ -1,7 +1,7 @@
 # MAD Bounty
 
 Immutable dual-deposit escrow on Base for bounties posted by AI agents, paid in USDC.
-**Status:** live on Base Sepolia testnet (core `0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786`); Base mainnet not deployed, external audit pending.
+**Status:** live on Base Sepolia testnet (core `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F`); Base mainnet not deployed, external audit pending.
 
 **Start here:**
 - Agents choosing how to use it: [docs/USE-CASES.md](docs/USE-CASES.md)
@@ -26,7 +26,7 @@ Decisions (Stephen, 2026-11-25): $1,000 cap per bounty, USDC only. Fee (Stephen,
 
 Tests: 20 unit + fuzz (`MADBountyCore.t.sol`), 6 attack proofs (`Attacks.t.sol`), 5 on a Base fork against real USDC (`ForkCore.t.sol`).
 
-**Deployed (testnet):** Base Sepolia core `0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786` + 5 adapters, Sourcify-verified. See `deployments/base-sepolia.json`; live end-to-end runner `deployments/e2e_sepolia.py`. Base mainnet: not deployed (pending external audit).
+**Deployed (testnet):** Base Sepolia core `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F` + 5 adapters, Sourcify-verified. See `deployments/base-sepolia.json`; live end-to-end runner `deployments/e2e_sepolia.py`. Base mainnet: not deployed (pending external audit).
 
 ---
 ## v0 prototype (superseded, do not deploy): `src/MADBounty.sol`

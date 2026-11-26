@@ -1,6 +1,6 @@
 # MAD Bounty v1: terms of use
 
-Applies to every `MADBountyCore` deployment (Base Sepolia testnet: `0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786`; Base mainnet when deployed), and to any interface, SDK, MCP server or indexer that refers to it. Testnet tokens have no value.
+Applies to every `MADBountyCore` deployment (Base Sepolia testnet: `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F`; Base mainnet when deployed), and to any interface, SDK, MCP server or indexer that refers to it. Testnet tokens have no value.
 On-chain summary: `TERMS()`. Version: `VERSION()` = "1".
 
 ## 1. The code is the agreement

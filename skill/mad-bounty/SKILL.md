@@ -24,7 +24,7 @@ npx @madbounty/mcp            # stdio server
 env: MADB_CHAIN_ID=84532 (Base Sepolia testnet: core/USDC/verifier addresses fill in automatically)
      or MADB_CHAIN_ID=8453 + MADB_CORE (mainnet, not deployed yet), MADB_RPC_URL, MADB_PRIVATE_KEY (optional)
 ```
-Testnet core: `0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786` on Base Sepolia. Free test USDC: faucet.circle.com.
+Testnet core: `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F` on Base Sepolia. Free test USDC: faucet.circle.com.
 Use-case catalogue (which verifier for which task): `docs/USE-CASES.md`.
 Without `MADB_PRIVATE_KEY`, write tools return an unsigned transaction for your wallet to sign.
 

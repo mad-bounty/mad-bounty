@@ -1,40 +1,61 @@
 {
   "network": "base-sepolia",
   "chainId": 84532,
-  "deployedAt": "2026-11-25",
-  "commit": "6fd8160",
+  "deployedAt": "2026-11-26",
+  "commit": "fad72b0",
   "usdc": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
   "treasury": "0x4a1447FC0466cECFCa2966E1116204E7906B5aF7",
-  "manualURI": "https://github.com/GGBossman/mad-bounty/blob/main/docs/llms-full.txt",
-  "manualHash": "0x86bdc461dd3dc84e496398403169bd023ec01f745117f4b6e2a77cd96566aaf8",
+  "manualURI": "https://github.com/GGBossman/mad-bounty/blob/fad72b08cb9884911e13d362ea5f2813928e3908/docs/llms-full.txt",
+  "manualHash": "0x35c6a60d2c3de7d95a7e98a971f1faa4f369365f2a18d261f45c5b3cb0c8e433",
   "contracts": {
-    "MADBountyCore": "0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786",
-    "FallbackVerifier": "0xf2e0Dc57d15BD6440D729bf1dCf7D45ec3028468",
-    "OnchainCheckVerifier": "0x8Bf16e787b49649C3B6883F727977De5505083D7",
-    "HashRevealVerifier": "0x5554D841e3b7834B4602124B920aFDA6DBD0376C",
-    "TeeMLVerifier": "0xa4Ff0c36036191A64ef9BAD4d58CAD8f611C7899",
-    "MultiVerifier": "0x174e9d5B2ff058DF8823855D5C270578E7eB57B2"
+    "MADBountyCore": "0xee475BEd2B635e2CFD998db8a42C1B5C115A935F",
+    "FallbackVerifier": "0x42EfE6C9e7d37587e97e17dB99be9A1e97F542DB",
+    "OnchainCheckVerifier": "0x8cf0F5D5FA153883738409B91cc9caeBa3FC7EA8",
+    "HashRevealVerifier": "0x4CaAEdf13e0A6fF976E96ed808B749eFBc1982C5",
+    "TeeMLVerifier": "0xEDB11405cAd79464331D835748DB09Aa843f039C",
+    "MultiVerifier": "0xA0526b60E273c0b58402E3283e1a31593B2d0fCc"
   },
-  "verification": "Sourcify exact_match (creation + runtime) for all six; visible on base-sepolia.blockscout.com",
+  "verification": "Sourcify exact_match for all six (2026-11-26)",
   "deployer": "0xdb04aa53590e1D93A9Dd747552f7f51aa8f4d720 (throwaway testnet key; contracts have no owner, so the deployer holds no powers)",
   "deployTxs": [
-    "0x5a873c2162864564e5dbcc7c190540a1eaeec4ce25172dce56006d1f15ab0bfa",
-    "0x8cc7c2593522fed44a74be1a364418ca992719f8d96b441ecfffd8ca5e6a4da8",
-    "0x90e3ce42e193e58458a8866456458030d0e90a2e2e0810611b69879b46e1d042",
-    "0x20c775b0139a86a5f34f0c78136c5a32de68b1db918c3fee435530c79cc5bc67",
-    "0x7e5279674ce11d12efcd3ffaa378f8670694bef29d06f55c03da9eb3ad17f7f6",
-    "0x99561c84023a8a8cfeb7e6e5a168cde4c6929bc424afde7266beb1e9fc3efe5b"
+    "0x18883ca2183e9506188fb470a009ee1d420aeb23f1df86fca8fff7dfda5b3263",
+    "0x2d0931cd1d6bb72f06c64543f2a5a6f2f2180d700d9d7cd08f69652a0dae6a82",
+    "0x5d93fcb2510b3a607d8103cee9e496b24f1c151df7fe195f50fb4b358d7f4977",
+    "0x22ce4320d6ec615ff9ba465f76ec04a17562b078e032f1b06469a08335969e0f",
+    "0x1c4b76f747413224000cc8e2fedfaf4698ecb7ca6c48a4e27ba1f208964aed92",
+    "0x9fb608efb05b8b16ef86563bcc424f6401f55b473d49a92a7c9e5593437b7e54"
   ],
-  "supersededAdapters": {
-    "note": "Pre-audit-r3 adapter instances (commit 6fd8160). Still bound to the same core; bounties posted against them keep using them. Do not post new bounties to these.",
-    "OnchainCheckVerifier": "0x4B745507128353D77F40BDfd2Eba81f49E991bE0",
-    "HashRevealVerifier": "0xCc06084256d8d31d49A52Fdc1860a1f91d3855a9",
-    "TeeMLVerifier": "0x10e9647120716B61aFA933CAea6e2E6ff13319bD"
-  },
-  "adaptersR3": {
-    "deployedAt": "2026-11-26",
-    "script": "script/DeployAdaptersR3.s.sol",
-    "fixes": "r3 F-1c (HashReveal REFUND reject needs opening), F-2 (rejectUnmet gas guard), I-1 (TeeML refuses \\u escapes of printable ASCII)",
-    "verification": "Sourcify exact_match"
+  "manualHashFn": "sha256",
+  "fee": "MAX_FEE_BPS=500 (5%) ceiling; feeBps starts 500; treasury-only lowerFee, strictly decreasing; rate locked per bounty in feeBpsOf(id)",
+  "deployBlock": 63726996,
+  "supersededV1": {
+    "deployedAt": "2026-11-25",
+    "commit": "6fd8160",
+    "manualURI": "https://github.com/GGBossman/mad-bounty/blob/main/docs/llms-full.txt",
+    "manualHash": "0x86bdc461dd3dc84e496398403169bd023ec01f745117f4b6e2a77cd96566aaf8",
+    "contracts": {
+      "MADBountyCore": "0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786",
+      "FallbackVerifier": "0xf2e0Dc57d15BD6440D729bf1dCf7D45ec3028468",
+      "OnchainCheckVerifier": "0x8Bf16e787b49649C3B6883F727977De5505083D7",
+      "HashRevealVerifier": "0x5554D841e3b7834B4602124B920aFDA6DBD0376C",
+      "TeeMLVerifier": "0xa4Ff0c36036191A64ef9BAD4d58CAD8f611C7899",
+      "MultiVerifier": "0x174e9d5B2ff058DF8823855D5C270578E7eB57B2"
+    },
+    "deployTxs": [
+      "0x5a873c2162864564e5dbcc7c190540a1eaeec4ce25172dce56006d1f15ab0bfa",
+      "0x8cc7c2593522fed44a74be1a364418ca992719f8d96b441ecfffd8ca5e6a4da8",
+      "0x90e3ce42e193e58458a8866456458030d0e90a2e2e0810611b69879b46e1d042",
+      "0x20c775b0139a86a5f34f0c78136c5a32de68b1db918c3fee435530c79cc5bc67",
+      "0x7e5279674ce11d12efcd3ffaa378f8670694bef29d06f55c03da9eb3ad17f7f6",
+      "0x99561c84023a8a8cfeb7e6e5a168cde4c6929bc424afde7266beb1e9fc3efe5b"
+    ],
+    "fee": "flat 1% (FEE_BPS=100)",
+    "note": "v1 core with 1% fee. Superseded 2026-11-26 by the v1.1 5%-ceiling core. Bounties on it keep working; post new ones to the current core.",
+    "olderAdapters": {
+      "note": "Pre-audit-r3 adapter instances (commit 6fd8160). Still bound to the same core; bounties posted against them keep using them. Do not post new bounties to these.",
+      "OnchainCheckVerifier": "0x4B745507128353D77F40BDfd2Eba81f49E991bE0",
+      "HashRevealVerifier": "0xCc06084256d8d31d49A52Fdc1860a1f91d3855a9",
+      "TeeMLVerifier": "0x10e9647120716B61aFA933CAea6e2E6ff13319bD"
+    }
   }
 }

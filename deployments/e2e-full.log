@@ -195,3 +195,183 @@
 2026-11-25T18:24:08Z PASS #24 rejectUnproven  (0xdd74bdf8d4bf2423a483682a9561955a039f09dc8b1d4d33ef8998f7f6ceb47e)
 2026-11-25T18:24:10Z PASS #24 state Rejected  (Rejected)
 2026-11-25T18:24:10Z ==== LATER done: 11 pass, 0 fail; 5 still pending, next due 2026-11-26 17:19 UTC
+2026-11-25T19:24:54Z ==== LATER phase (7 pending)
+2026-11-25T19:24:54Z ==== LATER done: 0 pass, 0 fail; 7 still pending, next due 2026-11-25 19:55 UTC
+2026-11-25T20:25:54Z ==== LATER phase (7 pending)
+2026-11-25T20:25:55Z PASS #26 rejectUnrevealed without opening (REFUND, junk) reverts WrongAnswer
+2026-11-25T20:25:55Z ==== LATER done: 1 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-25T21:26:54Z ==== LATER phase (6 pending)
+2026-11-25T21:26:54Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-25T22:27:55Z ==== LATER phase (6 pending)
+2026-11-25T22:27:55Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-25T23:28:54Z ==== LATER phase (6 pending)
+2026-11-25T23:28:54Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-26T00:29:54Z ==== LATER phase (6 pending)
+2026-11-26T00:29:54Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-26T01:30:55Z ==== LATER phase (6 pending)
+2026-11-26T01:30:55Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-26T02:31:54Z ==== LATER phase (6 pending)
+2026-11-26T02:31:54Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-26T03:32:55Z ==== LATER phase (6 pending)
+2026-11-26T03:32:55Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-26T04:33:54Z ==== LATER phase (6 pending)
+2026-11-26T04:33:54Z ==== LATER done: 0 pass, 0 fail; 6 still pending, next due 2026-11-26 07:56 UTC
+2026-11-26T05:22:14Z ==== NOW phase. agent 0xdb04aa53590e1D93A9Dd747552f7f51aa8f4d720 worker 0x2Ae54f56054fd4b758FA2d60500fEFDB3f5834f7 verifier 0xE54d497657C862d84C6eCEF5f6dA17D88C0959b1
+2026-11-26T05:22:18Z PASS worker -> agent 8 USDC  (0x377526193a9030155c7e79abadfb66db6409fd4c7e6406f287a22cd739507883)
+2026-11-26T05:22:20Z PASS agent approve  (0xf62f5e18c72c7a0779e35d96183f2106c206141039d7a41ad3c0fb204724e5e7)
+2026-11-26T05:22:21Z PASS worker approve  (0x33831e09e22004e6613e3fd772208e63775e38e1b353f3dabd6ece0e39219bd8)
+2026-11-26T05:22:22Z PASS verifier approve  (0x4a70f622092b5970d7b81c8f0f70d9ddefa117db9e3fadceafda8a4451e4ee2b)
+2026-11-26T05:22:23Z PASS NAME()
+2026-11-26T05:22:24Z PASS VERSION()
+2026-11-26T05:22:25Z PASS TERMS() non-empty + mentions silence rule  ("Agent escrows reward; worker escrows deposit on claim. Named verifier decides. )
+2026-11-26T05:22:25Z PASS manualURI()
+2026-11-26T05:22:26Z PASS manualHash()
+2026-11-26T05:22:27Z PASS treasury()
+2026-11-26T05:22:27Z PASS usdc()
+2026-11-26T05:22:28Z PASS MAX_FEE_BPS == 500
+2026-11-26T05:22:29Z PASS feeBps == 500 (5%)
+2026-11-26T05:22:29Z PASS lowerFee by non-treasury reverts NotAllowed
+2026-11-26T05:22:30Z PASS lowerFee raise by treasury reverts BadParam
+2026-11-26T05:22:31Z PASS lowerFee equal by treasury reverts BadParam
+2026-11-26T05:22:32Z PASS minDeposit($2) = $1 floor
+2026-11-26T05:22:32Z PASS minDeposit($100) = $2 (2%)
+2026-11-26T05:22:33Z PASS post reward < $1 reverts BadParam
+2026-11-26T05:22:34Z PASS post reward > $1000 reverts BadParam
+2026-11-26T05:22:34Z PASS post deposit < floor reverts BadParam
+2026-11-26T05:22:35Z PASS post deposit > reward reverts BadParam
+2026-11-26T05:22:36Z PASS post workWindow < 1h reverts BadParam
+2026-11-26T05:22:37Z PASS post reviewWindow < 12h reverts BadParam
+2026-11-26T05:22:37Z PASS post openUntil in past reverts BadParam
+2026-11-26T05:22:38Z PASS post verifier = 0 reverts BadParam
+2026-11-26T05:22:39Z PASS post HashReveal window+12h > review reverts BadConfig
+2026-11-26T05:22:40Z PASS post HashReveal window < 1h reverts BadConfig
+2026-11-26T05:22:40Z PASS adapter onPost by non-core reverts NotCore
+2026-11-26T05:22:41Z PASS withdraw with nothing owed reverts BadParam
+2026-11-26T05:22:42Z PASS retryBurn with nothing owed reverts BadParam
+2026-11-26T05:22:45Z PASS cancel: post #1  (0x6e0c4f84fcd0cd2f72f14a4f8b8c2b1fd1fef88897e5e735c11e628131e71600)
+2026-11-26T05:22:45Z PASS #1 cancel by stranger reverts NotAllowed
+2026-11-26T05:22:47Z PASS #1 cancel by agent  (0x213b2b5bc74ee386d67d1a2f7660441f2f8baf3afeeebc68895a197857ccbc2d)
+2026-11-26T05:22:48Z PASS #1 state Cancelled  (Cancelled)
+2026-11-26T05:22:50Z PASS #1 agent refunded in full  (0.0)
+2026-11-26T05:22:51Z PASS #1 vault holds 0.0 USDC  (0.0)
+2026-11-26T05:22:52Z PASS #1 claim after cancel reverts BadState
+2026-11-26T05:22:54Z PASS expiry: post #2  (0x661ee0b20ffa11ace176895b76c18188538d34c9059e4f4a035ac258b3c510ba)
+2026-11-26T05:22:55Z PASS #2 refundExpired before openUntil reverts TooEarly
+2026-11-26T05:22:57Z PASS claimAuthorizer=V, verifier=V: post #3  (0x4d06dbff986a733a2d56e78823116d776ccc6d661b20d6e2f64363115335e64e)
+2026-11-26T05:22:57Z PASS #3 claim with no auth reverts TooLate
+2026-11-26T05:23:00Z PASS #3 W's claim auth used by another address reverts BadSig
+2026-11-26T05:23:01Z PASS #3 claim auth signed by wrong key reverts BadSig
+2026-11-26T05:23:02Z PASS #3 claim with valid auth  (0x891e5439f555d5ea019a008d52e67de98a46739d9e49675e87b2a14e4d675e27)
+2026-11-26T05:23:04Z PASS #3 state Claimed  (Claimed)
+2026-11-26T05:23:05Z PASS #3 vault holds 2.0 USDC  (2.0)
+2026-11-26T05:23:06Z PASS #3 second claim reverts BadState
+2026-11-26T05:23:07Z PASS #3 submit by non-worker reverts NotAllowed
+2026-11-26T05:23:07Z PASS #3 settle before submit reverts BadState
+2026-11-26T05:23:09Z PASS #3 submit  (0x5cd8b02d75ff0ecf0b72a4856e9b47f7272d1a21c58572d4a83b706f1daa291b)
+2026-11-26T05:23:10Z PASS #3 settle by non-verifier reverts NotAllowed
+2026-11-26T05:23:10Z PASS #3 payOnTimeout early reverts TooEarly
+2026-11-26T05:23:11Z PASS #3 extendReview by worker reverts NotAllowed
+2026-11-26T05:23:14Z PASS #3 verifier settle(accept) directly  (0x05c2be21ea4d5cafa886de0e8245760611e09431494c396ac7e4cb0877bb0f60)
+2026-11-26T05:23:15Z PASS #3 state Paid  (Paid)
+2026-11-26T05:23:16Z PASS #3 feeBpsOf locked at 500
+2026-11-26T05:23:18Z PASS #3 worker +1.95 (reward-5% + deposit)  (1.95)
+2026-11-26T05:23:20Z PASS #3 treasury +0.05 fee
+2026-11-26T05:23:21Z PASS #3 vault holds 0.0 USDC  (0.0)
+2026-11-26T05:23:22Z PASS #3 settle twice reverts BadState
+2026-11-26T05:23:24Z PASS abandon: post #4  (0x69ccb95a75c8e32b202f315695a7d2fd4241f51f62a68e865cecc1167feafd55)
+2026-11-26T05:23:26Z PASS #4 claim  (0x3ae492bdbde6af36ae96e4946009d628b027d6d7907f45ddc61992ecf5f8f3a8)
+2026-11-26T05:23:26Z PASS #4 reclaimAbandoned early reverts TooEarly
+2026-11-26T05:23:28Z PASS direct reject+reverse: post #5  (0xdc583446275313edf4b46ee39bcf39065bc8b20077ec742f6844243f063bc333)
+2026-11-26T05:23:30Z PASS #5 claim  (0xd666fae4d879987f2cf8efacfe726bc112346f34b619c7a256b61600d8c43445)
+2026-11-26T05:23:31Z PASS #5 submit  (0x9a1a99ddfa3dc8bec41a549c848d762587d345d5429247d9fea8afaa432a710f)
+2026-11-26T05:23:32Z PASS #5 verifier settle(reject)  (0xdbd3811513bde85d6c3023422f1c974d31b6d2480ded9de8b633c1734de9c34b)
+2026-11-26T05:23:34Z PASS #5 state Rejected  (Rejected)
+2026-11-26T05:23:35Z PASS #5 finalizeReject during cooling reverts TooEarly
+2026-11-26T05:23:35Z PASS #5 reverse by non-verifier reverts NotAllowed
+2026-11-26T05:23:37Z PASS #5 verifier reverse()  (0xf0b8b7f7261ba58490ce6b5817bf5b3fc8764bb1807454e6f035f104e315e027)
+2026-11-26T05:23:39Z PASS #5 state Paid  (Paid)
+2026-11-26T05:23:40Z PASS #5 worker paid after reverse
+2026-11-26T05:23:42Z PASS #5 vault holds 0.0 USDC  (0.0)
+2026-11-26T05:23:44Z PASS sig reject+reverseWithSig: post #6  (0xb3d15f6eeace403a49ecd76f8d459e963790b6b71e949d345d845d729a001e21)
+2026-11-26T05:23:45Z PASS #6 claim  (0x420041ae39b102945543165bdff82f066a3b72c19575e930446eee3c6bffbbb1)
+2026-11-26T05:23:47Z PASS #6 submit  (0xd9f23db76de14f004469ddac0d7999186fa79486e1d7909d858053af1a6c5081)
+2026-11-26T05:23:49Z PASS #6 replay of #3-style accept sig for another id reverts BadSig
+2026-11-26T05:23:51Z PASS #6 accept sig with wrong evidence reverts BadSig
+2026-11-26T05:23:53Z PASS #6 verdict signed by agent key reverts BadSig
+2026-11-26T05:23:56Z PASS #6 stranger relays reject sig  (0xb155b59d5547593e67d8c10a509dc1d2c5ac51a10bf5d5762ac0a1efa0d6bd27)
+2026-11-26T05:23:58Z PASS #6 state Rejected  (Rejected)
+2026-11-26T05:23:59Z PASS #6 reject sig reused as reverse reverts BadSig
+2026-11-26T05:24:01Z PASS #6 accept sig can't overturn reject reverts BadState
+2026-11-26T05:24:04Z PASS #6 reverseWithSig relayed  (0x87a4932fe3172cbed5b00eb72193d1b8336a27aaa8a51174a89f114af7dbee95)
+2026-11-26T05:24:05Z PASS #6 state Paid  (Paid)
+2026-11-26T05:24:07Z PASS extendReview + timeout: post #7  (0xc4b2c192070331848a029830d5985ecc19a7f68acd8817bf9a5f0586982db6d2)
+2026-11-26T05:24:09Z PASS #7 claim  (0x520e826c54f3779110c02048a3bce1d54797a43453ce8af1a0ebf1c0230adf56)
+2026-11-26T05:24:10Z PASS #7 submit  (0x2b7c53ea98c232beda975d808144a57a4ee2631e0dcb99ade5971908341240bd)
+2026-11-26T05:24:12Z PASS #7 agent extendReview  (0xf6da9fc3e0509eb3db8ffeb1f25730050f5c3b853a8e596f14891919350fc487)
+2026-11-26T05:24:13Z PASS #7 deadline +12h
+2026-11-26T05:24:14Z PASS #7 second extendReview reverts NotAllowed
+2026-11-26T05:24:16Z PASS REFUND reject: post #8  (0xd8d2075c76ba432fcb9da2fc4687b25eb02e6026d97509d1bb6d0f8516030611)
+2026-11-26T05:24:17Z PASS #8 claim  (0x31a3bddc0a32db277ec3478e633636bf7b1a0e8907bba936c0e56a1c28ea3959)
+2026-11-26T05:24:19Z PASS #8 submit  (0x2d6505f1614abbfc91f6956126d4147a5a071fd2c84c8605e5a231c01c667d4c)
+2026-11-26T05:24:20Z PASS #8 reject (REFUND)  (0x86c0bc9d3de52f7c8dc488b709c9d0127fd79da11d716a7351211608143ddda9)
+2026-11-26T05:24:22Z PASS BURN reject: post #9  (0xb9e746d8d7d070698ff155df5ab92712f4c0c6b1e65b046d725adeb320a4a8bb)
+2026-11-26T05:24:24Z PASS #9 claim  (0x439c565b32d045007cac321dc148358135af3adf1cbd285a0258e26dfedf6e4a)
+2026-11-26T05:24:25Z PASS #9 submit  (0x37f7e0ff5b3c8fad3d25b50ac2c5788a4debf00c7a1f3816aaaf9796c142e0ca)
+2026-11-26T05:24:26Z PASS #9 reject (BURN)  (0x8b74a46aab1390d2fcb7bf256914ca68b0213e8f230c5a028c873bd64a12466a)
+2026-11-26T05:24:29Z PASS Fallback [V, backup] step 120s: post #10  (0x61d897ee074fc4d5580862f8d4d501fb3a65db320fd202758c0c248181d15d3b)
+2026-11-26T05:24:30Z PASS #10 claim  (0xd4dfd78994c1ccfdf0e553ee710d9028dd201ed758899f39bdc4a24c784d0bb5)
+2026-11-26T05:24:31Z PASS #10 submit  (0x92dbc993eed2e226be90ad158731d35998dea5b00f0a5136ca0d8431321d7797)
+2026-11-26T05:24:33Z PASS #10 backup verdict before its step reverts TooEarly
+2026-11-26T05:24:34Z PASS #10 backup sig claimed as primary reverts BadSig
+2026-11-26T05:24:34Z PASS #10 signer index out of range reverts BadIndex
+2026-11-26T05:24:36Z PASS Fallback primary reject + reverse: post #11  (0x063cb32e199f6230492ebafe0435ceac662c7d1db8a245cc90f2282fa56747fb)
+2026-11-26T05:24:38Z PASS #11 claim  (0x94663979c72a7a7e84c3793810af7cdcf13bfb011fb54b866f2fda69d1f06358)
+2026-11-26T05:24:40Z PASS #11 submit  (0x418aa39b632c703afd532a4f2ea686b94f67b9494ff51de73db19f0b2c59b9e2)
+2026-11-26T05:24:42Z PASS #11 primary reject via Fallback  (0xd49920348c0fb57b0b6e2cc2dcbbc7636885094d8ef2929de7c4e6696410899d)
+2026-11-26T05:24:43Z PASS #11 state Rejected  (Rejected)
+2026-11-26T05:24:45Z PASS #11 backup cannot reverse reverts BadSig
+2026-11-26T05:24:47Z PASS #11 core-domain reverse sig rejected by adapter reverts BadSig
+2026-11-26T05:24:48Z PASS #11 primary reverse via Fallback  (0x783a9a078b7f116ca326746e81f0644ba7ea49f7d03bc8a32ae3225b9f7c6d0a)
+2026-11-26T05:24:50Z PASS #11 state Paid  (Paid)
+2026-11-26T05:24:50Z PASS Fallback configure on a settled bounty reverts NotOpen
+2026-11-26T05:24:53Z PASS Fallback backup ladder: post #12  (0xf416b149b1fd280e36cf7c2f712972b395f12d2de7f8edff53eb28280cce5e57)
+2026-11-26T05:24:55Z PASS #12 claim  (0xa9a06804dd158e74c997ba34afd2062ceaec9b84a52916af7d6daa552d832c14)
+2026-11-26T05:24:56Z PASS #12 submit  (0xc22fce8b89ecff16f0b96efc1863e3e018dc17b52c025b7b1deca3aa85e76376)
+2026-11-26T05:24:58Z PASS #12 backup verdict before its step reverts TooEarly
+2026-11-26T05:25:00Z PASS HashReveal: post #13  (0x3e347e3cbf8a2551cefa0612ebdf223b117f04dd536c22472b7cc99c6d826938)
+2026-11-26T05:25:00Z PASS #13 reveal before submit reverts NotSubmitted
+2026-11-26T05:25:02Z PASS #13 claim  (0xfb9eed9ae3e47e74dbe173e197b311de737e06913028f0842e0fb41b55e40ebe)
+2026-11-26T05:25:03Z PASS #13 submit  (0x6ffd1a9b71ea48e4cdf3b42fef8083891eb752edaf46f0fbceacb0786866fd87)
+2026-11-26T05:25:04Z PASS #13 reveal by non-worker reverts NotWorker
+2026-11-26T05:25:05Z PASS #13 wrong answer reverts WrongAnswer
+2026-11-26T05:25:06Z PASS #13 correct reveal  (0x12d8e2a05d5cd7f7c6f56515c54a87591693e4ddec996bd7994fc0fd486bb978)
+2026-11-26T05:25:08Z PASS #13 state Paid  (Paid)
+2026-11-26T05:25:10Z PASS Multi 2-of-3 accept: post #14  (0xdba4c05bf6ed03ccbe2e2dbe84256d93336cb9aa08a66fbef22c60362700e1a7)
+2026-11-26T05:25:11Z PASS #14 claim  (0x8eb6c1734a15a010279b20c4ba0bae6a4cea29ef22b1bbe4e34f18f1071f7f24)
+2026-11-26T05:25:13Z PASS #14 submit  (0x9a3fc163220ce890e5dbb32e33243f9560736e88a81037368f15ad321310ee8b)
+2026-11-26T05:25:14Z PASS #14 1 sig < threshold reverts BelowThreshold
+2026-11-26T05:25:15Z PASS #14 duplicate signer reverts NotSorted
+2026-11-26T05:25:16Z PASS #14 unsorted signers reverts NotSorted
+2026-11-26T05:25:16Z PASS #14 outsider in quorum reverts UnknownSigner
+2026-11-26T05:25:18Z PASS #14 2-of-3 accept  (0xa56b0fb01f66a347ae2314adb92d28ea91250e522b00283ec0f9b5bc9f6c5083)
+2026-11-26T05:25:19Z PASS #14 state Paid  (Paid)
+2026-11-26T05:25:21Z PASS Multi reject + quorum reverse: post #15  (0x900cee0e912bf3daa859efe925c63676353e7c89a4eccd3da470b2a87631d86f)
+2026-11-26T05:25:23Z PASS #15 claim  (0xa9745298c4600633ff7af3a415f5373dd4967f2ce3cc48b189f23b2a6353f486)
+2026-11-26T05:25:24Z PASS #15 submit  (0x9177a20241d4e391638a809a7e00f12cc575b0875fa7fb3ed484102211f5dc0d)
+2026-11-26T05:25:27Z PASS #15 2-of-3 reject  (0x62a6ad5ce5f0a46f2aa304eff87bb7c630f41514dd12fd80b9306a1cd364b062)
+2026-11-26T05:25:28Z PASS #15 state Rejected  (Rejected)
+2026-11-26T05:25:30Z PASS #15 2-of-3 reverse  (0xdca9df0f2494f691d263004333fd536258413e5c0de1fd214c979293f8fa674b)
+2026-11-26T05:25:32Z PASS #15 state Paid  (Paid)
+2026-11-26T05:25:34Z PASS TeeML accept: post #16  (0xed293d6161923d11887621a7d399df337f37a3ca48d27b27e2102ff554f59908)
+2026-11-26T05:25:35Z PASS #16 claim  (0x16081ff36e5a47002907490102cdfb6bfecee6b1d51b75c5d082552cdd0d7303)
+2026-11-26T05:25:37Z PASS #16 submit  (0x2feedb2ea951da69612290f9d20f31b85318b8ee10aa292224371678fa12daf1)
+2026-11-26T05:25:39Z PASS #16 response with 2 VERDICT tokens reverts NoVerdict
+2026-11-26T05:25:40Z PASS #16 teeSigner recovers stand-in enclave
+2026-11-26T05:25:42Z PASS #16 sig from a non-enclave key reverts BadSigner
+2026-11-26T05:25:43Z PASS #16 TeeML VERDICT:Y relayed  (0x2b270418153b8c6949be710ed83d6ce391729b2e6612a990350c9f46f35430fa)
+2026-11-26T05:25:45Z PASS #16 state Paid  (Paid)
+2026-11-26T05:25:47Z PASS TeeML no proof: post #17  (0x8c61e33f5a3ff685fb7b174b0f9bdbb954479be70b3fac16171b191905be3ea2)
+2026-11-26T05:25:48Z PASS #17 claim  (0x88524f949313af3fb17acd71c774ca12c8a529c0ab020a26eda2764f839a7cf7)
+2026-11-26T05:25:50Z PASS #17 submit  (0xd73a508ad597d5e3a085acf231b01a8daf5d022213437a064ae566e75cd2f88f)
+2026-11-26T05:25:51Z PASS #17 rejectUnproven early reverts TooEarly
+2026-11-26T05:25:51Z ==== NOW done: 157 pass, 0 fail; 8 pending timed actions

@@ -114,15 +114,15 @@ export interface TimeoutSet {
 /** Live deployments. Base Sepolia is a TESTNET deployment (pre-external-audit); mainnet is not deployed yet. */
 export const DEPLOYMENTS = {
   84532: {
-    core: '0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786',
-    deployBlock: 63518400n,
+    core: '0xee475BEd2B635e2CFD998db8a42C1B5C115A935F',
+    deployBlock: 63726996n,
     usdc: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
     verifiers: {
-      fallback: '0xf2e0Dc57d15BD6440D729bf1dCf7D45ec3028468',
-      onchainCheck: '0x8Bf16e787b49649C3B6883F727977De5505083D7',
-      hashReveal: '0x5554D841e3b7834B4602124B920aFDA6DBD0376C',
-      teeML: '0xa4Ff0c36036191A64ef9BAD4d58CAD8f611C7899',
-      multi: '0x174e9d5B2ff058DF8823855D5C270578E7eB57B2',
+      fallback: '0x42EfE6C9e7d37587e97e17dB99be9A1e97F542DB',
+      onchainCheck: '0x8cf0F5D5FA153883738409B91cc9caeBa3FC7EA8',
+      hashReveal: '0x4CaAEdf13e0A6fF976E96ed808B749eFBc1982C5',
+      teeML: '0xEDB11405cAd79464331D835748DB09Aa843f039C',
+      multi: '0xA0526b60E273c0b58402E3283e1a31593B2d0fCc',
     },
   },
 } as const satisfies Record<number, { core: Address; deployBlock: bigint; usdc: Address; verifiers: Record<string, Address> }>;

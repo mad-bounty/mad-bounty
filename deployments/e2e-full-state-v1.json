@@ -1,0 +1,41 @@
+{
+ "pending": [
+  {
+   "due": 1795713588,
+   "action": "timeout_after_extend",
+   "id": 12
+  },
+  {
+   "due": 1795713596,
+   "action": "finalize_refund",
+   "id": 13
+  },
+  {
+   "due": 1795713603,
+   "action": "finalize_burn",
+   "id": 14
+  },
+  {
+   "due": 1795717567,
+   "action": "finalize_burn",
+   "id": 19
+  },
+  {
+   "due": 1795717570,
+   "action": "finalize_burn",
+   "id": 24
+  },
+  {
+   "due": 1795679804,
+   "action": "r3_junk_pays_worker",
+   "id": 26
+  }
+ ],
+ "started": 1795626983,
+ "note": "#15 fallback bounty: backup key lost in crash; primary accepts it in part2",
+ "fb_backup": {
+  "id": 17,
+  "sig": "0xd8b4d7ff9d6a7aad7442d7e9768a53103497cdcfd93bdbce0a46ebc5916383146b59babfc0c646c2ad19d0064ea6e13e3b7416969123cc408b5cec716f7fad441c"
+ },
+ "core": "0x0Bb5cd6132a0361Da9747bC90F0B06a212FB7786"
+}
