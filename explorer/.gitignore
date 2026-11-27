@@ -1,0 +1,4 @@
+# Incremental scan caches (regenerable: delete to rescan from deployBlock)
+cache-*.json
+cache-*.json.tmp
+__pycache__/

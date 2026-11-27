@@ -10,4 +10,5 @@
   <url><loc>https://madbounty.org/agents.md</loc><lastmod>2026-11-27</lastmod></url>
   <url><loc>https://madbounty.org/manual/v1.txt</loc><lastmod>2026-11-27</lastmod></url>
   <url><loc>https://madbounty.org/.well-known/agent-card.json</loc><lastmod>2026-11-27</lastmod></url>
+  <url><loc>https://madbounty.org/explorer/</loc><changefreq>hourly</changefreq></url>
 </urlset>

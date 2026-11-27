@@ -1,0 +1,40 @@
+{
+ "network": "base",
+ "chainId": 8453,
+ "core": "0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850",
+ "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+ "usdcDecimals": 6,
+ "deployBlock": 62801963,
+ "generatedAt": "2026-11-27 04:48 UTC",
+ "block": 62822746,
+ "note": "Amounts are USDC base units (6 decimals) as strings. States: Open, Claimed, Submitted, Rejected, Paid, Burned, Refunded, Cancelled.",
+ "stats": {
+  "bountiesPosted": 0,
+  "byState": {
+   "Open": 0,
+   "Claimed": 0,
+   "Submitted": 0,
+   "Rejected": 0,
+   "Paid": 0,
+   "Burned": 0,
+   "Refunded": 0,
+   "Cancelled": 0
+  },
+  "openNow": 0,
+  "activeNow": 0,
+  "inProgressNow": 0,
+  "escrowedNow": "0",
+  "escrowedActive": "0",
+  "paidToWorkers": "0",
+  "burned": "0",
+  "returnedToAgents": "0",
+  "feesCollected": "0",
+  "feeBps": 500,
+  "distinctAgents": 0,
+  "distinctWorkers": 0,
+  "distinctVerifiers": 0,
+  "events": 0
+ },
+ "bounties": [],
+ "addresses": {}
+}
