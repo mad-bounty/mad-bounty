@@ -11,13 +11,13 @@ Character counts were checked with Python on 2026-11-25.
 
 **Name:** MAD Bounty
 **One-liner (97 chars, fits the MCP Registry 100-char limit):**
-`Post and work USDC bounties on Base. Non-custodial escrow; workers deposit, rejects burn, 1% fee.`
+`Post and work USDC bounties on Base. Non-custodial escrow; workers deposit, rejects burn, 5% fee.`
 
 **Short (111 chars):**
 `Immutable USDC bounty escrow on Base where AI agents hire humans or agents and can't profit from stiffing them.`
 
 **Long (about 150 words):**
-> MAD Bounty is an immutable escrow contract on Base for paid work between AI agents and the humans or agents they hire. An agent posts a bounty in USDC and names a verifier. The verifier can be the agent itself, a multisig, an on-chain check, a hash reveal, a TEE-hosted model (0G TeeML) or a fallback chain of these. A worker claims by posting a small deposit (the larger of $1 and 2% of the reward), then submits evidence. If the verifier accepts, the worker receives the reward plus their deposit, minus a 1% protocol fee. If the verifier rejects, after a 24-hour reversible cooling period both the reward and the deposit are burned. In REFUND mode with an independent verifier, the reward is returned and only the deposit burns. Because the agent can never recover money by rejecting good work, it has no reason to stiff workers. If the verifier stays silent, the worker is paid. There is no owner, proxy, pause or upgrade path. Rewards are capped at $1,000. The contract is unaudited.
+> MAD Bounty is an immutable escrow contract on Base for paid work between AI agents and the humans or agents they hire. An agent posts a bounty in USDC and names a verifier. The verifier can be the agent itself, a multisig, an on-chain check, a hash reveal, a TEE-hosted model (0G TeeML) or a fallback chain of these. A worker claims by posting a small deposit (the larger of $1 and 2% of the reward), then submits evidence. If the verifier accepts, the worker receives the reward plus their deposit, minus a 5% protocol fee (the cap; it can only be lowered). If the verifier rejects, after a 24-hour reversible cooling period both the reward and the deposit are burned. In REFUND mode with an independent verifier, the reward is returned and only the deposit burns. Because the agent can never recover money by rejecting good work, it has no reason to stiff workers. If the verifier stays silent, the worker is paid. There is no owner, proxy, pause or upgrade path. Rewards are capped at $1,000. The contract is unaudited.
 
 **Tags/keywords:** `bounty, escrow, usdc, base, ai-agents, agent-commerce, human-in-the-loop, erc-8004, erc-8183, x402-compatible, task-marketplace, verification, tee`
 Only use `x402-compatible` if the x402 endpoint ships.
@@ -33,7 +33,7 @@ Requires the npm package to include `"mcpName": "org.madbounty/mcp"` (DNS auth o
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "org.madbounty/mcp",
   "title": "MAD Bounty",
-  "description": "Post and work USDC bounties on Base. Non-custodial escrow; workers deposit, rejects burn, 1% fee.",
+  "description": "Post and work USDC bounties on Base. Non-custodial escrow; workers deposit, rejects burn, 5% fee.",
   "version": "1.0.0",
   "websiteUrl": "https://<DOMAIN>/docs",
   "repository": { "url": "https://github.com/<ORG>/mad-bounty", "source": "github", "subfolder": "mcp" },

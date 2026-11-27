@@ -458,3 +458,35 @@
 2026-11-26T17:47:10Z PASS #14 2 USDC sent to 0x…dEaD
 2026-11-26T17:47:12Z PASS #14 vault holds 0.0 USDC  (0.0)
 2026-11-26T17:47:12Z ==== LATER done: 13 pass, 0 fail; 2 still pending, next due 2026-11-26 18:26 UTC
+2026-11-26T18:47:54Z ==== LATER phase (4 pending)
+2026-11-26T18:47:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T18:47:54Z ==== LATER phase (2 pending)
+2026-11-26T18:47:56Z PASS #19 finalizeReject BURN  (0xeb149c0a0fe986484b2af05951dbd1dec3cf65f0881f7f3359387df1b235dfec)
+2026-11-26T18:47:58Z PASS #19 state Burned  (Burned)
+2026-11-26T18:47:58Z PASS #19 2 USDC sent to 0x…dEaD
+2026-11-26T18:48:00Z PASS #19 vault holds 0.0 USDC  (0.0)
+2026-11-26T18:48:02Z PASS #24 finalizeReject BURN  (0x43d53059084e0ed4c08590748749967ce6d32ba9cfd9861e42904dbd6868d9fc)
+2026-11-26T18:48:03Z PASS #24 state Burned  (Burned)
+2026-11-26T18:48:04Z PASS #24 2 USDC sent to 0x…dEaD
+2026-11-26T18:48:05Z PASS #24 vault holds 0.0 USDC  (0.0)
+2026-11-26T18:48:05Z ==== LATER done: 8 pass, 0 fail; 0 still pending
+2026-11-26T19:48:55Z ==== LATER phase (4 pending)
+2026-11-26T19:48:55Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T19:48:55Z ==== LATER phase (0 pending)
+2026-11-26T19:48:55Z ==== LATER done: 0 pass, 0 fail; 0 still pending
+2026-11-26T20:49:54Z ==== LATER phase (4 pending)
+2026-11-26T20:49:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T20:49:54Z ==== LATER phase (0 pending)
+2026-11-26T20:49:54Z ==== LATER done: 0 pass, 0 fail; 0 still pending
+2026-11-26T21:50:54Z ==== LATER phase (4 pending)
+2026-11-26T21:50:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T21:50:54Z ==== LATER phase (0 pending)
+2026-11-26T21:50:54Z ==== LATER done: 0 pass, 0 fail; 0 still pending
+2026-11-26T22:51:54Z ==== LATER phase (4 pending)
+2026-11-26T22:51:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T22:51:54Z ==== LATER phase (0 pending)
+2026-11-26T22:51:54Z ==== LATER done: 0 pass, 0 fail; 0 still pending
+2026-11-26T23:52:54Z ==== LATER phase (4 pending)
+2026-11-26T23:52:54Z ==== LATER done: 0 pass, 0 fail; 4 still pending, next due 2026-11-27 05:26 UTC
+2026-11-26T23:52:54Z ==== LATER phase (0 pending)
+2026-11-26T23:52:54Z ==== LATER done: 0 pass, 0 fail; 0 still pending

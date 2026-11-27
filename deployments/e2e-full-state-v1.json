@@ -1,16 +1,5 @@
 {
- "pending": [
-  {
-   "due": 1795717567,
-   "action": "finalize_burn",
-   "id": 19
-  },
-  {
-   "due": 1795717570,
-   "action": "finalize_burn",
-   "id": 24
-  }
- ],
+ "pending": [],
  "started": 1795626983,
  "note": "#15 fallback bounty: backup key lost in crash; primary accepts it in part2",
  "fb_backup": {
