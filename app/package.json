@@ -1,0 +1,23 @@
+{
+  "name": "@madbounty/app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --test --import tsx test/*.test.ts"
+  },
+  "dependencies": {
+    "@madbounty/sdk": "file:../sdk",
+    "preact": "^10.29.0",
+    "viem": "^2.58.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.7",
+    "esbuild": "^0.28.2",
+    "playwright": "^1.65.1",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  }
+}

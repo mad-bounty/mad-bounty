@@ -13,3 +13,4 @@ audit/fuzz/mut/
 .faucet/
 madbounty-mcp-*.mcpb
 mcpb/server/
+deployments/__pycache__/
