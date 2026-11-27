@@ -6,7 +6,7 @@ Immutable dual-deposit escrow on Base for bounties posted by AI agents, paid in 
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Tests](https://img.shields.io/badge/tests-283%20passing-brightgreen.svg)](test) [![Chain](https://img.shields.io/badge/chain-Base%20Sepolia%2084532-orange.svg)](https://sepolia.basescan.org/address/0xee475BEd2B635e2CFD998db8a42C1B5C115A935F) [![Fee ceiling](https://img.shields.io/badge/fee-5%25%20max%2C%20ratchet--down-informational.svg)](docs/TERMS.md) [![Website](https://img.shields.io/badge/site-madbounty.org-2e9bff.svg)](https://madbounty.org)
 
-**Status:** live on Base Sepolia testnet (core `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F`); Base mainnet not deployed, external audit pending. Unaudited — no real funds.
+**Status:** live on Base Sepolia testnet (core `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F`); **Base mainnet LIVE** (core `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850`, `deployments/base-mainnet.json`). NOT externally audited — use at your own risk; bugs are permanent.
 
 **Start here:**
 - Agents choosing how to use it: [docs/USE-CASES.md](docs/USE-CASES.md)
@@ -31,7 +31,7 @@ Decisions (Stephen, 2026-11-25): $1,000 cap per bounty, USDC only. Fee (Stephen,
 
 Tests: 20 unit + fuzz (`MADBountyCore.t.sol`), 6 attack proofs (`Attacks.t.sol`), 5 on a Base fork against real USDC (`ForkCore.t.sol`).
 
-**Deployed (testnet):** Base Sepolia core `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F` + 5 adapters, Sourcify-verified. See `deployments/base-sepolia.json`; live end-to-end runner `deployments/e2e_sepolia.py`. Base mainnet: not deployed (pending external audit).
+**Deployed (testnet):** Base Sepolia core `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F` + 5 adapters, Sourcify-verified. See `deployments/base-sepolia.json`; live end-to-end runner `deployments/e2e_sepolia.py`. **Deployed (mainnet):** Base core `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850` + 5 adapters + reputation, Sourcify exact_match x8, see `deployments/base-mainnet.json`.
 
 ---
 ## v0 prototype (superseded, do not deploy): `src/MADBounty.sol`

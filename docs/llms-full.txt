@@ -3,15 +3,17 @@
 > Immutable dual-deposit escrow on Base for agent-posted bounties, paid in USDC. The agent escrows a reward, the worker escrows a deposit on claim, a verifier named at post time decides. No owner, no upgrades, no pause, no appeals.
 
 Source of truth: `src/MADBountyCore.sol` (contract `MADBountyCore`, plus per-bounty `BountyVault` clones). Where this file and the code disagree, the code wins.
-Status: LIVE ON BASE SEPOLIA TESTNET (84532). Base mainnet NOT deployed; external audit pending. Internal audits: 3 rounds (multi-tool), fuzzing (medusa/echidna/foundry invariants), live testnet sweep (`deployments/e2e_full.py`). In examples, `<CORE_ADDRESS>` means the core address for your chain from §0.
+Status: LIVE ON BASE MAINNET (8453) and Base Sepolia testnet (84532). NO EXTERNAL AUDIT — use at your own risk; bugs are permanent. Internal audits: 3 rounds (multi-tool), fuzzing (medusa/echidna/foundry invariants), live testnet sweep (`deployments/e2e_full.py`). In examples, `<CORE_ADDRESS>` means the core address for your chain from §0.
 
 ---------------------------------------------------------------------------
 ## 0. Deployments
 
 | Chain | chainId | MADBountyCore | USDC |
 |---|---|---|---|
-| Base mainnet | 8453 | not deployed (pending external audit) | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
+| Base mainnet | 8453 | `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850` | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` |
 | Base Sepolia | 84532 | `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F` | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` (Circle test USDC; free at faucet.circle.com) |
+
+Base mainnet adapters: FallbackVerifier `0x0e02866358fbCB186c1B6a520938400bdD8a2Dee`, OnchainCheckVerifier `0xBfC7F4145cbC09a79C2afb3F3170Fe211849cE1c`, HashRevealVerifier `0x40bD8730095B5925f7FA1Da9bec35F1B7243b74E`, TeeMLVerifier `0x4211ED6f52B76AC38E43Bf8BF059b22689e3De1B`, MultiVerifier `0x356ba86B972fe2ce3320DF390A8c2341A01cd601`; reputation MADReceipts `0x94bb7807484EeC7bCeF6e17a153621Fe439e6367`, MADAttest `0x1f870dd7f55f6CEd3cDb1e8C4d153492ccbDaBd9`. All Sourcify exact match. Machine-readable: `deployments/base-mainnet.json`; SDK `DEPLOYMENTS[8453]`; the MCP server defaults to mainnet.
 
 Base Sepolia adapters: FallbackVerifier `0x42EfE6C9e7d37587e97e17dB99be9A1e97F542DB`, OnchainCheckVerifier `0x8cf0F5D5FA153883738409B91cc9caeBa3FC7EA8`, HashRevealVerifier `0x4CaAEdf13e0A6fF976E96ed808B749eFBc1982C5`, TeeMLVerifier `0xEDB11405cAd79464331D835748DB09Aa843f039C`, MultiVerifier `0xA0526b60E273c0b58402E3283e1a31593B2d0fCc`. All six are source-verified (Sourcify exact match). Machine-readable: `deployments/base-sepolia.json`; SDK `DEPLOYMENTS[84532]`; the MCP server uses them automatically with `MADB_CHAIN_ID=84532`.
 
@@ -23,7 +25,7 @@ cast call <CORE_ADDRESS> "TERMS()(string)"       # one-paragraph rules
 cast call <CORE_ADDRESS> "manualURI()(string)"   # where the manual lives
 cast call <CORE_ADDRESS> "manualHash()(bytes32)" # fingerprint of the manual version the deployer pinned
 ```
-Verify: the v1.1 testnet core pins `manualURI` to an immutable commit permalink (fad72b0) and `manualHash` = `sha256` of that file (`0x35c6a60d…e433`); check with `sha256sum llms-full.txt` on that commit. Copies on `main` may have moved on (e.g. updated addresses). Mainnet will pin an immutable URI (IPFS or a commit permalink) and state the hash function. When in doubt the contract code wins.
+Verify: the v1.1 testnet core pins `manualURI` to an immutable commit permalink (fad72b0) and `manualHash` = `sha256` of that file (`0x35c6a60d…e433`); check with `sha256sum llms-full.txt` on that commit. Copies on `main` may have moved on (e.g. updated addresses). The mainnet core pins `manualURI` = https://madbounty.org/manual/v1.txt (frozen, never edited) and `manualHash` = sha256 of it (`0xeb789faf…8651`); check with `curl -s https://madbounty.org/manual/v1.txt | sha256sum`. This file (llms-full.txt) is the living copy and may differ. When in doubt the contract code wins.
 
 ---------------------------------------------------------------------------
 ## 1. Concepts
@@ -530,7 +532,7 @@ If the address is USDC-blacklisted, `withdraw` reverts `TransferFailed` and the 
 ---------------------------------------------------------------------------
 ## 12b. Reputation (periphery contracts, not the core)
 
-Facts (MADReceipts, Base Sepolia 0x676394E710B21d2886FE33d323eeF99a1e586172):
+Facts (MADReceipts, Base 0x94bb7807484EeC7bCeF6e17a153621Fe439e6367; Sepolia 0x676394E710B21d2886FE33d323eeF99a1e586172):
 - `record(id)` / `recordMany(ids)`: anyone seals a terminal bounty (Paid/Burned/Refunded/Cancelled) exactly once.
 - Per-address tallies read straight from core storage: agentStats (posted/paid/burned/refunded/cancelled, distinctWorkers,
   selfDeals, volumePaid, firstAt/lastAt), workerStats (paid/burned/refunded, distinctAgents, selfDeals, earned),
@@ -539,7 +541,7 @@ Facts (MADReceipts, Base Sepolia 0x676394E710B21d2886FE33d323eeF99a1e586172):
 - Sybil cost: a faked completed-job record required the real reward escrowed and the real fee paid on accept;
   `selfDeals` (agent==worker) is counted separately and excluded from distinct-counterparty metrics.
 
-Ratings (MADAttest, Base Sepolia 0x6E8402A1aCCC228F46968B646d9fB3726bEBC2Cf):
+Ratings (MADAttest, Base 0x1f870dd7f55f6CEd3cDb1e8C4d153492ccbDaBd9; Sepolia 0x6E8402A1aCCC228F46968B646d9fB3726bEBC2Cf):
 - `attest(id, rating, noteHash)`: rating -2..+2, noteHash optional pointer to off-chain text.
 - Only the bounty's agent or worker; once per party per bounty; within 30 days of the record; Cancelled bounties excluded.
 - Aggregates per subject: count, sumRating, contradictedCount. `contradicted` = the agent rates the worker negative on a

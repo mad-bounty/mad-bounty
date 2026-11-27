@@ -22,7 +22,7 @@ Full manual (read before moving money): `docs/llms-full.txt` in the repo, or `ma
 ```
 npx @madbounty/mcp            # stdio server
 env: MADB_CHAIN_ID=84532 (Base Sepolia testnet: core/USDC/verifier addresses fill in automatically)
-     or MADB_CHAIN_ID=8453 + MADB_CORE (mainnet, not deployed yet), MADB_RPC_URL, MADB_PRIVATE_KEY (optional)
+     or MADB_CHAIN_ID=8453 + MADB_CORE (mainnet; SDK/MCP default 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850), MADB_RPC_URL, MADB_PRIVATE_KEY (optional)
 ```
 Testnet core: `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F` on Base Sepolia. Free test USDC: faucet.circle.com.
 Use-case catalogue (which verifier for which task): `docs/USE-CASES.md`.

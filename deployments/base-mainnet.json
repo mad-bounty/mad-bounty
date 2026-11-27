@@ -1,0 +1,39 @@
+{
+  "network": "base",
+  "chainId": 8453,
+  "deployedAt": "2026-11-27",
+  "commit": "3e6d152",
+  "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "treasury": "0x4a1447FC0466cECFCa2966E1116204E7906B5aF7",
+  "manualURI": "https://madbounty.org/manual/v1.txt",
+  "manualHash": "0xeb789fafc19538986bbb3bfed4c1a5b1395b5aea07687b0fe72b366bf2018651",
+  "manualHashFn": "sha256",
+  "contracts": {
+    "MADBountyCore": "0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850",
+    "FallbackVerifier": "0x0e02866358fbCB186c1B6a520938400bdD8a2Dee",
+    "OnchainCheckVerifier": "0xBfC7F4145cbC09a79C2afb3F3170Fe211849cE1c",
+    "HashRevealVerifier": "0x40bD8730095B5925f7FA1Da9bec35F1B7243b74E",
+    "TeeMLVerifier": "0x4211ED6f52B76AC38E43Bf8BF059b22689e3De1B",
+    "MultiVerifier": "0x356ba86B972fe2ce3320DF390A8c2341A01cd601"
+  },
+  "vaultImpl": "0x6744048485D52f508864d7c6B18bc0Be681168b5",
+  "reputation": {
+    "MADReceipts": "0x94bb7807484EeC7bCeF6e17a153621Fe439e6367",
+    "MADAttest": "0x1f870dd7f55f6CEd3cDb1e8C4d153492ccbDaBd9"
+  },
+  "fee": "MAX_FEE_BPS=500 (5%) ceiling; feeBps starts 500; treasury-only lowerFee, strictly decreasing; locked per bounty in feeBpsOf(id)",
+  "deployBlock": 62801963,
+  "deployTxs": [
+    "0x4669c274b7249d914701daffb1bfd73de562f0f5a412e7360185d2b89c220a8f",
+    "0xb0eeee8003a380342a9f4661097a378f5dcebaa6184fa7c3c6b0964d2e14b99f",
+    "0x15454fc3dafffe9b3b8e9117a7b1f8386a215eb0763df7f8def45177402cc7e9",
+    "0x1ea38f00c8d66ec13ae89bba345f3cb2c633da2e2bea2c2ccd9e2254bf5e646a",
+    "0xf32ba82de4459061aab2822a5fc60813e009868bc736cd816b928e8a4a8304c9",
+    "0x1fb419432d0238b24be63c17c090b760163e0b0ff761b26f1dae0d5340efbd3c",
+    "0x553f6057382f36fe57dc0b8095e90ac9951ee3563d3aa88d2793c56ed0aee974",
+    "0x0805d9d4c5c0f907751df496a412fb26081a68ef4e59a9818e02deb92106bb0f"
+  ],
+  "verification": "Sourcify exact_match for all 8 (2026-11-27)",
+  "deployer": "0xe29bcf26f87912ebd9A98ed7cFc8eFEd513F153F (one-time key; contracts have no owner, deployer holds no powers; leftover ETH returned)",
+  "audit": "NO external audit. Internal: 3 rounds + fuzz/symbolic + live testnet sweep."
+}

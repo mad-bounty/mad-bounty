@@ -111,8 +111,24 @@ export interface TimeoutSet {
   refundExpired: bigint[];
 }
 
-/** Live deployments. Base Sepolia is a TESTNET deployment (pre-external-audit); mainnet is not deployed yet. */
+/** Live deployments. Base mainnet (8453) is LIVE but NOT externally audited. Base Sepolia (84532) is the testnet. */
 export const DEPLOYMENTS = {
+  8453: {
+    core: '0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850',
+    deployBlock: 62801963n,
+    usdc: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+    verifiers: {
+      fallback: '0x0e02866358fbCB186c1B6a520938400bdD8a2Dee',
+      onchainCheck: '0xBfC7F4145cbC09a79C2afb3F3170Fe211849cE1c',
+      hashReveal: '0x40bD8730095B5925f7FA1Da9bec35F1B7243b74E',
+      teeML: '0x4211ED6f52B76AC38E43Bf8BF059b22689e3De1B',
+      multi: '0x356ba86B972fe2ce3320DF390A8c2341A01cd601',
+    },
+    reputation: {
+      receipts: '0x94bb7807484EeC7bCeF6e17a153621Fe439e6367',
+      attest: '0x1f870dd7f55f6CEd3cDb1e8C4d153492ccbDaBd9',
+    },
+  },
   84532: {
     core: '0xee475BEd2B635e2CFD998db8a42C1B5C115A935F',
     deployBlock: 63726996n,
