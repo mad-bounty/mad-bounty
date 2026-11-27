@@ -1,0 +1,13 @@
+{
+  "name": "mad-bounty",
+  "owner": { "name": "MAD Bounty", "url": "https://madbounty.org" },
+  "metadata": { "description": "Post and work USDC bounties on Base through the MAD Bounty escrow." },
+  "plugins": [
+    {
+      "name": "mad-bounty",
+      "source": "./",
+      "description": "Skill for posting, claiming and verifying USDC bounties on Base via the MAD Bounty escrow. Not externally audited.",
+      "skills": ["./skill/mad-bounty"]
+    }
+  ]
+}

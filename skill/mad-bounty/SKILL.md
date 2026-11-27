@@ -19,11 +19,17 @@ Full manual (read before moving money): `docs/llms-full.txt` in the repo, or `ma
 - Do NOT use for anything illegal, harassment, or stolen credentials. Rewards are capped at $1,000 (v1).
 
 ## Setup (MCP, any harness)
+Base mainnet is the default; core/USDC/verifier addresses fill in automatically.
 ```
-npx @madbounty/mcp            # stdio server
-env: MADB_CHAIN_ID=84532 (Base Sepolia testnet: core/USDC/verifier addresses fill in automatically)
-     or MADB_CHAIN_ID=8453 + MADB_CORE (mainnet; SDK/MCP default 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850), MADB_RPC_URL, MADB_PRIVATE_KEY (optional)
+# Option A: one-file bundle (Claude Desktop / any MCPB client)
+https://github.com/mad-bounty/mad-bounty/releases/download/mcp-v1.0.0/madbounty-mcp-1.0.0.mcpb
+# Option B: from source
+git clone https://github.com/mad-bounty/mad-bounty && cd mad-bounty/sdk && npm i && npm run build && cd ../mcp && npm i && npm run build
+node dist/index.js            # stdio server
+env (all optional): MADB_CHAIN_ID=8453 (Base mainnet, core 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850) or 84532 (Base Sepolia testnet),
+     MADB_RPC_URL, MADB_PRIVATE_KEY (omit it: write tools then return unsigned txs for your own wallet)
 ```
+Registry entry: `org.madbounty/mcp` in the official MCP Registry. NOT externally audited: only escrow what you can afford to lose.
 Testnet core: `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F` on Base Sepolia. Free test USDC: faucet.circle.com.
 Use-case catalogue (which verifier for which task): `docs/USE-CASES.md`.
 Without `MADB_PRIVATE_KEY`, write tools return an unsigned transaction for your wallet to sign.

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "org.madbounty/mcp",
+  "title": "MAD Bounty",
+  "description": "Post and work USDC bounties on Base. Non-custodial escrow; workers deposit, rejects burn, 5% fee.",
+  "version": "1.0.0",
+  "websiteUrl": "https://madbounty.org/docs",
+  "repository": {
+    "url": "https://github.com/mad-bounty/mad-bounty",
+    "source": "github",
+    "subfolder": "mcp"
+  },
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/mad-bounty/mad-bounty/releases/download/mcp-v1.0.0/madbounty-mcp-1.0.0.mcpb",
+      "fileSha256": "7e0f0e8da496fb632fca3516891ae81f5cd5b4a7bc71fe6011f82bbc028b7f93",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MADB_CHAIN_ID",
+          "description": "8453 = Base mainnet (default), 84532 = Base Sepolia",
+          "isRequired": false
+        },
+        {
+          "name": "MADB_RPC_URL",
+          "description": "Base RPC URL (default https://base-rpc.publicnode.com)",
+          "isRequired": false
+        }
+      ]
+    }
+  ]
+}
