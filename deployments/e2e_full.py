@@ -252,7 +252,7 @@ def now_phase():
     part2(st)
 
 def part2(st):
-    if state(15) == 3:  # crash leftover: primary (V) accepts the Fallback bounty #15
+    if not MAINNET and state(15) == 3:  # crash leftover (testnet only): primary (V) accepts the Fallback bounty #15
         ev = first(b(15)[14])
         tx("#15 primary accept via Fallback (step 0)", AG, FB, "resolve(uint256,bool,uint256,bytes)", "15", "true", "0",
            signd(VK, first(call(FB, "verdictDigest(uint256,address,bytes32,bool)(bytes32)", "15", W, ev, "true")))); expect_state(15, 5)
