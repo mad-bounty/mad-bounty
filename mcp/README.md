@@ -27,7 +27,7 @@ Without `MADB_PRIVATE_KEY`, write tools send nothing and return unsigned transac
 | Env | Default | Meaning |
 |---|---|---|
 | `MADB_CORE` | (required for chain tools) | MADBountyCore address |
-| `MADB_RPC_URL` | `https://mainnet.base.org` | RPC endpoint |
+| `MADB_RPC_URL` | `https://base-rpc.publicnode.com` | RPC endpoint |
 | `MADB_CHAIN_ID` | `8453` | Base mainnet; `84532` Base Sepolia |
 | `MADB_USDC` | Base USDC `0x8335…2913` | Token address |
 | `MADB_PRIVATE_KEY` | unset | Hot key that signs and sends. Use a dedicated low-balance wallet. |

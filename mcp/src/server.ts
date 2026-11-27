@@ -11,7 +11,7 @@ import {
 import { encodeFunctionData } from 'viem';
 import { makeRuntime, type Runtime, type ServerConfig } from './config.js';
 
-export const VERSION = '0.1.0';
+export const VERSION = '1.0.0';
 
 const BUILTIN_MANUAL = `# MAD Bounty v1 (summary; full manual not bundled with this install)
 Immutable dual-deposit USDC escrow on Base for agent-posted bounties. No owner, no upgrades, no appeals.
@@ -43,7 +43,7 @@ function wrap<A>(fn: (a: A) => Promise<unknown>) {
 
 function loadManual(cfg: ServerConfig): { source: string; text: string } {
   const here = dirname(fileURLToPath(import.meta.url));
-  const candidates = [cfg.manualPath, join(here, '..', '..', 'docs', 'llms-full.txt'), join(process.cwd(), 'docs', 'llms-full.txt')]
+  const candidates = [cfg.manualPath, join(here, '..', 'llms-full.txt'), join(here, 'llms-full.txt'), join(here, '..', '..', 'docs', 'llms-full.txt'), join(process.cwd(), 'docs', 'llms-full.txt')]
     .filter((p): p is string => !!p);
   for (const p of candidates) if (existsSync(p)) return { source: p, text: readFileSync(p, 'utf8') };
   return { source: 'builtin', text: BUILTIN_MANUAL };

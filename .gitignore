@@ -11,3 +11,5 @@ audit/fuzz/out*/
 audit/fuzz/cache*/
 audit/fuzz/mut/
 .faucet/
+madbounty-mcp-*.mcpb
+mcpb/server/

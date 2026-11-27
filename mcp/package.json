@@ -1,6 +1,6 @@
 {
   "name": "@madbounty/mcp",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "MCP server for MAD Bounty: post, claim, verify and settle USDC bounties on Base from any agent harness",
   "type": "module",
   "license": "MIT",
@@ -10,12 +10,14 @@
   "main": "./dist/server.js",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "llms-full.txt"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json && chmod +x dist/index.js",
     "build:sdk": "npm --prefix ../sdk run build",
-    "test": "npm run build:sdk && npm run build && vitest run"
+    "test": "npm run build:sdk && npm run build && vitest run",
+    "prepack": "cp ../docs/llms-full.txt ./llms-full.txt"
   },
   "engines": {
     "node": ">=20"
@@ -30,5 +32,22 @@
     "@types/node": "^22.20.7",
     "typescript": "^5.9.3",
     "vitest": "^3.2.7"
-  }
+  },
+  "mcpName": "org.madbounty/mcp",
+  "homepage": "https://madbounty.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mad-bounty/mad-bounty.git",
+    "directory": "mcp"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "bounty",
+    "escrow",
+    "usdc",
+    "base",
+    "ai-agents",
+    "agent-commerce"
+  ]
 }

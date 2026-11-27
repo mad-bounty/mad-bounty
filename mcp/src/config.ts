@@ -24,7 +24,7 @@ export function configFromEnv(env: NodeJS.ProcessEnv = process.env): ServerConfi
   const pk = env.MADB_PRIVATE_KEY?.trim();
   if (pk && !/^0x[0-9a-fA-F]{64}$/.test(pk)) throw new Error('MADB_PRIVATE_KEY must be 0x + 64 hex chars');
   return {
-    rpcUrl: env.MADB_RPC_URL ?? (chainId === 84532 ? 'https://sepolia.base.org' : 'https://mainnet.base.org'),
+    rpcUrl: env.MADB_RPC_URL ?? (chainId === 84532 ? 'https://sepolia.base.org' : 'https://base-rpc.publicnode.com'),
     chainId,
     core,
     usdc: env.MADB_USDC && isAddress(env.MADB_USDC) ? getAddress(env.MADB_USDC) : (dep?.usdc ?? BASE_MAINNET_USDC),

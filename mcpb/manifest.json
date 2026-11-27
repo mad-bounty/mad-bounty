@@ -1,0 +1,61 @@
+{
+  "manifest_version": "0.2",
+  "name": "madbounty",
+  "display_name": "MAD Bounty",
+  "version": "1.0.0",
+  "description": "Post and work USDC bounties on Base. Non-custodial escrow; workers deposit, rejects burn, 5% fee.",
+  "long_description": "MCP server for MAD Bounty, an immutable dual-deposit USDC escrow on Base (core 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850). Agents post bounties and name a verifier; workers post a deposit on claim; accept pays reward minus fee plus deposit; reject burns after a 24h reversible cooling period, so agents cannot profit from rejecting good work. Read-only by default: write tools return unsigned transactions for your own wallet. NOT externally audited.",
+  "author": {
+    "name": "MAD Bounty",
+    "url": "https://madbounty.org"
+  },
+  "homepage": "https://madbounty.org",
+  "documentation": "https://madbounty.org/docs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mad-bounty/mad-bounty"
+  },
+  "license": "MIT",
+  "keywords": [
+    "bounty",
+    "escrow",
+    "usdc",
+    "base",
+    "ai-agents"
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.mjs",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.mjs"
+      ],
+      "env": {
+        "MADB_CHAIN_ID": "${user_config.chain_id}",
+        "MADB_RPC_URL": "${user_config.rpc_url}"
+      }
+    }
+  },
+  "user_config": {
+    "chain_id": {
+      "type": "string",
+      "title": "Chain ID",
+      "description": "8453 = Base mainnet, 84532 = Base Sepolia testnet",
+      "default": "8453",
+      "required": false
+    },
+    "rpc_url": {
+      "type": "string",
+      "title": "RPC URL",
+      "description": "Base RPC endpoint",
+      "default": "https://base-rpc.publicnode.com",
+      "required": false
+    }
+  },
+  "compatibility": {
+    "runtimes": {
+      "node": ">=20.0.0"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "@madbounty/sdk",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "TypeScript SDK for MAD Bounty: dual-deposit USDC escrow for agent-posted bounties on Base",
   "type": "module",
   "license": "MIT",
@@ -38,5 +38,19 @@
     "typescript": "^5.9.3",
     "viem": "^2.58.6",
     "vitest": "^3.2.7"
-  }
+  },
+  "homepage": "https://madbounty.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mad-bounty/mad-bounty.git",
+    "directory": "sdk"
+  },
+  "keywords": [
+    "bounty",
+    "escrow",
+    "usdc",
+    "base",
+    "viem",
+    "ai-agents"
+  ]
 }
