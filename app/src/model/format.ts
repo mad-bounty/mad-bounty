@@ -52,7 +52,7 @@ export function utc(ts: number): string {
 
 const KIND_LABELS: Record<VerifierKind, string> = {
   self: 'Poster reviews it (self)',
-  eoa: 'Single reviewer (address)',
+  eoa: 'Single reviewer',
   onchainCheck: 'On-chain check',
   hashReveal: 'Hash reveal',
   teeML: 'TeeML (0G)',

@@ -49,7 +49,7 @@ test('labels and tones cover every verifier kind and state', () => {
   assert.equal(verifierKindLabel('teeML'), 'TeeML (0G)');
   assert.equal(verifierKindLabel('multi'), 'Multi-sig panel');
   assert.equal(verifierKindLabel('fallback'), 'Fallback ladder');
-  assert.equal(verifierKindLabel('eoa'), 'Single reviewer (address)');
+  assert.equal(verifierKindLabel('eoa'), 'Single reviewer');
   assert.equal(verifierKindLabel('contract'), 'Smart-contract verifier');
   assert.equal(stateLabel('Paid'), 'Paid');
   assert.equal(stateLabel('Rejected'), 'Rejected (cooling)');

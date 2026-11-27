@@ -78,11 +78,12 @@ async function shot(page, name, vp, full = true) {
 }
 async function firstOpenBounty(page) {
   await go(page, '#/');
-  const href = await page.locator('.bcard').first().getAttribute('href').catch(() => null);
+  // browse may default to 'All' when nothing is open: pick a card whose state pill says Open
+  const href = await page.locator('.bcard').filter({ has: page.locator('.spill', { hasText: /^Open$/i }) }).first().getAttribute('href', { timeout: 3_000 }).catch(() => null);
   return href ? href.split('/').pop() : null;
 }
 async function openFirstAction(page, name, vp, submitToo = false) {
-  const btn = page.locator('.ap-primary .btn:visible:not([disabled]), .arow .btn:not([disabled])').first();
+  const btn = page.locator('.ap-primary .btn:visible:not([disabled]), .arow .btn:visible:not([disabled])').first();
   if (!(await btn.count())) return;
   await btn.click(); await page.waitForTimeout(400);
   if (await page.locator('#ev').count()) await page.fill('#ev', 'https://gist.github.com/example/1a2b3c — result.txt');
@@ -114,6 +115,7 @@ for (const vp of [{ width: 360, height: 780 }, { width: 390, height: 844 }, { wi
   await go(page, '#/'); await connectWallet(page);
   await go(page, `#/bounty/${BOUNTY}`); await shot(page, `03-bounty-${BOUNTY}`, vp);
   await openFirstAction(page, '05b-confirm-action', vp, true);
+  for (const id of (process.env.MADB_EXTRA ?? '22').split(',').filter(Boolean)) { await go(page, `#/bounty/${id}`); await shot(page, `03-bounty-${id}`, vp); }
   await ctx.close();
 
   // worker: claim sheet with safety check, submit sheet, my bounties

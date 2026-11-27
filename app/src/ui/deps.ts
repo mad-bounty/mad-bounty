@@ -10,6 +10,9 @@ export { createWriter, type Writer } from '../chain/writes';
 export { friendlyError } from '../chain/errors';
 export { availableActions, nextStep } from '../model/actions';
 export { defaultForm, derive, buildSpecJson, buildPostParams, describe, type PostCtx } from '../model/postForm';
+export { moneyRows, moneyView, feeLabel, pct, type MoneyRow, type RowAmount } from '../model/money';
+export { outcomeOf, outcomeForViewer, eventDetail, gapLabel, prefillFromSpec, type Outcome, type Path } from '../model/outcome';
+export { specHashOf } from '../chain/specCalldata';
 export { shortAddr, duration, relTime, utc, verifierKindLabel, stateLabel } from '../model/format';
 
 /** Bare amount for display next to a separate "USDC" unit: '1,035.00' (keeps sub-cent precision, never rounds). */

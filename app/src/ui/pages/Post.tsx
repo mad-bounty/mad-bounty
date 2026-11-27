@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'preact/hooks';
 import type { Address } from 'viem';
 import type { PostDerived, PostFormState, VerifierChoice } from '../../types';
 import { CHAINS, buildPostParams, buildSpecJson, defaultForm, derive, describe, duration, usdc, type PostCtx } from '../deps';
+import type { SpecPrefill } from '../../model/outcome';
 import { createStore, getReader, getWriter, openWalletPicker, runTx, useChain, useStore, useWallet } from '../store';
 import { useAsync, useNow } from '../hooks';
 import { Btn, Money, Notice } from '../components';
@@ -10,6 +11,15 @@ import * as Icon from '../icons';
 // Draft survives navigating away (in memory only).
 const draft = createStore<PostFormState>(defaultForm());
 const posted = createStore<{ id: bigint; chainId: number; title: string } | undefined>(undefined);
+/** Set when the wizard was opened from 'Post a similar bounty'. */
+const similarFrom = createStore<{ id: bigint; notes: string[] } | undefined>(undefined);
+
+/** Prefill the wizard's task fields from a finished bounty's verified spec (money and reviewer start fresh). */
+export function startSimilar(p: SpecPrefill, id: bigint) {
+  draft.set({ ...defaultForm(), ...p.fields });
+  posted.set(undefined);
+  similarFrom.set({ id, notes: p.notes });
+}
 
 const STEPS = ['Task', 'Money & rules', 'Review'] as const;
 const KB = 1024;
@@ -26,6 +36,7 @@ export function PostPage() {
   const w = useWallet();
   const form = useStore(draft);
   const done = useStore(posted);
+  const similar = useStore(similarFrom);
   const [step, setStep] = useState(stepFromHash());
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
@@ -74,7 +85,7 @@ export function PostPage() {
       return wr.post(buildPostParams(form, c), buildSpecJson(form, c), onP);
     });
     setBusy(false);
-    if (res !== undefined) { posted.set({ id: res.id, chainId: chain, title: form.title }); draft.set(defaultForm()); setTouched({}); scrollTo(0, 0); }
+    if (res !== undefined) { similarFrom.set(undefined); posted.set({ id: res.id, chainId: chain, title: form.title }); draft.set(defaultForm()); setTouched({}); scrollTo(0, 0); }
   };
 
   if (done) return <PostSuccess id={done.id} title={done.title} onAgain={() => { posted.set(undefined); goStep(1); }} />;
@@ -109,6 +120,7 @@ export function PostPage() {
           {step === 1 && (
             <section class="panel" aria-labelledby="wiz-h">
               <h2 class="panel-h" id="wiz-h" tabIndex={-1}>1 · What needs doing?</h2>
+              {similar && <Notice tone="info" title={`Copied from bounty #${similar.id}.`}>Edit anything you like — nothing is posted until step 3. {similar.notes.join(' ')} <button type="button" class="linkish" onClick={() => { draft.set(defaultForm()); similarFrom.set(undefined); }}>Start empty</button></Notice>}
               <Field id="title" label="Title" err={err('title')} hint="One line a worker can scan. Shown on the bounty card.">
                 <input id="title" value={form.title} maxLength={120} placeholder="e.g. Translate our FAQ into Spanish"
                   onInput={(e) => set({ title: val(e) })} onBlur={() => touch('title')} aria-invalid={!!err('title')} />
@@ -173,13 +185,14 @@ export function PostPage() {
                   <li><span class="tp-n">{w.address && needsApprove ? 2 : 1}</span><span>Post the bounty — moves <strong>{usdc(d.reward)} USDC</strong> into its escrow vault.</span></li>
                 </ol>
               </div>
-              <p class="audit-line"><Icon.Alert size={14} /><span>MAD Bounty is <strong>NOT externally audited</strong>. Contracts are immutable; only escrow what you can afford to lose. Network: <strong>{CHAINS[chain].name}</strong>.</span></p>
-              <div class="wiz-nav">
+              <p class="audit-line audit-near"><Icon.Alert size={14} /><span><strong>NOT externally audited</strong> — only escrow what you can afford to lose. Contracts are immutable. Network: <strong>{CHAINS[chain].name}</strong>.</span></p>
+              <div class="wiz-nav wiz-nav-tight">
                 <Btn kind="quiet" onClick={() => goStep(2)}><Icon.Back size={16} />Back</Btn>
                 {w.address
                   ? <Btn size="lg" busy={busy} disabled={!d.ok || short} onClick={submit}>{needsApprove ? 'Approve & post' : 'Post'} · <span class="nowrap">{usdc(d.reward)} USDC</span></Btn>
                   : <Btn size="lg" onClick={openWalletPicker}><Icon.Wallet size={18} />Connect wallet to post</Btn>}
               </div>
+              {w.address && (short || !d.ok) && <p class="why-off small post-why">{short ? `Needs ${usdc(d.reward)} USDC; your wallet holds ${usdc(balance.data!)} USDC.` : 'Fix the issue above to post.'}</p>}
             </section>
           )}
         </div>
@@ -221,7 +234,7 @@ function MoneyFields({ form, d, set, err, touch }: { form: PostFormState; d: Pos
         <div class="slider">
           <input type="range" aria-label="Deposit size" min={minNum} max={maxNum} step={Math.max(0.01, (maxNum - minNum) / 100)} value={Math.min(depositNum, maxNum)}
             onInput={(e) => set({ depositUsdc: Number(val(e)).toFixed(2) })} />
-          <div class="slider-l"><span>Min {usdc(d.minDeposit)}</span><span>Deposit = {Math.round((depositNum / Math.max(maxNum, 1e-9)) * 100)}% of reward</span><span>Max {usdc(d.reward)}</span></div>
+          <div class="slider-l"><span>Min {usdc(d.minDeposit)}</span><span>{Math.round((depositNum / Math.max(d.reward ? Number(d.reward) / 1e6 : maxNum, 1e-9)) * 100)}% of reward (min 2%)</span><span>Max {usdc(d.reward)}</span></div>
         </div>
       )}
       <div class="grid3">
@@ -230,12 +243,12 @@ function MoneyFields({ form, d, set, err, touch }: { form: PostFormState; d: Pos
             {[1, 6, 12, 24, 48, 72, 168, 336, 720].map((h) => <option value={h}>{duration(h * 3600)}</option>)}
           </select>
         </Field>
-        <Field id="review" label="Time to review" hint="Silence after this pays the worker.">
+        <Field id="review" label="Time to review" hint="If you don't decide in time, the worker is paid automatically.">
           <select id="review" value={form.reviewWindowHours} onChange={(e) => set({ reviewWindowHours: Number(val(e)) })}>
             {[12, 24, 48, 72, 168, 336, 720].map((h) => <option value={h}>{duration(h * 3600)}</option>)}
           </select>
         </Field>
-        <Field id="open" label="Open for claims" hint="Then anyone can refund you.">
+        <Field id="open" label="Open for claims" hint="If nobody claims it by then, the reward can be returned to you.">
           <select id="open" value={form.openDays} onChange={(e) => set({ openDays: Number(val(e)) })}>
             {[1, 3, 7, 14, 30, 60, 90, 180].map((n) => <option value={n}>{n} {n === 1 ? 'day' : 'days'}</option>)}
           </select>

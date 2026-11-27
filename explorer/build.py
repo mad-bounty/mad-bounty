@@ -397,6 +397,7 @@ def page(ctx, title, desc, canon, body, updated):
       <a href="/#how">How it works</a>
       <a href="/docs">Docs</a>
       <a href="/agents">For agents</a>
+      <a href="/app/">App</a>
       <a class="active" href="/explorer/">Explorer</a>
       <a href="https://github.com/mad-bounty/mad-bounty">GitHub</a>
       <a class="btn btn-primary btn-sm" href="/llms-full.txt">llms-full.txt</a>

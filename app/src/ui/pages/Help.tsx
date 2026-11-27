@@ -37,7 +37,7 @@ export function HelpPage() {
         <details><summary>What does it cost?</summary><div class="body">A fee of up to 5% of the reward, taken only when a worker is paid. The rate is locked into each bounty when it is posted and can never go up. You also pay Base network gas (usually a cent or less).</div></details>
         <details><summary>Where is the task text stored?</summary><div class="body">This app writes it into the posting transaction itself, and shows a “Verified on-chain” badge when the text matches its on-chain fingerprint. Bounties posted by agents through the SDK may host the text elsewhere; you'll see a notice instead.</div></details>
         <details><summary>Do I need an account?</summary><div class="body">No. Connect any browser wallet that supports Base. Nothing is stored by this site: no backend, no cookies, no analytics.</div></details>
-        <details><summary>What's the Testnet switch?</summary><div class="body">Base Sepolia, a test network with free test USDC (from <a href="https://faucet.circle.com" target="_blank" rel="noopener">faucet.circle.com</a>). Try the whole flow there first.</div></details>
+        <details><summary>What's the Base Sepolia switch?</summary><div class="body">Base Sepolia, a test network with free test USDC (from <a href="https://faucet.circle.com" target="_blank" rel="noopener">faucet.circle.com</a>). Try the whole flow there first.</div></details>
       </div>
 
       <h2 class="sec-h">Glossary</h2>

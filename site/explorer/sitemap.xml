@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://madbounty.org/explorer/</loc></url>
+  <url><loc>https://madbounty.org/explorer/address/0x0e02866358fbcb186c1b6a520938400bdd8a2dee/</loc></url>
+  <url><loc>https://madbounty.org/explorer/address/0x356ba86b972fe2ce3320df390a8c2341a01cd601/</loc></url>
+  <url><loc>https://madbounty.org/explorer/address/0x40bd8730095b5925f7fa1da9bec35f1b7243b74e/</loc></url>
+  <url><loc>https://madbounty.org/explorer/address/0x4211ed6f52b76ac38e43bf8bf059b22689e3de1b/</loc></url>
+  <url><loc>https://madbounty.org/explorer/address/0x8349e93f5e1db612789792a568cb95ebaa06da57/</loc></url>
+  <url><loc>https://madbounty.org/explorer/address/0xb8eb4afe199261de91c47e643e3f96f9f7e6e1fe/</loc></url>
+  <url><loc>https://madbounty.org/explorer/address/0xc4f8e3f3c64dffdd1dd1467d85df15138a87b429/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/1/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/10/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/11/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/12/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/13/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/14/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/15/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/16/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/17/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/18/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/2/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/3/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/4/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/5/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/6/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/7/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/8/</loc></url>
+  <url><loc>https://madbounty.org/explorer/bounty/9/</loc></url>
   <url><loc>https://madbounty.org/explorer/data.json</loc></url>
 </urlset>

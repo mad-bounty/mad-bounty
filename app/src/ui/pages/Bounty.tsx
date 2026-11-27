@@ -19,7 +19,7 @@ export function BountyPage({ id }: { id: bigint }) {
         <EmptyState title={`Couldn't load bounty #${id}`} icon={<Icon.Alert size={22} />}
           action={<><Btn kind="ghost" onClick={q.reload}>Try again</Btn><Btn href="#/">All bounties</Btn></>}>
           <p>{q.error}</p>
-          <p class="small muted">Bounty numbers are per network. Check the Base / Testnet switch at the top.</p>
+          <p class="small muted">Bounty numbers are per network. Check the Base / Base Sepolia switch at the top.</p>
         </EmptyState>
       </div>
     );
@@ -36,10 +36,10 @@ export function BountyPage({ id }: { id: bigint }) {
           <SpecView s={v.spec} specHash={v.specHash} open={v.bounty.state === 'Open'} />
           <MoneyBox v={v} me={w.address} />
           <Parties v={v} me={w.address} />
+          <Timeline v={v} next={next.deadline ? next : undefined} />
         </div>
-        <aside class="bside" aria-label="Actions and history">
+        <aside class="bside" aria-label="Actions">
           <div class="bside-desk"><ActionPanel v={v} next={next} /></div>
-          <Timeline events={v.timeline} next={next.deadline ? next : undefined} />
         </aside>
       </div>
     </div>

@@ -16,11 +16,16 @@ export function Browse() {
   const w = useWallet();
   const now = useNow();
   const list = useKeyed(String(chain), useAsync(() => getReader(chain).listBounties(), [chain]));
-  const [filter, setFilter] = useState<Filter>('open');
+  // `picked` is the user's explicit choice; until they click, the default follows the data:
+  // with nothing open but some bounties listed, open on All instead of an empty Open view.
+  const [picked, setFilter] = useState<Filter>();
   const [sort, setSort] = useState<Sort>('reward');
 
   const isOpenNow = (b: BountySummary) => b.state === 'Open' && Number(b.openUntil) > now;
   const mine = (b: BountySummary) => eqAddr(w.address, b.agent) || eqAddr(w.address, b.worker) || eqAddr(w.address, b.verifier);
+  const all0 = list.data ?? [];
+  const openCount0 = all0.filter(isOpenNow).length;
+  const filter: Filter = picked ?? (list.data && openCount0 === 0 && all0.length > 0 ? 'all' : 'open');
   const shown = useMemo(() => {
     const all = list.data ?? [];
     const f = all.filter((b) => (filter === 'open' ? isOpenNow(b) : filter === 'mine' ? mine(b) : true));
@@ -35,8 +40,9 @@ export function Browse() {
   const openCount = all.filter(isOpenNow).length;
   const openValue = all.filter(isOpenNow).reduce((s, b) => s + b.reward, 0n);
 
-  const seg = (v: Filter, label: string, n?: number) => (
-    <button type="button" role="radio" aria-checked={filter === v} class={filter === v ? 'on' : ''} onClick={() => setFilter(v)}>
+  const seg = (v: Filter, label: string, n?: number, off?: string) => (
+    <button type="button" role="radio" aria-checked={filter === v} class={filter === v ? 'on' : ''} onClick={() => setFilter(v)}
+      disabled={!!off} title={off} aria-disabled={off ? true : undefined}>
       {label}{n !== undefined && list.data ? <span class="seg-n">{n}</span> : null}
     </button>
   );
@@ -54,20 +60,20 @@ export function Browse() {
               : <>&nbsp;</>}
           </p>
         </div>
-        <Btn href="#/post" kind="primary" size="sm"><Icon.Plus size={16} />Post a bounty</Btn>
+        <Btn href="#/post" kind={w.address ? 'primary' : 'ghost'} size="sm"><Icon.Plus size={16} />Post a bounty</Btn>
       </div>
 
       <div class="toolbar">
         <div class="seg" role="radiogroup" aria-label="Show">
-          {seg('open', 'Open', openCount)}{seg('mine', 'Mine')}{seg('all', 'All', all.length)}
+          {seg('open', 'Open', openCount)}{seg('mine', 'Mine', undefined, w.address ? undefined : 'Connect a wallet')}{seg('all', 'All', all.length)}
         </div>
-        <label class="sort">
+        {shown.length > 1 && <label class="sort">
           <span class="sr">Sort by</span>
           <select value={sort} onChange={(e) => setSort((e.target as HTMLSelectElement).value as Sort)}>
             <option value="reward">Top reward</option>
             <option value="newest">Newest</option>
           </select>
-        </label>
+        </label>}
       </div>
 
       {list.error && <Notice tone="danger" title="Couldn't load bounties.">{list.error} <button class="linkish" type="button" onClick={list.reload}>Try again</button></Notice>}
@@ -78,7 +84,7 @@ export function Browse() {
         <div class="cards">{shown.map((b) => <BountyCard b={b} me={w.address} />)}</div>
       ) : list.data ? (
         all.length === 0 ? (
-          <EmptyState title={`No bounties on ${CHAINS[chain].name} yet`} icon={<Icon.Sparkle size={22} />}
+          <EmptyState title={`No bounties on ${CHAINS[chain].name} yet`}
             action={<><Btn href="#/post"><Icon.Plus size={16} />Post the first bounty</Btn>{chain === 8453 && <Btn kind="ghost" onClick={() => setChain(84532)}>Try it on testnet</Btn>}</>}>
             <p>A bounty is a paid task held in escrow. Someone posts a reward in USDC, a worker claims it by locking a small deposit, and a verifier decides if the work is good.</p>
             <ol class="teach">
@@ -91,7 +97,7 @@ export function Browse() {
           <EmptyState title="Connect a wallet to see yours" icon={<Icon.Wallet size={22} />}><p>Bounties you posted, claimed, or review show up here.</p></EmptyState>
         ) : (
           <EmptyState title={filter === 'open' ? 'Nothing open right now' : 'Nothing here yet'}
-            action={<Btn kind="ghost" onClick={() => setFilter('all')}>Show all {all.length} bounties</Btn>}>
+            action={<><Btn onClick={() => setFilter('all')}>Show all {all.length} bounties</Btn><Btn kind="ghost" href="#/post"><Icon.Plus size={16} />Post a bounty</Btn></>}>
             <p>{filter === 'open' ? 'Every bounty is claimed or finished. New ones appear here as soon as they are posted.' : 'You have no bounties as poster, worker, or verifier.'}</p>
           </EmptyState>
         )

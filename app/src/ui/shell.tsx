@@ -51,7 +51,6 @@ export function AppShell({ route, children }: { route: Route; children: Componen
           <div class="wrap">
             <Icon.Alert size={16} />
             <span><strong>Testnet</strong> · Base Sepolia. Test USDC only, no real value.</span>
-            <button type="button" class="linkish" onClick={() => setChain(8453)}>Switch to Base</button>
           </div>
         </div>
       )}
@@ -79,7 +78,7 @@ export function ChainToggle() {
   );
   return (
     <div class={`seg seg-chain${chain === 84532 ? ' is-test' : ''}`} role="radiogroup" aria-label="Network">
-      {opt(8453, 'Base')}{opt(84532, 'Testnet')}
+      {opt(8453, 'Base')}{opt(84532, 'Base Sepolia')}
     </div>
   );
 }
@@ -110,7 +109,7 @@ export function WalletButton() {
   if (w.chainId !== undefined && w.chainId !== chain) {
     return (
       <button type="button" class="btn b-gold btn-sm wbtn" disabled={busy} onClick={async () => { setBusy(true); try { await ensureChain(chain); } catch { /* wallet shows it */ } setBusy(false); }}>
-        {busy ? <Icon.Spinner size={16} /> : <Icon.Alert size={16} />}Switch to {chain === 84532 ? 'Testnet' : 'Base'}
+        {busy ? <Icon.Spinner size={16} /> : <Icon.Alert size={16} />}Switch to {chain === 84532 ? 'Base Sepolia' : 'Base'}
       </button>
     );
   }

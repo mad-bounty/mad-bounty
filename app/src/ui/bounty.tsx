@@ -1,10 +1,9 @@
 // Bounty building blocks: card, money box, timeline, spec view, parties.
-import { acceptPayout } from '@madbounty/sdk';
+import { useState } from 'preact/hooks';
 import type { Address } from 'viem';
 import type { BountySummary, BountyView, SpecStatus, TimelineEvent, TimelineKind } from '../types';
-import { duration, shortAddr, usdc, utc, verifierKindLabel } from './deps';
+import { duration, eventDetail, feeLabel, gapLabel, moneyRows, moneyView, outcomeOf, specHashOf, usdc, utc, verifierKindLabel, type MoneyRow, type Path, type RowAmount } from './deps';
 import { Addr, CopyBtn, Countdown, KindChip, Money, Notice, Skeleton, StatePill, TxLink, When } from './components';
-import { useNow } from './hooks';
 import * as Icon from './icons';
 
 const ZERO = '0x0000000000000000000000000000000000000000';
@@ -24,12 +23,13 @@ export function cardClock(b: Pick<BountySummary, 'state' | 'openUntil' | 'deadli
 export function BountyCard({ b, me }: { b: BountySummary; me?: Address }) {
   const clock = cardClock(b);
   const done = ['Paid', 'Burned', 'Refunded', 'Cancelled'].includes(b.state);
+  const generic = b.title.trim() === `Bounty #${b.id}`;
   const role = eqAddr(me, b.agent) ? 'You posted' : eqAddr(me, b.worker) ? (done ? 'You worked on it' : 'You\'re working') : eqAddr(me, b.verifier) ? (done ? 'You reviewed' : 'You review') : undefined;
   return (
     <a class={`bcard${done ? ' is-done' : ''}`} href={`#/bounty/${b.id}`} aria-label={`${b.title}, reward ${usdc(b.reward)} USDC, ${b.state}`}>
       <div class="bc-top">
         <StatePill state={b.state} />
-        <span class="bc-id mono">#{b.id.toString()}</span>
+        {!generic && <span class="bc-id mono">#{b.id.toString()}</span>}
       </div>
       <h3 class="bc-title">{b.title}</h3>
       <div class="bc-reward"><Money v={b.reward} size="lg" /></div>
@@ -48,46 +48,68 @@ export function BountyCard({ b, me }: { b: BountySummary; me?: Address }) {
 }
 
 // ---------------------------------------------------------------- MoneyBox
-export function MoneyBox({ v, me }: { v: BountyView; me?: Address }) {
-  const b = v.bounty;
-  const { toWorker, fee } = acceptPayout(b.reward, b.deposit, b.feeBps);
-  const youW = eqAddr(me, b.worker) || (b.state === 'Open' && !eqAddr(me, b.agent));
-  const youA = eqAddr(me, b.agent);
-  const refund = b.rejectMode === 'Refund';
-  const pct = (Number(b.feeBps) / 100).toString();
-  type Cell = { amt?: bigint; text: string; tone: 'pos' | 'neg' | 'neu' };
-  const rows: { k: string; hint: string; worker: Cell; agent: Cell }[] = [
-    { k: 'Work accepted', hint: `Worker gets reward minus ${pct}% fee, plus their deposit back.`,
-      worker: { amt: toWorker, text: 'paid out', tone: 'pos' }, agent: { text: 'Reward goes to worker', tone: 'neu' } },
-    { k: 'Work rejected', hint: refund ? 'After a 24h cooling-off period, the reward returns to the poster and the deposit burns.' : 'After a 24h cooling-off period, the reward and the deposit both burn.',
-      worker: { amt: b.deposit, text: 'loses deposit', tone: 'neg' },
-      agent: refund ? { amt: b.reward, text: 'gets back', tone: 'pos' } : { amt: b.reward, text: 'reward burns', tone: 'neg' } },
-    { k: 'Verifier silent', hint: 'If nobody gives a verdict before the review deadline, the worker is paid.',
-      worker: { amt: toWorker, text: 'paid out', tone: 'pos' }, agent: { text: 'Reward goes to worker', tone: 'neu' } },
-    { k: 'Worker abandons', hint: 'If no work arrives in time, the deposit burns and the bounty reopens.',
-      worker: { amt: b.deposit, text: 'loses deposit', tone: 'neg' }, agent: { text: 'Bounty reopens', tone: 'neu' } },
-  ];
-  const cell = (c: Cell, who: string) => (
-    <td class={`mb-${c.tone}`} data-label={who}>
-      {c.amt !== undefined ? <><span class="mb-amt">{c.tone === 'neg' ? '−' : c.tone === 'pos' ? '+' : ''}{usdc(c.amt)}</span><span class="mb-u"> USDC</span><span class="mb-t">{c.text}</span></> : <span class="mb-t mb-t-only">{c.text}</span>}
+const TERMINAL_STATES = ['Paid', 'Burned', 'Refunded', 'Cancelled'];
+export const isTerminal = (state: string) => TERMINAL_STATES.includes(state);
+/** Which money-table row a finished bounty realised. */
+const ROW_OF: Partial<Record<Path, MoneyRow['id']>> = { accept: 'accept', timeout: 'timeout', burn: 'reject', refund: 'reject' };
+
+function signed(n: bigint): string {
+  return n > 0n ? `+${usdc(n)}` : n < 0n ? `−${usdc(-n)}` : usdc(0n);
+}
+function MoneyCell({ c, who }: { c: RowAmount | null; who: string }) {
+  if (!c) return <td class="mb-neu" data-label={who}><span class="mb-t">—</span></td>;
+  const tone = c.net > 0n ? 'pos' : c.net < 0n ? 'neg' : 'neu';
+  const w = c.wallet;
+  return (
+    <td class={`mb-${tone}`} data-label={who}>
+      <span class="mb-amt">{signed(c.net)}</span><span class="mb-u"> USDC</span>
+      <span class="mb-t">{c.note}</span>
+      {w && w.dir === 'in' && w.of !== undefined && <span class="mb-g">gets {usdc(w.amount)} back <span class="nowrap">({usdc(w.of)} deposit + {usdc(w.amount - w.of)})</span></span>}
     </td>
   );
+}
+
+export function MoneyBox({ v, me }: { v: BountyView; me?: Address }) {
+  const b = v.bounty;
+  const rows = moneyRows(moneyView(b));
+  const fee = rows[0]!.treasury;
+  const done = isTerminal(b.state);
+  const out = done ? outcomeOf(v.timeline, b.id) : undefined;
+  const realized = out ? ROW_OF[out.path] : undefined;
+  const youW = eqAddr(me, b.worker) || (b.state === 'Open' && !!me && !eqAddr(me, b.agent));
+  const youA = eqAddr(me, b.agent);
   return (
-    <section class="panel" aria-labelledby="mb-h">
+    <section class={`panel${done ? ' mb-done' : ''}`} aria-labelledby="mb-h">
       <h2 class="panel-h" id="mb-h"><Icon.Coins size={18} />Who gets what</h2>
       <div class="mb-in">
         <div><span class="k">Reward</span><Money v={b.reward} /></div>
-        <div><span class="k">Deposit</span><Money v={b.deposit} /></div>
-        <div><span class="k">Fee</span><span class="money money-md">{pct}%<span class="money-unit"> · {usdc(fee)} USDC</span></span></div>
+        <div><span class="k">Worker deposit</span><Money v={b.deposit} /></div>
+        <div><span class="k">Protocol fee</span><Money v={fee} /><span class="mb-kx">{feeLabel(b.feeBps)}</span></div>
       </div>
+      {done && !realized && out && <p class="mb-note">{out.word}: none of these happened — nobody claimed it, and the reward went back to the poster.</p>}
       <table class="mbox">
+        <caption class="sr">Net change in USDC for each party, per outcome</caption>
         <thead><tr><th scope="col">If…</th><th scope="col">Worker{youW ? ' (you)' : ''}</th><th scope="col">Poster{youA ? ' (you)' : ''}</th></tr></thead>
         <tbody>
-          {rows.map((r) => (
-            <tr><th scope="row" title={r.hint}>{r.k}<span class="mb-hint">{r.hint}</span></th>{cell(r.worker, youW ? 'Worker (you)' : 'Worker')}{cell(r.agent, youA ? 'Poster (you)' : 'Poster')}</tr>
-          ))}
+          {rows.map((r) => {
+            const hit = realized === r.id;
+            const foot = [r.treasury > 0n ? `${usdc(r.treasury)} fee to treasury` : '', r.burned > 0n ? `${usdc(r.burned)} burned` : ''].filter(Boolean).join(' · ');
+            return (
+              <tr class={hit ? `mb-hit${out?.path === 'burn' || out?.path === 'refund' ? ' mb-hit-neg' : ''}` : done ? 'mb-dim' : ''} aria-current={hit ? 'true' : undefined}>
+                <th scope="row">
+                  {hit && <span class="mb-tag"><Icon.Check size={12} />What happened</span>}
+                  {r.label}
+                  <span class="mb-hint">{r.hint}</span>
+                  {foot && <span class="mb-foot">+ {foot}</span>}
+                </th>
+                <MoneyCell c={r.worker} who={youW ? 'Worker (you)' : 'Worker'} />
+                <MoneyCell c={r.poster} who={youA ? 'Poster (you)' : 'Poster'} />
+              </tr>
+            );
+          })}
         </tbody>
       </table>
+      <p class="mb-fine">Numbers are each party's <strong>net</strong> change. In every row, worker + poster + fee + burned adds up to zero.</p>
     </section>
   );
 }
@@ -109,44 +131,55 @@ export function Parties({ v, me }: { v: BountyView; me?: Address }) {
       </div>
       <div class="party"><span class="k">Verdict by</span><span class="v">{verifierKindLabel(v.verifierKind)}</span></div>
       <div class="party"><span class="k">On reject</span><span class="v">{b.rejectMode === 'Refund' ? <span class="t-gold">Reward back to poster, deposit burns</span> : 'Reward + deposit burn'}</span></div>
+      <div class="party"><span class="k">Cooling-off</span><span class="v">24h after a reject, before it is final</span></div>
       <div class="party"><span class="k">Windows</span><span class="v">{duration(b.workWindow)} to work · {duration(b.reviewWindow)} to review</span></div>
-      {!isZero(b.claimAuthorizer) && row('Claim approval', b.claimAuthorizer)}
+      {!isZero(b.claimAuthorizer) && row('Claim approver', b.claimAuthorizer)}
       <div class="party"><span class="k">Vault</span><span class="v"><Addr a={b.vault} label="vault" /> <span class="muted small">holds {usdc(v.vaultBalance)} USDC</span></span></div>
     </section>
   );
 }
 
 // ---------------------------------------------------------------- Timeline
-const TL: Record<TimelineKind, { label: string; tone: string }> = {
-  Posted: { label: 'Posted', tone: 'accent' }, Cancelled: { label: 'Cancelled by poster', tone: 'muted' }, Expired: { label: 'Expired', tone: 'muted' },
-  Claimed: { label: 'Claimed', tone: 'gold' }, Submitted: { label: 'Work submitted', tone: 'gold' }, ReviewExtended: { label: 'Review extended', tone: 'gold' },
-  Rejected: { label: 'Rejected', tone: 'danger' }, Reversed: { label: 'Rejection reversed', tone: 'green' }, Paid: { label: 'Worker paid', tone: 'green' },
-  Burned: { label: 'Funds burned', tone: 'danger' }, Refunded: { label: 'Refunded to poster', tone: 'muted' }, Abandoned: { label: 'Abandoned · reopened', tone: 'danger' },
-  Owed: { label: 'Payment queued', tone: 'gold' }, Withdrawn: { label: 'Withdrawn', tone: 'green' },
+const TL: Record<TimelineKind, string> = {
+  Posted: 'Posted', Cancelled: 'Cancelled by poster', Expired: 'Expired — nobody claimed',
+  Claimed: 'Claimed', Submitted: 'Work submitted', ReviewExtended: 'Review extended',
+  Rejected: 'Rejected', Reversed: 'Rejection reversed', Paid: 'Worker paid',
+  Burned: 'Funds burned', Refunded: 'Refunded to poster', Abandoned: 'Abandoned · reopened',
+  Owed: 'Payment queued', Withdrawn: 'Withdrawn',
 };
-function tlDetail(e: TimelineEvent): string | undefined {
-  const a = e.args;
-  const amt = (k: string) => (typeof a[k] === 'bigint' ? `${usdc(a[k] as bigint)} USDC` : undefined);
-  if (e.kind === 'Claimed' && typeof a.worker === 'string') return `by ${shortAddr(a.worker)}`;
-  if (e.kind === 'Posted') return amt('reward') && `${amt('reward')} escrowed`;
-  if (e.kind === 'Paid') return amt('toWorker') && `${amt('toWorker')} to worker`;
-  if (e.kind === 'Owed' || e.kind === 'Withdrawn') return amt('amount');
-  return undefined;
+/** Outcome-coloured events; everything else that already happened shares one 'done' style. */
+const TL_TONE: Partial<Record<TimelineKind, string>> = {
+  Paid: 'green', Withdrawn: 'green', Reversed: 'green', Burned: 'danger', Rejected: 'danger', Abandoned: 'danger', Cancelled: 'muted', Expired: 'muted', Refunded: 'muted',
+};
+function tlLabel(e: TimelineEvent): string {
+  if (e.kind === 'Paid') return e.args.byTimeout === true ? 'Paid on timeout' : 'Accepted · worker paid';
+  return TL[e.kind];
 }
-export function Timeline({ events, next }: { events: TimelineEvent[]; next?: { headline: string; deadline?: number } }) {
+/** '2026-11-27 08:55:12 UTC' — seconds matter when two steps land in the same minute. */
+const utcSec = (t: number) => new Date(t * 1000).toISOString().slice(0, 19).replace('T', ' ') + ' UTC';
+export function Timeline({ v, next }: { v: BountyView; next?: { headline: string; deadline?: number } }) {
+  const b = v.bounty;
+  const events = v.timeline;
+  const ctx = { reward: b.reward, deposit: b.deposit, feeBps: b.feeBps, verifier: b.verifier };
   return (
     <section class="panel" aria-labelledby="tl-h">
       <h2 class="panel-h" id="tl-h"><Icon.Clock size={18} />Timeline</h2>
       <ol class="tl">
-        {events.map((e) => {
-          const m = TL[e.kind]; const d = tlDetail(e);
+        {events.map((e, i) => {
+          const d = eventDetail(e, ctx);
+          const prev = i > 0 ? events[i - 1] : undefined;
+          const gap = prev && e.time && prev.time ? gapLabel(prev.time, e.time, prev.kind) : '';
           return (
-            <li class={`tl-i tone-${m.tone}`}>
+            <li class={`tl-i tl-done tone-${TL_TONE[e.kind] ?? 'accent'}`}>
               <span class="tl-dot" aria-hidden="true" />
               <div class="tl-b">
-                <span class="tl-l">{m.label}</span>
+                <span class="tl-l">{tlLabel(e)}</span>
                 {d && <span class="tl-d">{d}</span>}
-                <span class="tl-m"><When t={e.time} /> · <TxLink hash={e.tx}>tx</TxLink></span>
+                <span class="tl-m">
+                  {e.time ? <><time dateTime={new Date(e.time * 1000).toISOString()}>{utcSec(e.time)}</time><span> · <When t={e.time} /></span></> : null}
+                  {gap && <span class="tl-gap"> · {gap}</span>}
+                </span>
+                <TxLink hash={e.tx} label={`View transaction for ${tlLabel(e)}`}>View tx</TxLink>
               </div>
             </li>
           );
@@ -154,7 +187,7 @@ export function Timeline({ events, next }: { events: TimelineEvent[]; next?: { h
         {next && (
           <li class="tl-i tl-next">
             <span class="tl-dot" aria-hidden="true" />
-            <div class="tl-b"><span class="tl-l">Next: {next.headline}</span>{next.deadline ? <span class="tl-m" title={utc(next.deadline)}>deadline <When t={next.deadline} /></span> : null}</div>
+            <div class="tl-b"><span class="tl-l">Next: {next.headline}</span>{next.deadline ? <span class="tl-m">deadline {utc(next.deadline)} · <When t={next.deadline} /></span> : null}</div>
           </li>
         )}
       </ol>
@@ -177,6 +210,29 @@ function renderEvidence(f: unknown): string {
   }
   return '';
 }
+/** Paste-and-compare: keccak256 of the exact UTF-8 bytes typed, no trimming or canonicalising. */
+function SpecCheck({ specHash }: { specHash: string }) {
+  const [text, setText] = useState('');
+  const h = text ? specHashOf(text) : undefined;
+  const ok = !!h && h.toLowerCase() === specHash.toLowerCase();
+  return (
+    <details class="speccheck">
+      <summary>Check a spec</summary>
+      <div class="field">
+        <label for="spec-paste">Paste the exact spec text the poster sent you</label>
+        <textarea id="spec-paste" class="mono" rows={5} spellcheck={false} value={text} onInput={(e) => setText((e.target as HTMLTextAreaElement).value)} placeholder='{"specVersion":"madb-spec/1", …}' />
+        <p class="hint"><Icon.Info size={14} />Hashed in your browser, byte for byte. A single changed space or line ending gives a different hash.</p>
+      </div>
+      {h && (
+        <div class={`sc-res ${ok ? 'sc-ok' : 'sc-bad'}`} role="status">
+          {ok ? <Icon.ShieldCheck size={16} /> : <Icon.Alert size={16} />}
+          <span><strong>{ok ? 'Match.' : 'No match.'}</strong> {ok ? 'This is the text the bounty committed to.' : 'This is not the text the bounty committed to — don\'t rely on it.'}<code class="mono sc-h">{h}</code></span>
+        </div>
+      )}
+    </details>
+  );
+}
+
 export function SpecView({ s, specHash, open = true }: { s: SpecStatus; specHash: string; open?: boolean }) {
   if (s.kind === 'loading') {
     return <section class="panel"><Skeleton h={14} w="40%" /><div style={{ height: '12px' }} /><Skeleton h={14} /><Skeleton h={14} w="90%" /><Skeleton h={14} w="70%" /></section>;
@@ -186,9 +242,10 @@ export function SpecView({ s, specHash, open = true }: { s: SpecStatus; specHash
       <section class="panel" aria-labelledby="sp-h">
         <h2 class="panel-h" id="sp-h"><Icon.Doc size={18} />The task</h2>
         {s.kind === 'mismatch' && <Notice tone="danger" title="Spec doesn't match.">The text found in the post transaction does not hash to the on-chain specHash. Don't rely on it — ask the poster for the real spec.</Notice>}
-        {s.kind === 'offchain' && <Notice tone="info" title="Spec not published on-chain.">The poster (probably an agent using the SDK) hosts the task text elsewhere.{open ? ' Get it from them and check that its keccak256 equals the hash below before claiming.' : ' Its keccak256 must equal the hash below.'}</Notice>}
+        {s.kind === 'offchain' && <Notice tone="info" title="Spec not on-chain.">The task text was published off-chain. Ask the poster for it, then check its keccak256 matches:{open ? ' do this before you claim.' : ''}</Notice>}
         {s.kind === 'invalid' && <Notice tone="warn" title="Spec can't be read.">{s.reason}</Notice>}
         <div class="hashline"><span class="k">specHash</span><span class="hash-row"><code class="mono">{specHash}</code><CopyBtn text={specHash} label="specHash" /></span></div>
+        {s.kind !== 'invalid' && <SpecCheck specHash={specHash} />}
       </section>
     );
   }
@@ -221,22 +278,45 @@ export function SpecView({ s, specHash, open = true }: { s: SpecStatus; specHash
 export function BountyHeader({ v }: { v: BountyView }) {
   const b = v.bounty;
   const clock = cardClock(b);
-  const now = useNow();
+  const done = isTerminal(b.state);
+  const out = done ? outcomeOf(v.timeline, b.id) : undefined;
+  const genericTitle = v.title.trim() === `Bounty #${b.id}`;
+  const fee = moneyRows(moneyView(b))[0]!.treasury;
   return (
     <div class="bhead">
       <div class="bhead-top">
         <a class="back" href="#/"><Icon.Back size={16} />All bounties</a>
       </div>
-      <div class="bhead-pills"><StatePill state={b.state} /><KindChip kind={v.verifierKind} /><span class="bc-id mono">#{b.id.toString()}</span></div>
+      <div class="bhead-pills"><StatePill state={b.state} /><KindChip kind={v.verifierKind} />{!genericTitle && <span class="bc-id mono">#{b.id.toString()}</span>}</div>
       <h1 class="bhead-t">{v.title}</h1>
-      <div class="bhead-reward">
-        <Money v={b.reward} size="hero" />
-        <span class="bhead-sub">reward{b.state === 'Open' ? <> · claim with a <strong>{usdc(b.deposit)} USDC</strong> deposit</> : null}</span>
-      </div>
+      {out && out.path !== 'none' ? (
+        <div class={`bhead-out out-${out.path}`}>
+          <span class="bo-k">{out.word}</span>
+          <div class="bhead-reward">
+            <Money v={out.amount ?? b.reward} size="hero" />
+            <span class="bo-to">{out.path === 'accept' || out.path === 'timeout'
+              ? <>paid out to {out.to ? <Addr a={out.to} label="worker" /> : 'the worker'} <span class="t-dim">(incl. their deposit back)</span></>
+              : out.to}</span>
+          </div>
+          <p class="bhead-sub">
+            {(out.path === 'accept' || out.path === 'timeout')
+              ? <>{usdc(b.reward)} reward − {usdc(fee)} fee + {usdc(b.deposit)} deposit back · <strong class="t-green nowrap">+{usdc(b.reward - fee)} USDC net</strong> to the worker</>
+              : out.path === 'burn' ? <>{usdc(b.reward)} reward + {usdc(b.deposit)} worker deposit</>
+                : <>{usdc(b.reward)} USDC reward</>}
+          </p>
+        </div>
+      ) : (
+        <div class="bhead-reward">
+          <Money v={b.reward} size="hero" />
+          <span class="bhead-sub">reward{b.state === 'Open' ? <> · claim with a <strong>{usdc(b.deposit)} USDC</strong> deposit</> : null}</span>
+        </div>
+      )}
       <div class="bhead-meta">
-        {clock && !['Paid', 'Burned', 'Refunded', 'Cancelled'].includes(b.state) && <Countdown to={clock.to} label={clock.label} />}
-        <span class="muted small">Posted <When t={v.postedAt} /></span>
-        {now > 0 && null}
+        {clock && !done && <Countdown to={clock.to} label={clock.label} />}
+        <span class="muted small">
+          {done && v.timeline.length > 0 && v.timeline[v.timeline.length - 1]!.time > 0 && <>Finished <When t={v.timeline[v.timeline.length - 1]!.time} /> · </>}
+          Posted <When t={v.postedAt} />
+        </span>
       </div>
     </div>
   );

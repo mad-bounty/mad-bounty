@@ -90,10 +90,10 @@ export function Addr({ a, label, you }: { a: string; label?: string; you?: boole
   );
 }
 
-export function TxLink({ hash, children }: { hash: string; children?: ComponentChildren }) {
+export function TxLink({ hash, children, label }: { hash: string; children?: ComponentChildren; label?: string }) {
   const chain = useChain();
   return (
-    <a class="txlink" href={`${CHAINS[chain].explorer}/tx/${hash}`} target="_blank" rel="noopener">
+    <a class="txlink" href={`${CHAINS[chain].explorer}/tx/${hash}`} target="_blank" rel="noopener" aria-label={label} title={`${hash} — view on Basescan`}>
       {children ?? <span class="mono">{shortAddr(hash)}</span>}<Icon.External size={12} />
     </a>
   );
@@ -103,7 +103,7 @@ export function TxLink({ hash, children }: { hash: string; children?: ComponentC
 export function EmptyState({ title, children, icon, action }: { title: string; children?: ComponentChildren; icon?: ComponentChildren; action?: ComponentChildren }) {
   return (
     <div class="empty">
-      <div class="empty-ic" aria-hidden="true">{icon ?? <Icon.Search size={22} />}</div>
+      <div class="empty-ic" aria-hidden="true">{icon ?? <Icon.Inbox size={22} />}</div>
       <h3>{title}</h3>
       {children && <div class="empty-body">{children}</div>}
       {action && <div class="empty-act">{action}</div>}
@@ -138,7 +138,7 @@ export function Btn({ kind = 'primary', size, busy, disabled, onClick, href, chi
   onClick?: (e: MouseEvent) => void; href?: string; children: ComponentChildren; type?: 'button' | 'submit'; label?: string;
 }) {
   const cls = `btn b-${kind}${size ? ` btn-${size}` : ''}${full ? ' btn-full' : ''}${busy ? ' is-busy' : ''}`;
-  if (href) return <a class={cls} href={href} aria-label={label}>{children}</a>;
+  if (href) return <a class={cls} href={href} aria-label={label} onClick={onClick}>{children}</a>;
   return (
     <button type={type} class={cls} disabled={disabled || busy} aria-busy={busy || undefined} onClick={onClick} aria-label={label}>
       {busy && <Icon.Spinner size={16} />}{children}

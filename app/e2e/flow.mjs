@@ -158,7 +158,7 @@ async function connect(page) {
   await page.getByRole('dialog').waitFor({ state: 'detached', timeout: 15_000 });
 }
 async function selectTestnet(page) {
-  await page.getByRole('radio', { name: 'Testnet' }).first().click();
+  await page.getByRole('radio', { name: 'Base Sepolia' }).first().click();
   await page.locator('.testnet-banner').waitFor({ timeout: 5_000 });
 }
 const reads = {
@@ -393,8 +393,8 @@ try {
   const workerFinal = await waitBalance(workerW.address, workerAfterClaim + 1_950_000n);
   check('C', workerFinal - workerAfterClaim === 1_950_000n, `worker USDC +${Number(workerFinal - workerAfterClaim) / 1e6} on accept (net over run ${Number(workerFinal - bal0.worker) / 1e6})`);
   await V.page.reload({ waitUntil: 'domcontentloaded' }); await settle(V.page);
-  await V.page.locator('.tl').first().getByText('Worker paid').first().waitFor({ timeout: 30_000 }).catch(() => {});
-  check('C', await V.page.locator('.tl:visible').getByText('Worker paid').first().isVisible().catch(() => false), 'timeline shows "Worker paid" after refresh');
+  await V.page.locator('.tl').first().getByText(/worker paid/i).first().waitFor({ timeout: 30_000 }).catch(() => {});
+  check('C', await V.page.locator('.tl:visible').getByText(/worker paid/i).first().isVisible().catch(() => false), 'timeline shows "Worker paid" after refresh');
   await shot(V.page, 'C-04-bounty-paid', true);
 
   await go(W.page, '#/me');

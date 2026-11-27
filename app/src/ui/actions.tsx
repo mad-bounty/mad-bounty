@@ -3,10 +3,11 @@ import { useMemo, useState } from 'preact/hooks';
 import { assessBounty, type SafetyWarning } from '@madbounty/sdk';
 import type { Address, Hex } from 'viem';
 import type { ActionId, ActionOption, BountyView, NextStep } from '../types';
-import { CHAINS, availableActions, relTime, usdc, utc } from './deps';
+import { CHAINS, availableActions, outcomeForViewer, outcomeOf, prefillFromSpec, relTime, usdc, utc } from './deps';
 import { getWriter, openWalletPicker, runTx, useChain, useWallet } from './store';
 import { useNow } from './hooks';
 import { Btn, Modal, Notice } from './components';
+import { startSimilar } from './pages/Post';
 import * as Icon from './icons';
 
 const ROLE: Record<ActionOption['role'], string> = { agent: 'Poster', worker: 'Worker', verifier: 'Verifier', anyone: 'Anyone' };
@@ -63,14 +64,18 @@ export function ActionPanel({ v, next }: { v: BountyView; next: NextStep }) {
   const blocked = actions.filter((a) => a !== primary && a.role !== 'anyone' && !a.enabled);
 
   const start = (a: ActionOption) => { if (!me) { openWalletPicker(); return; } setOpen(a); };
+  const terminal = ['Paid', 'Burned', 'Refunded', 'Cancelled'].includes(v.bounty.state);
+  const out = terminal ? outcomeOf(v.timeline, v.bounty.id) : undefined;
+  const mineLine = out ? outcomeForViewer(out, { agent: v.bounty.agent, worker: v.bounty.worker, verifier: v.bounty.verifier }, me) : undefined;
+  const similar = terminal && v.spec.kind === 'verified' ? prefillFromSpec(v.spec.spec) : undefined;
 
   return (
     <section class="panel apanel" aria-labelledby="ap-h">
       <h2 class="sr" id="ap-h">What you can do</h2>
-      <div class="next">
-        <span class="next-k">What happens next</span>
-        <strong class="next-h">{next.headline}</strong>
-        <p class="next-d">{next.detail}</p>
+      <div class={`next${out ? ` next-out out-${out.path}` : ''}`}>
+        <span class="next-k">{out ? 'Outcome' : 'What happens next'}</span>
+        <strong class="next-h">{mineLine ?? (out && out.path !== 'none' ? out.headline : next.headline)}</strong>
+        <p class="next-d">{out && out.path !== 'none' ? out.detail : next.detail}</p>
         {next.deadline && <span class="next-dl" title={utc(next.deadline)}><Icon.Clock size={14} />{next.deadline > now ? 'Deadline' : 'Deadline passed'}: <time>{utc(next.deadline)}</time></span>}
       </div>
 
@@ -107,7 +112,15 @@ export function ActionPanel({ v, next }: { v: BountyView; next: NextStep }) {
           {blocked.map((a) => <ActionRow a={a} onGo={start} busy={false} />)}
         </details>
       )}
-      {actions.length === 0 && <p class="muted small">This bounty is finished. Nothing left to do.</p>}
+      {actions.length === 0 && !terminal && <p class="muted small">Nothing to do here right now.</p>}
+      {terminal && (
+        <div class="ap-similar">
+          <Btn kind="ghost" full href="#/post" onClick={similar ? () => startSimilar(similar, v.bounty.id) : undefined}>
+            <Icon.Plus size={16} />Post a similar bounty
+          </Btn>
+          <p class="why">{similar ? 'Opens the wizard with this task\'s text filled in. You set the money and reviewer.' : 'This task\'s text isn\'t on-chain, so the wizard starts empty.'}</p>
+        </div>
+      )}
 
       {open && (
         <ConfirmSheet v={v} a={open} me={me!} now={now} onClose={() => setOpen(undefined)}
@@ -226,8 +239,8 @@ export function ConfirmSheet({ v, a, me, now, onClose, onConfirm }: {
           </div>
         )}
 
-        <p class="audit-line"><Icon.Alert size={14} /><span>MAD Bounty is <strong>NOT externally audited</strong>. Contracts are immutable; only risk what you can afford to lose.</span></p>
       </div>
+      <p class="audit-line audit-near"><Icon.Alert size={14} /><span><strong>NOT externally audited</strong> — only escrow what you can afford to lose. Contracts are immutable.</span></p>
       <div class="sheet-foot">
         <span class="sheet-note">Opens your wallet</span>
         <Btn kind="quiet" onClick={onClose}>Not now</Btn>

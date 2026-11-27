@@ -45,3 +45,4 @@ export const Search = (p: P) => <I {...p}><circle cx="11" cy="11" r="7" /><path 
 export const Chevron = (p: P) => <I {...p}><path d="M9 6l6 6-6 6" /></I>;
 export const Trash = (p: P) => <I {...p}><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></I>;
 export const Sparkle = (p: P) => <I {...p}><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" /></I>;
+export const Inbox = (p: P) => <I {...p}><path d="M3 13l2.5-8h13L21 13v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" /><path d="M3 13h5l1.5 2.5h5L16 13h5" /></I>;
