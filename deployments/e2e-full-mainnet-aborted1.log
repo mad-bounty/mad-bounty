@@ -1,0 +1,68 @@
+2026-11-27T09:47:55Z ==== NOW phase. agent 0xc4F8E3f3c64dfFDd1Dd1467d85Df15138a87b429 worker 0x8349E93F5E1Db612789792A568cb95EBaA06dA57 verifier 0xb8Eb4afe199261de91C47e643E3f96f9F7e6e1FE
+2026-11-27T09:47:56Z FAIL fund worker ETH  (Error: HTTP error 403 with body: {"jsonrpc":"2.0","error":{"code":-32602,"message":"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode"},"id":5})
+2026-11-27T09:47:57Z FAIL fund verifier ETH  (Error: server returned an error response: error code -32000: nonce too low: next nonce 2, tx nonce 1)
+2026-11-27T09:47:58Z FAIL agent -> worker 10 USDC (deposits)  (Error: HTTP error 403 with body: {"jsonrpc":"2.0","error":{"code":-32602,"message":"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode"},"id":5})
+2026-11-27T09:47:59Z FAIL agent approve  (Error: server returned an error response: error code -32000: nonce too low: next nonce 3, tx nonce 2)
+2026-11-27T09:48:00Z FAIL worker approve  (Error: HTTP error 403 with body: {"jsonrpc":"2.0","error":{"code":-32602,"message":"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode"},"id":5})
+2026-11-27T09:48:00Z FAIL verifier approve  (Error: Failed to estimate gas: server returned an error response: error code -32000: gas required exceeds allowance (0))
+2026-11-27T09:48:00Z PASS NAME()
+2026-11-27T09:48:00Z PASS VERSION()
+2026-11-27T09:48:01Z PASS TERMS() non-empty + mentions silence rule  ("Agent escrows reward; worker escrows deposit on claim. Named verifier decides. )
+2026-11-27T09:48:01Z PASS manualURI()
+2026-11-27T09:48:01Z PASS manualHash()
+2026-11-27T09:48:01Z PASS treasury()
+2026-11-27T09:48:02Z PASS usdc()
+2026-11-27T09:48:02Z PASS MAX_FEE_BPS == 500
+2026-11-27T09:48:02Z PASS feeBps == 500 (5%)
+2026-11-27T09:48:02Z PASS lowerFee by non-treasury reverts NotAllowed
+2026-11-27T09:48:03Z PASS lowerFee raise by treasury reverts BadParam
+2026-11-27T09:48:03Z PASS lowerFee equal by treasury reverts BadParam
+2026-11-27T09:48:03Z PASS minDeposit($2) = $1 floor
+2026-11-27T09:48:03Z PASS minDeposit($100) = $2 (2%)
+2026-11-27T09:48:04Z PASS post reward < $1 reverts BadParam
+2026-11-27T09:48:04Z PASS post reward > $1000 reverts BadParam
+2026-11-27T09:48:04Z PASS post deposit < floor reverts BadParam
+2026-11-27T09:48:04Z PASS post deposit > reward reverts BadParam
+2026-11-27T09:48:05Z PASS post workWindow < 1h reverts BadParam
+2026-11-27T09:48:05Z PASS post reviewWindow < 12h reverts BadParam
+2026-11-27T09:48:05Z PASS post openUntil in past reverts BadParam
+2026-11-27T09:48:05Z PASS post verifier = 0 reverts BadParam
+2026-11-27T09:48:06Z FAIL post HashReveal window+12h > review reverts BadConfig  (Error: server returned an error response: error code 3: execution reverted: ERC20: transfer amount exceeds allowance, data: "0x08c379a000000000000000000000000000000000000000000000000000000000000000200)
+2026-11-27T09:48:06Z FAIL post HashReveal window < 1h reverts BadConfig  (Error: server returned an error response: error code 3: execution reverted: ERC20: transfer amount exceeds allowance, data: "0x08c379a000000000000000000000000000000000000000000000000000000000000000200)
+2026-11-27T09:48:06Z PASS adapter onPost by non-core reverts NotCore
+2026-11-27T09:48:07Z PASS withdraw with nothing owed reverts BadParam
+2026-11-27T09:48:07Z PASS retryBurn with nothing owed reverts BadParam
+2026-11-27T09:48:08Z FAIL cancel: post #1  (Error: Failed to estimate gas: server returned an error response: error code 3: execution reverted: ERC20: transfer amount exceeds allowance, data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000)
+2026-11-27T09:50:11Z ==== NOW phase. agent 0xc4F8E3f3c64dfFDd1Dd1467d85Df15138a87b429 worker 0x8349E93F5E1Db612789792A568cb95EBaA06dA57 verifier 0xb8Eb4afe199261de91C47e643E3f96f9F7e6e1FE
+2026-11-27T09:50:12Z FAIL fund verifier ETH  (Error: HTTP error 403 with body: {"jsonrpc":"2.0","error":{"code":-32602,"message":"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode"},"id":5})
+2026-11-27T09:50:13Z FAIL agent approve  (Error: HTTP error 403 with body: {"jsonrpc":"2.0","error":{"code":-32602,"message":"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode"},"id":5})
+2026-11-27T09:50:13Z FAIL worker approve  (Error: HTTP error 403 with body: {"jsonrpc":"2.0","error":{"code":-32602,"message":"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode"},"id":5})
+2026-11-27T09:50:14Z FAIL verifier approve  (Error: HTTP error 403 with body: {"jsonrpc":"2.0","error":{"code":-32602,"message":"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode"},"id":5})
+2026-11-27T09:50:14Z PASS NAME()
+2026-11-27T09:50:15Z PASS VERSION()
+2026-11-27T09:50:15Z PASS TERMS() non-empty + mentions silence rule  ("Agent escrows reward; worker escrows deposit on claim. Named verifier decides. )
+2026-11-27T09:50:15Z PASS manualURI()
+2026-11-27T09:50:15Z PASS manualHash()
+2026-11-27T09:50:16Z PASS treasury()
+2026-11-27T09:50:16Z PASS usdc()
+2026-11-27T09:50:16Z PASS MAX_FEE_BPS == 500
+2026-11-27T09:50:16Z PASS feeBps == 500 (5%)
+2026-11-27T09:50:17Z PASS lowerFee by non-treasury reverts NotAllowed
+2026-11-27T09:50:17Z PASS lowerFee raise by treasury reverts BadParam
+2026-11-27T09:50:17Z PASS lowerFee equal by treasury reverts BadParam
+2026-11-27T09:50:17Z PASS minDeposit($2) = $1 floor
+2026-11-27T09:50:18Z PASS minDeposit($100) = $2 (2%)
+2026-11-27T09:50:18Z PASS post reward < $1 reverts BadParam
+2026-11-27T09:50:18Z PASS post reward > $1000 reverts BadParam
+2026-11-27T09:50:18Z PASS post deposit < floor reverts BadParam
+2026-11-27T09:50:19Z PASS post deposit > reward reverts BadParam
+2026-11-27T09:50:19Z PASS post workWindow < 1h reverts BadParam
+2026-11-27T09:50:19Z PASS post reviewWindow < 12h reverts BadParam
+2026-11-27T09:50:19Z PASS post openUntil in past reverts BadParam
+2026-11-27T09:50:20Z PASS post verifier = 0 reverts BadParam
+2026-11-27T09:50:20Z PASS post HashReveal window+12h > review reverts BadConfig
+2026-11-27T09:50:20Z PASS post HashReveal window < 1h reverts BadConfig
+2026-11-27T09:50:20Z PASS adapter onPost by non-core reverts NotCore
+2026-11-27T09:50:21Z PASS withdraw with nothing owed reverts BadParam
+2026-11-27T09:50:21Z PASS retryBurn with nothing owed reverts BadParam
+2026-11-27T09:50:22Z FAIL cancel: post #1  (Error: HTTP error 403 with body: {"jsonrpc":"2.0","error":{"code":-32602,"message":"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode"},"id":5})

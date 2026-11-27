@@ -1,0 +1,1 @@
+{"agentId": 1230263, "tx": "0x0cd14470d593f6038175b1c4fea486f3bdbd27a055fbcab8798efab9c286e8d1", "owner": "0xc4F8E3f3c64dfFDd1Dd1467d85Df15138a87b429", "duplicate": {"agentId": 1230264, "tx": "0x1ecfb94de18871ddd94b30d141a5af43c09310b9d465b204be3bfa8aebe555a1", "note": "accidental second registration from a concurrent run; same agentURI"}}

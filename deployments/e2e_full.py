@@ -6,7 +6,7 @@ Results append to e2e-full.log; pending actions in e2e-full-state.json. Keys are
 import json, os, subprocess, sys, time
 
 MAINNET = os.environ.get("MADB_NET") == "mainnet"
-R = os.environ.get("MADB_RPC") or ("https://base-rpc.publicnode.com" if MAINNET else "https://sepolia.base.org")
+R = os.environ.get("MADB_RPC") or ("https://base.drpc.org" if MAINNET else "https://sepolia.base.org")
 D = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "base-mainnet.json" if MAINNET else "base-sepolia.json")))
 CORE, USDC = D["contracts"]["MADBountyCore"], D["usdc"]
 FB, OC, HR, TV, MV = (D["contracts"][k] for k in ("FallbackVerifier", "OnchainCheckVerifier", "HashRevealVerifier", "TeeMLVerifier", "MultiVerifier"))
@@ -21,8 +21,13 @@ ST = {1: "Open", 2: "Claimed", 3: "Submitted", 4: "Rejected", 5: "Paid", 6: "Bur
 ONE = 1_000_000
 RESULTS = {"pass": 0, "fail": 0}
 
+TRANSIENT = ("HTTP error 403", "HTTP error 429", "rate limit", "request limit", "timed out", "408", "502", "503", "Archive requests")
 def cast(*a, check=True):
-    r = subprocess.run(["cast", *a], capture_output=True, text=True)
+    for attempt in range(5):  # public RPCs are load-balanced/rate-limited: retry only pre-broadcast transient errors
+        r = subprocess.run(["cast", *a], capture_output=True, text=True)
+        err = r.stderr + r.stdout
+        if r.returncode == 0 or not any(t in err for t in TRANSIENT) or "nonce too low" in err: break
+        time.sleep(2 + 3 * attempt)
     if check and r.returncode: raise RuntimeError(r.stderr.strip()[:500])
     return r
 def out(*a): return cast(*a).stdout.strip()
@@ -106,9 +111,9 @@ def now_phase():
     log(f"==== NOW phase. agent {A} worker {W} verifier {V}")
     # funding
     if MAINNET:  # agent wallet is the only funded one: seed worker (gas + deposits) and verifier (gas)
-        if float(out("balance", W, "--ether", "--rpc-url", R)) < 0.0004: tx("fund worker ETH", AG, W, value="0.0008ether")
-        if float(out("balance", V, "--ether", "--rpc-url", R)) < 0.0003: tx("fund verifier ETH", AG, V, value="0.0006ether")
-        if bal(W) < 10 * ONE: tx("agent -> worker 10 USDC (deposits)", AG, USDC, "transfer(address,uint256)", W, str(10 * ONE - bal(W)))
+        if float(out("balance", W, "--ether", "--rpc-url", R)) < 0.0003: tx("fund worker ETH", AG, W, value="0.0005ether")
+        if float(out("balance", V, "--ether", "--rpc-url", R)) < 0.0002: tx("fund verifier ETH", AG, V, value="0.0004ether")
+        if bal(W) < 7 * ONE: tx("agent -> worker 7 USDC (deposits)", AG, USDC, "transfer(address,uint256)", W, str(7 * ONE - bal(W)))
     elif float(out("balance", V, "--ether", "--rpc-url", R)) < 0.0003: tx("fund verifier ETH", AG, V, value="0.0006ether")
     if not MAINNET and bal(V) >= 15 * ONE: tx("verifier -> agent 15 USDC", VK, USDC, "transfer(address,uint256)", A, str(15 * ONE))
     if not MAINNET and bal(A) < 25 * ONE and bal(W) > 12 * ONE: tx("worker -> agent 8 USDC", WK, USDC, "transfer(address,uint256)", A, str(8 * ONE))
