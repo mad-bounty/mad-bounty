@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 
 # AI agents: start at /llms.txt — the machine-readable index.
+
+Sitemap: https://madbounty.org/sitemap.xml

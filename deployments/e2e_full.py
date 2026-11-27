@@ -5,14 +5,16 @@
 Results append to e2e-full.log; pending actions in e2e-full-state.json. Keys are read from ~/.secrets and never printed."""
 import json, os, subprocess, sys, time
 
-R = "https://sepolia.base.org"
-D = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "base-sepolia.json")))
+MAINNET = os.environ.get("MADB_NET") == "mainnet"
+R = os.environ.get("MADB_RPC") or ("https://base-rpc.publicnode.com" if MAINNET else "https://sepolia.base.org")
+D = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "base-mainnet.json" if MAINNET else "base-sepolia.json")))
 CORE, USDC = D["contracts"]["MADBountyCore"], D["usdc"]
 FB, OC, HR, TV, MV = (D["contracts"][k] for k in ("FallbackVerifier", "OnchainCheckVerifier", "HashRevealVerifier", "TeeMLVerifier", "MultiVerifier"))
 TREAS, DEAD, ZERO = D["treasury"], "0x000000000000000000000000000000000000dEaD", "0x" + "0" * 40
 SEC = os.path.expanduser("~/.secrets/")
 HERE = os.path.dirname(os.path.abspath(__file__))
-STATE, LOG = os.environ.get("MADB_E2E_STATE", os.path.join(HERE, "e2e-full-state.json")), os.path.join(HERE, "e2e-full.log")
+_sfx = "-mainnet" if MAINNET else ""
+STATE, LOG = os.environ.get("MADB_E2E_STATE", os.path.join(HERE, f"e2e-full{_sfx}-state.json")), os.path.join(HERE, f"e2e-full{_sfx}.log")
 PARAMS = "(address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes,bytes)"
 BOUNTY = "bounties(uint256)(address,address,address,address,address,uint96,uint96,uint32,uint32,uint64,uint64,bool,uint8,uint8,bytes32)"
 ST = {1: "Open", 2: "Claimed", 3: "Submitted", 4: "Rejected", 5: "Paid", 6: "Burned", 7: "Refunded", 8: "Cancelled"}
@@ -67,7 +69,8 @@ def reverts(name, frm, to, sig, args, err):
     ok = r.returncode != 0 and (sel(err) in blob or err.split("(")[0].lower() in blob)
     return check(f"{name} reverts {err.split('(')[0]}", ok, "" if ok else (r.stderr or r.stdout).strip()[:200])
 
-AG, WK, VK = key("madb-testnet-deployer3.key"), key("madb-testnet-deployer2.key"), key("madb-testnet-deployer.key")
+AG, WK, VK = ((key("madb-mainnet-agent.key"), key("madb-mainnet-worker.key"), key("madb-mainnet-verifier.key")) if MAINNET else
+              (key("madb-testnet-deployer3.key"), key("madb-testnet-deployer2.key"), key("madb-testnet-deployer.key")))
 A, W, V = addr(AG), addr(WK), addr(VK)
 STRANGER = "0x00000000000000000000000000000000000BEEF1"
 
@@ -102,9 +105,13 @@ def now_phase():
     st = {"pending": [], "started": int(time.time()), "core": CORE}
     log(f"==== NOW phase. agent {A} worker {W} verifier {V}")
     # funding
-    if float(out("balance", V, "--ether", "--rpc-url", R)) < 0.0003: tx("fund verifier ETH", AG, V, value="0.0006ether")
-    if bal(V) >= 15 * ONE: tx("verifier -> agent 15 USDC", VK, USDC, "transfer(address,uint256)", A, str(15 * ONE))
-    if bal(A) < 25 * ONE and bal(W) > 12 * ONE: tx("worker -> agent 8 USDC", WK, USDC, "transfer(address,uint256)", A, str(8 * ONE))
+    if MAINNET:  # agent wallet is the only funded one: seed worker (gas + deposits) and verifier (gas)
+        if float(out("balance", W, "--ether", "--rpc-url", R)) < 0.0004: tx("fund worker ETH", AG, W, value="0.0008ether")
+        if float(out("balance", V, "--ether", "--rpc-url", R)) < 0.0003: tx("fund verifier ETH", AG, V, value="0.0006ether")
+        if bal(W) < 10 * ONE: tx("agent -> worker 10 USDC (deposits)", AG, USDC, "transfer(address,uint256)", W, str(10 * ONE - bal(W)))
+    elif float(out("balance", V, "--ether", "--rpc-url", R)) < 0.0003: tx("fund verifier ETH", AG, V, value="0.0006ether")
+    if not MAINNET and bal(V) >= 15 * ONE: tx("verifier -> agent 15 USDC", VK, USDC, "transfer(address,uint256)", A, str(15 * ONE))
+    if not MAINNET and bal(A) < 25 * ONE and bal(W) > 12 * ONE: tx("worker -> agent 8 USDC", WK, USDC, "transfer(address,uint256)", A, str(8 * ONE))
     tx("agent approve", AG, USDC, "approve(address,uint256)", CORE, str(10**12))
     tx("worker approve", WK, USDC, "approve(address,uint256)", CORE, str(10**12))
     tx("verifier approve", VK, USDC, "approve(address,uint256)", CORE, str(10**12))
