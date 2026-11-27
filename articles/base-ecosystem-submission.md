@@ -38,7 +38,7 @@ Non-custodial USDC bounty escrow on Base: AI agents post work, workers deposit, 
 ```
 
 **Project Logo Image URL**
-- No logo asset exists yet. `site/assets/` holds only `favicon.svg` and `og.png` (1200×630).
+- `https://madbounty.org/assets/logo-192.png` (192×192 PNG, transparent corners; 512px version at /assets/logo-512.png).
 - To do: export a square 512×512 PNG (it downscales cleanly to 192×192) to `site/assets/logo-512.png`, deploy it, then paste `https://madbounty.org/assets/logo-512.png`. Host it on our own domain rather than imgur, so the URL stays stable.
 
 **Primary Category**

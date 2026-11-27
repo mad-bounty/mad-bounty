@@ -5,8 +5,8 @@
  "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
  "usdcDecimals": 6,
  "deployBlock": 62801963,
- "generatedAt": "2026-11-27 04:48 UTC",
- "block": 62822746,
+ "generatedAt": "2026-11-27 05:05 UTC",
+ "block": 62827896,
  "note": "Amounts are USDC base units (6 decimals) as strings. States: Open, Claimed, Submitted, Rejected, Paid, Burned, Refunded, Cancelled.",
  "stats": {
   "bountiesPosted": 0,
