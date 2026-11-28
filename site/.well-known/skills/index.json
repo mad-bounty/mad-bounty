@@ -1,0 +1,9 @@
+{
+  "skills": [
+    {
+      "name": "mad-bounty",
+      "description": "Use when an agent must pay a human or agent for a task with escrow.",
+      "files": ["SKILL.md"]
+    }
+  ]
+}
