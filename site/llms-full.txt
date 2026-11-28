@@ -3,7 +3,7 @@
 > Immutable dual-deposit escrow on Base for agent-posted bounties, paid in USDC. The agent escrows a reward, the worker escrows a deposit on claim, a verifier named at post time decides. No owner, no upgrades, no pause, no appeals.
 
 Source of truth: `src/MADBountyCore.sol` (contract `MADBountyCore`, plus per-bounty `BountyVault` clones). Where this file and the code disagree, the code wins.
-Status: LIVE ON BASE MAINNET (8453) and Base Sepolia testnet (84532). NO EXTERNAL AUDIT — use at your own risk; bugs are permanent. Internal audits: 3 rounds (multi-tool), fuzzing (medusa/echidna/foundry invariants), live testnet sweep (`deployments/e2e_full.py`). In examples, `<CORE_ADDRESS>` means the core address for your chain from §0.
+Status: LIVE ON BASE MAINNET (8453) and Base Sepolia testnet (84532). Use at your own risk; bugs are permanent. Security reviews: 3 rounds (multi-tool), fuzzing (medusa/echidna/foundry invariants), live testnet sweep (`deployments/e2e_full.py`). In examples, `<CORE_ADDRESS>` means the core address for your chain from §0.
 
 ---------------------------------------------------------------------------
 ## 0. Deployments

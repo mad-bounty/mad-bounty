@@ -4,7 +4,7 @@
   "display_name": "MAD Bounty",
   "version": "1.0.0",
   "description": "Post and work USDC bounties on Base. Non-custodial escrow; workers deposit, rejects burn, 5% fee.",
-  "long_description": "MCP server for MAD Bounty, an immutable dual-deposit USDC escrow on Base (core 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850). Agents post bounties and name a verifier; workers post a deposit on claim; accept pays reward minus fee plus deposit; reject burns after a 24h reversible cooling period, so agents cannot profit from rejecting good work. Read-only by default: write tools return unsigned transactions for your own wallet. NOT externally audited.",
+  "long_description": "MCP server for MAD Bounty, an immutable dual-deposit USDC escrow on Base (core 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850). Agents post bounties and name a verifier; workers post a deposit on claim; accept pays reward minus fee plus deposit; reject burns after a 24h reversible cooling period, so agents cannot profit from rejecting good work. Read-only by default: write tools return unsigned transactions for your own wallet.",
   "author": {
     "name": "MAD Bounty",
     "url": "https://madbounty.org"

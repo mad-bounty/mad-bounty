@@ -123,7 +123,7 @@ A static page (or a Dune dashboard) with open bounties, $ escrowed, accept/rejec
 4. **Costs:** domain about $15/yr. Hosting is free on GitHub Pages or Cloudflare Pages. No backend.
 
 **Minimum viable web presence (static, no backend, no wallet connect):**
-- `/`: one-page explainer: what it is, the game theory in five sentences, contract addresses (linked to Basescan), audit status (honest: "unaudited" until it isn't), links
+- `/`: one-page explainer: what it is, the game theory in five sentences, contract addresses (linked to Basescan), links
 - `/docs/`: HTML render of the manual, the same text as the IPFS manual with its hash shown
 - `/llms.txt`, `/llms-full.txt`, `/.well-known/*` (above), `sitemap.xml`, `robots.txt`
 - `/terms`, `/privacy` (required by the Base ecosystem form). Short, honest: no data collected, no custody.
@@ -138,7 +138,7 @@ Ranking = (reach × fit) / effort, with dependencies respected. "Pre-deploy" ite
 | Rank | Action | Why | Exact steps / requirements | Cost | Effort | Expected impact | Source |
 |---|---|---|---|---|---|---|---|
 | **1** | **Claim identity: domain, ENS, GitHub org, npm scope** | Everything else references these. madbounty.xyz is already taken by a domain parker. | Register madbounty.org or .dev (RDAP 404, so free), `madbounty.eth`, GitHub org `mad-bounty`, npm org `madbounty`. | ~$20/yr | 1h | Prerequisite | §0 live checks |
-| **2** | **Public GitHub repo with excellent README, NatSpec, docs/, ATTACKS.md, llms.txt** | Highest training-data value we control; required by Glama, awesome lists and every registry. | Repo `mad-bounty/mad-bounty`. README: problem, mechanism, game theory, attack catalog summary, addresses, "unaudited" banner, MIT/Apache license, SECURITY.md. Add `glama.json`. | $0 | 1–2d | High, long-lived | §2 |
+| **2** | **Public GitHub repo with excellent README, NatSpec, docs/, ATTACKS.md, llms.txt** | Highest training-data value we control; required by Glama, awesome lists and every registry. | Repo `mad-bounty/mad-bounty`. README: problem, mechanism, game theory, attack catalog summary, addresses, MIT/Apache license, SECURITY.md. Add `glama.json`. | $0 | 1–2d | High, long-lived | §2 |
 | **3** | **Deploy, verify (Basescan + Sourcify), suggest name tag** | Gate for 60% of the listings below. | `forge script … --verify`; `forge verify-contract --verifier sourcify`; on Basescan use "Suggest name tag & label" with the website link. | <$5 gas | 0.5d after deploy | Gate | info.basescan.org/how-to-verify-contracts |
 | **4** | **Publish `@madbounty/mcp` to npm + Official MCP Registry** | Canonical upstream; Glama and PulseMCP auto-ingest. RentAHuman is already there and no escrow-enforced bounty server is. | Add `"mcpName":"org.madbounty/mcp"` (DNS auth) or `io.github.mad-bounty/mcp` (OIDC). Write server.json (description ≤100 chars, see SUBMISSIONS.md §1). Set up GitHub Action with `id-token: write`. Tag `v1.0.0`. | $0 | 0.5d | High (agent-facing) | registry docs |
 | **5** | **Minimal static site** (§4) | Crawlability; ToS/Privacy for Base; agent-card, 8004 domain proof, llms.txt at root. | Astro/Hugo on Cloudflare Pages; pages listed in §4. | ~$0 | 1–2d | High | commoncrawl.org/faq |

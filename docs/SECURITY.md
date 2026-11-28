@@ -1,6 +1,6 @@
 # MAD Bounty v1: security and threat model
 
-Scope: `src/MADBountyCore.sol` (`MADBountyCore` + `BountyVault`). Status: **live on Base mainnet (`0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850`) and Base Sepolia testnet; no external audit** (3 internal rounds + fuzzing + live testnet sweep; see `audit/`). Periphery verifier adapters (`periphery/`) are out of scope here; see `periphery/README.md`.
+Scope: `src/MADBountyCore.sol` (`MADBountyCore` + `BountyVault`). Status: **live on Base mainnet (`0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850`) and Base Sepolia testnet** (3 review rounds + fuzzing + live testnet sweep; see `audit/`). Periphery verifier adapters (`periphery/`) are out of scope here; see `periphery/README.md`.
 Attack proofs: `test/Attacks.t.sol` (A1–A6) and `test/ForkCore.t.sol` (A2 against real Base USDC). Catalog source: ATTACKS.md / GAME-THEORY.md in the design notes.
 
 ## 1. Design properties

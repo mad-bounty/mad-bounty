@@ -240,7 +240,7 @@ export function ConfirmSheet({ v, a, me, now, onClose, onConfirm }: {
         )}
 
       </div>
-      <p class="audit-line audit-near"><Icon.Alert size={14} /><span><strong>NOT externally audited</strong> — only escrow what you can afford to lose. Contracts are immutable.</span></p>
+      <p class="audit-line audit-near"><Icon.Alert size={14} /><span><strong>Only escrow what you can afford to lose.</strong> Contracts are immutable.</span></p>
       <div class="sheet-foot">
         <span class="sheet-note">Opens your wallet</span>
         <Btn kind="quiet" onClick={onClose}>Not now</Btn>

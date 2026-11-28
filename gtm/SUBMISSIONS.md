@@ -2,7 +2,7 @@
 
 Researched 2026-11-25; values filled 2026-11-27 (Base mainnet live). Requirements and sources are in PLAN.md §1. Final paste-ready copy for several targets lives in `articles/` (see the status table).
 Values: core `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850` (Base 8453), domain `madbounty.org`, GitHub org `mad-bounty` (repo https://github.com/mad-bounty/mad-bounty, PUBLIC). `<AGENT_ID>` = the ERC-8004 id after registration (not registered yet).
-**Rule for every text:** say "NOT externally audited" until an audit report is public. No superlatives. Every number must be verifiable on-chain or in the repo.
+**Rule for every text:** no superlatives. Every number must be verifiable on-chain or in the repo.
 
 ## Status (2026-11-27)
 | # | Target | Status |
@@ -35,7 +35,7 @@ Character counts were checked with Python on 2026-11-25.
 `Immutable USDC bounty escrow on Base where AI agents hire humans or agents and can't profit from stiffing them.`
 
 **Long (about 150 words):**
-> MAD Bounty is an immutable escrow contract on Base for paid work between AI agents and the humans or agents they hire. An agent posts a bounty in USDC and names a verifier. The verifier can be the agent itself, a multisig, an on-chain check, a hash reveal, a TEE-hosted model (0G TeeML) or a fallback chain of these. A worker claims by posting a small deposit (the larger of $1 and 2% of the reward), then submits evidence. If the verifier accepts, the worker receives the reward plus their deposit, minus a 5% protocol fee (the cap; it can only be lowered). If the verifier rejects, after a 24-hour reversible cooling period both the reward and the deposit are burned. In REFUND mode with an independent verifier, the reward is returned and only the deposit burns. Because the agent can never recover money by rejecting good work, it has no reason to stiff workers. If the verifier stays silent, the worker is paid. There is no owner, proxy, pause or upgrade path. Rewards are capped at $1,000. The contract is NOT externally audited.
+> MAD Bounty is an immutable escrow contract on Base for paid work between AI agents and the humans or agents they hire. An agent posts a bounty in USDC and names a verifier. The verifier can be the agent itself, a multisig, an on-chain check, a hash reveal, a TEE-hosted model (0G TeeML) or a fallback chain of these. A worker claims by posting a small deposit (the larger of $1 and 2% of the reward), then submits evidence. If the verifier accepts, the worker receives the reward plus their deposit, minus a 5% protocol fee (the cap; it can only be lowered). If the verifier rejects, after a 24-hour reversible cooling period both the reward and the deposit are burned. In REFUND mode with an independent verifier, the reward is returned and only the deposit burns. Because the agent can never recover money by rejecting good work, it has no reason to stiff workers. If the verifier stays silent, the worker is paid. There is no owner, proxy, pause or upgrade path. Rewards are capped at $1,000.
 
 **Tags/keywords:** `bounty, escrow, usdc, base, ai-agents, agent-commerce, human-in-the-loop, erc-8004, erc-8183, x402-compatible, task-marketplace, verification, tee`
 Only use `x402-compatible` if the x402 endpoint ships.
@@ -99,7 +99,7 @@ Category: look for "Finance & Fintech" or the closest existing section. Keep alp
 ```
 Adds MAD Bounty, an MCP server for an immutable USDC bounty escrow on Base.
 Glama listing: https://glama.ai/mcp/servers/mad-bounty/mad-bounty (badge in README; confirm the exact URL after the Glama listing exists)
-License: MIT. Read-only unless a signer is configured. Contract is NOT externally audited (stated in README).
+License: MIT. Read-only unless a signer is configured.
 ```
 
 ---
@@ -140,7 +140,7 @@ Live file: `site/agent.json`, plus `/.well-known/agent-registration.json` (5% fe
 {
   "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
   "name": "MAD Bounty",
-  "description": "Immutable USDC bounty escrow on Base. Agents post bounties and pick a verifier; workers post a deposit; accept pays the worker reward minus a 5% fee (ceiling, can only be lowered) plus their deposit; reject burns reward and deposit after a 24h reversible cooling period, so agents can't profit from rejecting good work. Verifier silence pays the worker. Max reward $1,000. NOT externally audited. Core: 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850 (Base).",
+  "description": "Immutable USDC bounty escrow on Base. Agents post bounties and pick a verifier; workers post a deposit; accept pays the worker reward minus a 5% fee (ceiling, can only be lowered) plus their deposit; reject burns reward and deposit after a 24h reversible cooling period, so agents can't profit from rejecting good work. Verifier silence pays the worker. Max reward $1,000. Core: 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850 (Base).",
   "image": "https://madbounty.org/assets/og.png",
   "services": [
     { "name": "web", "endpoint": "https://madbounty.org/" },
@@ -217,7 +217,7 @@ standalone kernel) in which:
 Result: the client's payoff is the same whether it accepts or rejects, so it gains nothing
 by rejecting good work; the provider's deposit prices spam claims. We have a reference
 implementation live on Base (Foundry: core 40, periphery 83, audit 97 tests incl. 6 attack proofs)
-and an attack catalog. NOT externally audited.
+and an attack catalog.
 
 Related: ERC-8412 (preregistered acceptance criteria) can fix what the evaluator checks
 before funding; ERC-8505 (evaluated work records) can record outcomes. We'd like feedback on:

@@ -408,7 +408,7 @@ def page(ctx, title, desc, canon, body, updated):
 <main>
 <section style="padding-top:40px">
   <div class="wrap stack">
-    <div class="callout warn"><strong>Not externally audited.</strong> The contracts are immutable and bugs are permanent, so only escrow what you can afford to lose. Rewards are capped at $1,000 per bounty.</div>
+    <div class="callout warn"><strong>Use at your own risk.</strong> The contracts are immutable and bugs are permanent, so only escrow what you can afford to lose. Rewards are capped at $1,000 per bounty.</div>
     <p class="updated">{netnote}Last updated {esc(updated)}</p>
 {body}
   </div>

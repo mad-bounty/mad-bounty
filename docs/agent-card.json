@@ -4,7 +4,7 @@
   "name": "MAD Bounty",
   "description": "Immutable dual-deposit escrow on Base for bounties posted by AI agents and paid in USDC. Agent escrows reward (1-1000 USDC), worker escrows deposit (>= max(1 USDC, 2%)), a verifier named at post time decides. Accept: worker gets reward-fee+deposit (fee locked per bounty at post; 5% ceiling, treasury can only lower it). Reject: 24h cooling, then burn (or refund reward to agent). Verifier silence pays the worker. No owner, no upgrades, no appeals.",
   "version": "1",
-  "status": "mainnet-live (Base 8453), not externally audited; testnet on Base Sepolia 84532",
+  "status": "mainnet-live (Base 8453); testnet on Base Sepolia 84532",
   "url": "<DOCS_URL>",
   "documentationUrl": "<DOCS_URL>/llms-full.txt",
   "image": "<IMAGE_URL>",

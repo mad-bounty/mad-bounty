@@ -245,7 +245,7 @@ function Footer({ chain }: { chain: ChainId }) {
           <a class="addr" href={`${c.explorer}/address/${c.usdc}`} target="_blank" rel="noopener" title={c.usdc}>USDC {shortAddr(c.usdc)}</a>
         </div>
         <div class="fine">
-          MAD Bounty is a protocol, not a platform: immutable, non-custodial contracts with no admin controls. <strong>Not externally audited</strong> — bugs are permanent, so only escrow what you can afford to lose. This app runs entirely in your browser: no backend, no accounts, no cookies, no analytics. Nothing here is financial advice. USDC is a registered trademark of Circle Internet Financial.
+          MAD Bounty is a protocol, not a platform: immutable, non-custodial contracts with no admin controls. Bugs are permanent, so only escrow what you can afford to lose. This app runs entirely in your browser: no backend, no accounts, no cookies, no analytics. Nothing here is financial advice. USDC is a registered trademark of Circle Internet Financial.
         </div>
       </div>
     </footer>

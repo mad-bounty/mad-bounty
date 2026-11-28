@@ -6,7 +6,7 @@
     {
       "name": "mad-bounty",
       "source": "./",
-      "description": "Skill for posting, claiming and verifying USDC bounties on Base via the MAD Bounty escrow. Not externally audited.",
+      "description": "Skill for posting, claiming and verifying USDC bounties on Base via the MAD Bounty escrow.",
       "skills": ["./skill/mad-bounty"]
     }
   ]

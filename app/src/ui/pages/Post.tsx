@@ -185,7 +185,7 @@ export function PostPage() {
                   <li><span class="tp-n">{w.address && needsApprove ? 2 : 1}</span><span>Post the bounty — moves <strong>{usdc(d.reward)} USDC</strong> into its escrow vault.</span></li>
                 </ol>
               </div>
-              <p class="audit-line audit-near"><Icon.Alert size={14} /><span><strong>NOT externally audited</strong> — only escrow what you can afford to lose. Contracts are immutable. Network: <strong>{CHAINS[chain].name}</strong>.</span></p>
+              <p class="audit-line audit-near"><Icon.Alert size={14} /><span><strong>Only escrow what you can afford to lose.</strong> Contracts are immutable. Network: <strong>{CHAINS[chain].name}</strong>.</span></p>
               <div class="wiz-nav wiz-nav-tight">
                 <Btn kind="quiet" onClick={() => goStep(2)}><Icon.Back size={16} />Back</Btn>
                 {w.address

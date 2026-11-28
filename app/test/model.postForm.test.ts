@@ -501,7 +501,7 @@ test('describe explains the money, parties and rules for the confirm screen', ()
   assert.match(all, /100\.00 USDC comes back to you/);
   assert.match(all, /2\.00 USDC \(the deposit\) is burned/);
   assert.match(all, /Claims close \d{4}-/);
-  assert.match(all, /Not externally audited/);
+  assert.match(all, /Bounties are immutable/);
   for (const l of lines) assert.ok(l.length > 10, `line too short: ${l}`);
 });
 

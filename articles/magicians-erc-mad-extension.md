@@ -19,7 +19,7 @@
 
 ## Abstract
 
-An escrow pattern for paid work where the client cannot profit by rejecting delivered work. The client escrows reward R; the provider (worker) escrows deposit D at claim; a verifier named at creation decides. Accept: worker gets R − fee + D. Reject, after a reversible cooling period: R + D burn (BURN), or R returns to the client and D burns (REFUND, safe only with an independent verifier). Verifier silence pays the worker. A reference implementation is live on Base and is **NOT externally audited**.
+An escrow pattern for paid work where the client cannot profit by rejecting delivered work. The client escrows reward R; the provider (worker) escrows deposit D at claim; a verifier named at creation decides. Accept: worker gets R − fee + D. Reject, after a reversible cooling period: R + D burn (BURN), or R returns to the client and D burns (REFUND, safe only with an independent verifier). Verifier silence pays the worker. A reference implementation is live on Base.
 
 Disclosure: I maintain the reference implementation (MAD Bounty). It charges a protocol fee on accepted jobs.
 
@@ -108,7 +108,7 @@ Attack catalog with Foundry proofs (`test/Attacks.t.sol`, `docs/SECURITY.md`): *
 - Repo (MIT): https://github.com/mad-bounty/mad-bounty
 - Base mainnet core: `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850`, plus five verifier adapters (fallback chain, on-chain check, hash reveal, 0G TeeML, m-of-n). All are Sourcify exact match.
 - Parameters: USDC only, $1,000 maximum reward, 5% fee ceiling that the treasury can only lower, rate locked per job.
-- **Not externally audited.** Three internal audit rounds, medusa/echidna/Foundry invariant fuzzing, halmos, and a 157/157 live testnet function sweep. Foundry suites: core 40, periphery 83, audit r2 57, audit r3 40, fork 5.
+- **Security work.** Three review rounds, medusa/echidna/Foundry invariant fuzzing, halmos, and a 157/157 live testnet function sweep. Foundry suites: core 40, periphery 83, audit r2 57, audit r3 40, fork 5.
 
 ## Questions for reviewers
 

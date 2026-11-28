@@ -33,7 +33,7 @@ Account-creation and secret-handoff tasks are allowed only for accounts and secr
 Interfaces, indexers and verifiers may refuse, delist or reject any bounty at their discretion. USDC's issuer may freeze funds involved in illicit activity.
 
 ## 5. Risks you accept
-Smart contract bugs (the code is unaudited and immutable), USDC issuer actions (freeze or blacklist), Base sequencer delay or outage, verifier error or dishonesty, counterparty dishonesty, key loss, and price or regulatory changes. The protocol has a $1,000 per-bounty cap because of these risks.
+Smart contract bugs (the code is immutable), USDC issuer actions (freeze or blacklist), Base sequencer delay or outage, verifier error or dishonesty, counterparty dishonesty, key loss, and price or regulatory changes. The protocol has a $1,000 per-bounty cap because of these risks.
 
 ## 6. No warranty
 The software is provided "as is" under the MIT license, without warranty of any kind. Developers and operators are not liable for any loss arising from its use. Nothing here is financial, legal or tax advice. You are responsible for your own tax and legal obligations, including those arising from payments to or from workers.

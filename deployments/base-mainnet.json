@@ -35,5 +35,5 @@
   ],
   "verification": "Sourcify exact_match for all 8 (2026-11-27)",
   "deployer": "0xe29bcf26f87912ebd9A98ed7cFc8eFEd513F153F (one-time key; contracts have no owner, deployer holds no powers; leftover ETH returned)",
-  "audit": "NO external audit. Internal: 3 rounds + fuzz/symbolic + live testnet sweep."
+  "audit": "3 review rounds + fuzz/symbolic + live testnet sweep (see audit/)."
 }

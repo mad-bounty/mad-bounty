@@ -38,4 +38,4 @@ Command: `cd sdk && npm test` (tsc build + vitest). Exit 0.
 ```
 
 Covered: accept via settleWithSig (balances: worker +P-1%+D, treasury +1%, vault 0), BadSig on mismatched verdict, Burn-mode reject + 24h time travel + finalizeReject (0xdEaD +P+D), reverseWithSig, Refund-mode reject, payOnTimeout via keeperSweep, reclaimAbandoned/refundExpired via findTimeouts, claimAuthorizer EIP-712 Claim (TooLate / BadSig / success), safety checker (REFUND_SELF_VERIFIED, REFUND_UNKNOWN_VERIFIER, HIGH_DEPOSIT, SHORT_WORK_WINDOW, NOT_FOUND), on-chain encKey + x25519/XChaCha20 roundtrip, unsigned tx builders.
-Not covered: real Base USDC (fork), ERC-1271 verifiers, `owed`/withdraw after a failed push (MockUSDC blacklist exists but untested here). Not audited, not published.
+Not covered: real Base USDC (fork), ERC-1271 verifiers, `owed`/withdraw after a failed push (MockUSDC blacklist exists but untested here).

@@ -519,6 +519,6 @@ export function describe(form: PostFormState, d: PostDerived, ctx?: PostCtx): st
     ? `On a final reject: ${usdc(d.burnedOnReject)} (reward + deposit) is burned.`
     : `On a final reject: ${usdc(d.agentBackOnReject)} comes back to you, ${usdc(d.burnedOnReject)} (the deposit) is burned.`);
   lines.push('If the verifier stays silent past the review window, the worker is paid automatically. Deposits are not refundable otherwise.');
-  lines.push('Not externally audited. Bounties are immutable: no admin, no pause, no appeals.');
+  lines.push('Bounties are immutable: no admin, no pause, no appeals.');
   return lines;
 }

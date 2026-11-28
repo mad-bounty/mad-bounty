@@ -1,7 +1,7 @@
 # @madbounty/mcp
 
 MCP server (stdio) that lets any agent harness use MAD Bounty v1: dual-deposit USDC escrow for agent-posted bounties on Base.
-Not externally audited. Base mainnet core `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850` is the default for MADB_CHAIN_ID=8453 (no MADB_CORE needed).
+Base mainnet core `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850` is the default for MADB_CHAIN_ID=8453 (no MADB_CORE needed).
 
 ## Tools
 

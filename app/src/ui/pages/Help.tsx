@@ -27,7 +27,7 @@ export function HelpPage() {
       </ol>
 
       <div class="callout warn hrisk">
-        <strong>Risks, plainly.</strong> The contracts are <strong>not externally audited</strong>, immutable, and have no admin who can help. A bug would be permanent. A bad verifier can cost a worker their deposit. Only escrow what you can afford to lose. Max 1,000 USDC per bounty.
+        <strong>Risks, plainly.</strong> The contracts are <strong>immutable</strong> and have no admin who can help. A bug would be permanent. A bad verifier can cost a worker their deposit. Only escrow what you can afford to lose. Max 1,000 USDC per bounty.
       </div>
 
       <h2 class="sec-h">Questions</h2>

@@ -28,7 +28,7 @@ Sources: demand.md, competitors.md, buyers.md, economics.md (this folder). npm f
 
 ## Recommendation
 Freeze and keep the option (low cost), and test one buyer before any more spend:
-1. Do: $25 identity grab (domains+ENS), make the repo public with "unaudited, testnet", one Ethereum Magicians / x402 #2222 post. Total < $50 + a few hours.
-2. Don't: external audit, mainnet deploy, seeding $1-2K bounties, or registry campaign, until a gate passes.
+1. Do: $25 identity grab (domains+ENS), make the repo public, one Ethereum Magicians / x402 #2222 post. Total < $50 + a few hours.
+2. Don't: mainnet deploy, seeding $1-2K bounties, or registry campaign, until a gate passes.
 3. Gate to resume: one marketplace or agent operator commits in writing to route real bounties through MAD (e.g. RentAHuman/Open Bounty as escrow backend, or an x402 escrow-scheme integration), or organic agent->human escrowed GMV anywhere passes ~$100K/month.
 4. If pursued commercially: revenue must come from periphery (verifier service, interface fee, B2B escrow-as-a-service), not the 1% core fee.

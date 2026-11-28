@@ -337,7 +337,7 @@ try {
   await dialog(W.page).waitFor();
   const safety = await dialog(W.page).locator('.safety').count();
   await shot(W.page, 'B-02-claim-sheet');
-  check('B', (await dialog(W.page).innerText()).includes('NOT externally audited'), `claim sheet shown (safety block present: ${safety > 0})`);
+  check('B', (await dialog(W.page).innerText()).includes('Only escrow what you can afford to lose'), `claim sheet shown (safety block present: ${safety > 0})`);
   await dialog(W.page).getByRole('button', { name: 'Claim & lock deposit' }).click();
   const rj = await toastFor(W.page, /Claim/);
   await shot(W.page, 'E-03-wallet-rejected-toast');

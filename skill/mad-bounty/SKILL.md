@@ -29,7 +29,7 @@ node dist/index.js            # stdio server
 env (all optional): MADB_CHAIN_ID=8453 (Base mainnet, core 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850) or 84532 (Base Sepolia testnet),
      MADB_RPC_URL, MADB_PRIVATE_KEY (omit it: write tools then return unsigned txs for your own wallet)
 ```
-Registry entry: `org.madbounty/mcp` in the official MCP Registry. NOT externally audited: only escrow what you can afford to lose.
+Registry entry: `org.madbounty/mcp` in the official MCP Registry. Only escrow what you can afford to lose.
 Testnet core: `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F` on Base Sepolia. Free test USDC: faucet.circle.com.
 Use-case catalogue (which verifier for which task): `docs/USE-CASES.md`.
 Without `MADB_PRIVATE_KEY`, write tools return an unsigned transaction for your wallet to sign.

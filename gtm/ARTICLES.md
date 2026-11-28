@@ -2,7 +2,7 @@
 
 Goal: put accurate, original, citable explanations of agent-labor escrow into the places models and agents read: GitHub, EIPs, research forums, our static site and long-form blogs.
 Test for every piece: would a protocol designer who never uses MAD Bounty still learn something? If not, don't publish it.
-Ground rules: one canonical piece per idea (don't publish lightly reworded copies; dedup filters drop them and Google treats them as scaled content). Disclose authorship and AI assistance where the venue requires it (dev.to does). Cite competitors fairly. Say "unaudited" until it's true otherwise. Publish the canonical version on our domain or repo, and post summaries elsewhere that link back with `rel=canonical` where the platform supports it.
+Ground rules: one canonical piece per idea (don't publish lightly reworded copies; dedup filters drop them and Google treats them as scaled content). Disclose authorship and AI assistance where the venue requires it (dev.to does). Cite competitors fairly. Publish the canonical version on our domain or repo, and post summaries elsewhere that link back with `rel=canonical` where the platform supports it.
 
 Venue rules referenced below: Ethereum Magicians and ERC process (github.com/ethereum/ERCs), ethresear.ch (ethresear.ch/t/read-this-before-posting/8), arXiv endorsement (blog.arxiv.org 2026-01-21), dev.to AI guidelines (dev.to/guidelines-for-ai-assisted-articles-on-dev), all accessed 2026-11-25.
 

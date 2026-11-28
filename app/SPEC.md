@@ -26,7 +26,7 @@ the only JS area of the site.
   (CORS `*`). Logs: chunk by <= 45,000 blocks from `deployBlock`. Writes go through the user's wallet.
 - Every money-moving action shows a **confirmation sheet** before the wallet opens: plain-language
   summary, exact USDC amounts (reward, deposit, fee, what each party gets on accept / reject), the verifier
-  and reject mode, and the "NOT externally audited" line. The user must tick nothing — one clear primary
+  and reject mode, and the "only escrow what you can afford to lose" risk line. The user must tick nothing — one clear primary
   button — but the sheet must be impossible to skip.
 
 ## Where the spec text lives (no backend)

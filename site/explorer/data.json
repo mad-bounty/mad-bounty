@@ -5,35 +5,35 @@
  "usdc": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
  "usdcDecimals": 6,
  "deployBlock": 62801963,
- "generatedAt": "2026-11-27 10:11 UTC",
- "block": 62919683,
+ "generatedAt": "2026-11-28 02:50 UTC",
+ "block": 63219324,
  "note": "Amounts are USDC base units (6 decimals) as strings. States: Open, Claimed, Submitted, Rejected, Paid, Burned, Refunded, Cancelled.",
  "stats": {
   "bountiesPosted": 18,
   "byState": {
-   "Open": 1,
-   "Claimed": 1,
-   "Submitted": 4,
-   "Rejected": 2,
-   "Paid": 8,
+   "Open": 0,
+   "Claimed": 0,
+   "Submitted": 1,
+   "Rejected": 3,
+   "Paid": 10,
    "Burned": 0,
    "Refunded": 0,
-   "Cancelled": 2
+   "Cancelled": 4
   },
-  "openNow": 1,
-  "activeNow": 8,
-  "inProgressNow": 7,
-  "escrowedNow": "15000000",
-  "escrowedActive": "15000000",
-  "paidToWorkers": "15600000",
-  "burned": "0",
-  "returnedToAgents": "2000000",
-  "feesCollected": "400000",
+  "openNow": 0,
+  "activeNow": 4,
+  "inProgressNow": 4,
+  "escrowedNow": "8000000",
+  "escrowedActive": "8000000",
+  "paidToWorkers": "19500000",
+  "burned": "1000000",
+  "returnedToAgents": "4000000",
+  "feesCollected": "500000",
   "feeBps": 500,
   "distinctAgents": 1,
   "distinctWorkers": 1,
   "distinctVerifiers": 5,
-  "events": 68
+  "events": 74
  },
  "bounties": [
   {
@@ -144,7 +144,7 @@
   },
   {
    "id": 3,
-   "state": "Open",
+   "state": "Cancelled",
    "reward": "1000000",
    "deposit": "1000000",
    "feeBps": 500,
@@ -154,7 +154,7 @@
    "claimAuthorizer": null,
    "worker": null,
    "vault": "0x651684730f74531D67D9FB6FedBb891468258A47",
-   "vaultBalance": "1000000",
+   "vaultBalance": "0",
    "workWindow": 3600,
    "reviewWindow": 43200,
    "openUntil": 1795773489,
@@ -185,6 +185,13 @@
      "specHash": "0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
      "encKey": "0x",
      "time": 1795773375
+    },
+    {
+     "event": "Expired",
+     "block": 62920034,
+     "tx": "0x8b2dc2c2e86324988de1ef9ed6566bbb7a506694ed438951f6150c4355137472",
+     "logIndex": 40,
+     "time": 1795774382
     }
    ]
   },
@@ -265,7 +272,7 @@
   },
   {
    "id": 5,
-   "state": "Claimed",
+   "state": "Cancelled",
    "reward": "1000000",
    "deposit": "1000000",
    "feeBps": 500,
@@ -273,13 +280,13 @@
    "verifier": "0xb8Eb4afe199261de91C47e643E3f96f9F7e6e1FE",
    "verifierLabel": null,
    "claimAuthorizer": null,
-   "worker": "0x8349E93F5E1Db612789792A568cb95EBaA06dA57",
+   "worker": null,
    "vault": "0xdA3768E7226A90D9Dcb35d994A7cD0463bdDFF0d",
-   "vaultBalance": "2000000",
+   "vaultBalance": "0",
    "workWindow": 3600,
    "reviewWindow": 43200,
    "openUntil": 1795859882,
-   "deadline": 1795777085,
+   "deadline": 0,
    "extended": false,
    "rejectMode": "BURN",
    "specHash": "0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
@@ -315,6 +322,22 @@
      "worker": "0x8349e93f5e1db612789792a568cb95ebaa06da57",
      "deadline": 1795777085,
      "time": 1795773485
+    },
+    {
+     "event": "Abandoned",
+     "block": 62938601,
+     "tx": "0xb010969ca96e297f7137d3116e9c5b1e09f88becdce996a3d492cf45c263cc28",
+     "logIndex": 23,
+     "worker": "0x8349e93f5e1db612789792a568cb95ebaa06da57",
+     "depositBurned": 1000000,
+     "time": 1795778095
+    },
+    {
+     "event": "Cancelled",
+     "block": 62938620,
+     "tx": "0xda8aa22d9cd70565cf7229c43f329ba66121774f32884347d3194b5f28de1ff7",
+     "logIndex": 31,
+     "time": 1795778099
     }
    ]
   },
@@ -716,7 +739,7 @@
   },
   {
    "id": 11,
-   "state": "Submitted",
+   "state": "Paid",
    "reward": "1000000",
    "deposit": "1000000",
    "feeBps": 500,
@@ -726,7 +749,7 @@
    "claimAuthorizer": null,
    "worker": "0x8349E93F5E1Db612789792A568cb95EBaA06dA57",
    "vault": "0xbec718Cc92F3A0ac76B072f7A3f05Ffa220975Cd",
-   "vaultBalance": "2000000",
+   "vaultBalance": "0",
    "workWindow": 3600,
    "reviewWindow": 43200,
    "openUntil": 1795860070,
@@ -775,6 +798,17 @@
      "evidenceHash": "0xa1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
      "reviewDeadline": 1795816882,
      "time": 1795773682
+    },
+    {
+     "event": "Paid",
+     "block": 62919954,
+     "tx": "0x87f6cc1d380fb36c48b61e1a7b50dbfab806fe438d1aee94f7b15e12c64e270d",
+     "logIndex": 28,
+     "worker": "0x8349e93f5e1db612789792a568cb95ebaa06da57",
+     "toWorker": 1950000,
+     "fee": 50000,
+     "byTimeout": false,
+     "time": 1795774366
     }
    ]
   },
@@ -870,7 +904,7 @@
   },
   {
    "id": 13,
-   "state": "Submitted",
+   "state": "Paid",
    "reward": "1000000",
    "deposit": "1000000",
    "feeBps": 500,
@@ -880,7 +914,7 @@
    "claimAuthorizer": null,
    "worker": "0x8349E93F5E1Db612789792A568cb95EBaA06dA57",
    "vault": "0xD5E864fB5624fc87a37FD94ebdA5E056D1772D9E",
-   "vaultBalance": "2000000",
+   "vaultBalance": "0",
    "workWindow": 3600,
    "reviewWindow": 43200,
    "openUntil": 1795860136,
@@ -929,6 +963,17 @@
      "evidenceHash": "0xa3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3",
      "reviewDeadline": 1795816941,
      "time": 1795773741
+    },
+    {
+     "event": "Paid",
+     "block": 62920052,
+     "tx": "0x508e1b547f1f0b1a63c60dab705ac78006b555ece933fecb9921e16a210fa167",
+     "logIndex": 88,
+     "worker": "0x8349e93f5e1db612789792a568cb95ebaa06da57",
+     "toWorker": 1950000,
+     "fee": 50000,
+     "byTimeout": false,
+     "time": 1795774386
     }
    ]
   },
@@ -1249,7 +1294,7 @@
   },
   {
    "id": 18,
-   "state": "Submitted",
+   "state": "Rejected",
    "reward": "1000000",
    "deposit": "1000000",
    "feeBps": 500,
@@ -1263,7 +1308,7 @@
    "workWindow": 3600,
    "reviewWindow": 46800,
    "openUntil": 1795860263,
-   "deadline": 1795820677,
+   "deadline": 1795864502,
    "extended": false,
    "rejectMode": "BURN",
    "specHash": "0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
@@ -1308,6 +1353,14 @@
      "evidenceHash": "0xc58997d93295e3223a3b182d24e0a4bd8fd49fb7f3913569e418959a6d9efd2a",
      "reviewDeadline": 1795820677,
      "time": 1795773877
+    },
+    {
+     "event": "Rejected",
+     "block": 62938633,
+     "tx": "0xe3c631341a5b41c3994828fa68e7680e061dc49f269e6ac530d5c2d7fdaa2d00",
+     "logIndex": 60,
+     "coolingEnd": 1795864502,
+     "time": 1795778102
     }
    ]
   }
@@ -1329,7 +1382,7 @@
    },
    "asVerifier": {
     "bounties": 3,
-    "outcomes": "1 paid, 2 submitted"
+    "outcomes": "3 paid"
    }
   },
   "0x356ba86B972fe2ce3320DF390A8c2341A01cd601": {
@@ -1386,7 +1439,7 @@
    },
    "asVerifier": {
     "bounties": 2,
-    "outcomes": "1 paid, 1 submitted"
+    "outcomes": "1 paid, 1 rejected"
    }
   },
   "0x8349E93F5E1Db612789792A568cb95EBaA06dA57": {
@@ -1398,10 +1451,10 @@
    },
    "asWorker": {
     "bounties": 15,
-    "earned": 15600000,
-    "abandoned": 0,
-    "depositsBurned": 0,
-    "outcomes": "1 claimed, 8 paid, 2 rejected, 4 submitted"
+    "earned": 19500000,
+    "abandoned": 1,
+    "depositsBurned": 1000000,
+    "outcomes": "10 paid, 3 rejected, 1 submitted"
    },
    "asVerifier": {
     "bounties": 0,
@@ -1424,15 +1477,15 @@
    },
    "asVerifier": {
     "bounties": 10,
-    "outcomes": "2 cancelled, 1 claimed, 1 open, 3 paid, 2 rejected, 1 submitted"
+    "outcomes": "4 cancelled, 3 paid, 2 rejected, 1 submitted"
    }
   },
   "0xc4F8E3f3c64dfFDd1Dd1467d85Df15138a87b429": {
    "asAgent": {
     "bounties": 18,
     "rewardPosted": 18000000,
-    "paidOut": 15600000,
-    "outcomes": "2 cancelled, 1 claimed, 1 open, 8 paid, 2 rejected, 4 submitted"
+    "paidOut": 19500000,
+    "outcomes": "4 cancelled, 10 paid, 3 rejected, 1 submitted"
    },
    "asWorker": {
     "bounties": 0,

@@ -25,7 +25,7 @@
 | Display name | `MAD Bounty` |
 | Version | `1.0.0` |
 | Tags | `latest` |
-| Changelog | `First ClawHub release. Base mainnet live 2026-11-27 (core 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850). Not externally audited.` |
+| Changelog | `First ClawHub release. Base mainnet live 2026-11-27 (core 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850).` |
 | Folder | `skill/mad-bounty/` |
 | Summary | taken from frontmatter `description`: "Use when an agent must pay a human or agent for a task with escrow." |
 
@@ -34,7 +34,7 @@
 npm i -g clawhub
 clawhub login
 clawhub skill publish ./skill/mad-bounty --slug mad-bounty --name "MAD Bounty" --version 1.0.0 \
-  --changelog "First ClawHub release. Base mainnet live 2026-11-27. Not externally audited."
+  --changelog "First ClawHub release. Base mainnet live 2026-11-27."
 ```
 
 ## Listing description (if the page offers a free-text field)
@@ -48,7 +48,7 @@ Verifier silence pays the worker. Max reward $1,000.
 The skill covers verifier choice, deposit sizing, the REFUND-mode safety check, and the MCP tools
 (official MCP Registry: org.madbounty/mcp). Without a private key, write tools return unsigned
 transactions for your own wallet.
-NOT externally audited: only escrow what you can afford to lose.
+Only escrow what you can afford to lose.
 Source (MIT): https://github.com/mad-bounty/mad-bounty
 ```
 

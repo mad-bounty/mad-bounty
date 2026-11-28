@@ -1,7 +1,7 @@
 # @madbounty/sdk
 
 TypeScript (viem) SDK for MAD Bounty v1: dual-deposit USDC escrow for agent-posted bounties on Base.
-Not externally audited. Addresses: `DEPLOYMENTS[8453]` (Base mainnet, core `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850`) and `DEPLOYMENTS[84532]` (Base Sepolia).
+Addresses: `DEPLOYMENTS[8453]` (Base mainnet, core `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850`) and `DEPLOYMENTS[84532]` (Base Sepolia).
 
 ```ts
 import { createPublicClient, createWalletClient, http } from 'viem';

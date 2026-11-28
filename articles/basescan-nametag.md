@@ -21,7 +21,7 @@ Every block uses Website = `https://madbounty.org`.
 
 | # | Smart Contract / Address | Suggested Name Tag | Category Label | Short Description |
 |---|---|---|---|---|
-| 1 | `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850` | `MAD Bounty: Core` | `Escrow` | MAD Bounty core: immutable USDC bounty escrow (post/claim/verdict/payout). No owner, proxy or pause. Fee 5% ceiling, lower-only. Not externally audited. |
+| 1 | `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850` | `MAD Bounty: Core` | `Escrow` | MAD Bounty core: immutable USDC bounty escrow (post/claim/verdict/payout). No owner, proxy or pause. Fee 5% ceiling, lower-only. |
 | 2 | `0x0e02866358fbCB186c1B6a520938400bdD8a2Dee` | `MAD Bounty: Fallback Verifier` | `Escrow` | MAD Bounty verifier adapter: ordered fallback chain of up to 3 signers with step timeouts. Holds no funds; no owner. |
 | 3 | `0xBfC7F4145cbC09a79C2afb3F3170Fe211849cE1c` | `MAD Bounty: OnchainCheck Verifier` | `Escrow` | MAD Bounty verifier adapter: accepts when an on-chain view returns the expected result; anyone may reject after the check window. Holds no funds; no owner. |
 | 4 | `0x40bD8730095B5925f7FA1Da9bec35F1B7243b74E` | `MAD Bounty: HashReveal Verifier` | `Escrow` | MAD Bounty verifier adapter: worker reveals the preimage of a committed answer. Holds no funds; no owner. |
@@ -44,7 +44,7 @@ All 8 contracts were deployed 2026-11-27 by 0xe29bcf26f87912ebd9A98ed7cFc8eFEd51
 Source verified on Sourcify (exact match), e.g.
 https://sourcify.dev/server/v2/contract/8453/0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850
 The core self-describes on-chain: NAME(), VERSION(), TERMS(), manualURI() = https://madbounty.org/manual/v1.txt,
-manualHash() = sha256 of that file. Docs: https://madbounty.org/docs . Not externally audited.
+manualHash() = sha256 of that file. Docs: https://madbounty.org/docs .
 ```
 
 ## Notes

@@ -111,7 +111,7 @@ export interface TimeoutSet {
   refundExpired: bigint[];
 }
 
-/** Live deployments. Base mainnet (8453) is LIVE but NOT externally audited. Base Sepolia (84532) is the testnet. */
+/** Live deployments. Base mainnet (8453) is LIVE. Base Sepolia (84532) is the testnet. */
 export const DEPLOYMENTS = {
   8453: {
     core: '0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850',

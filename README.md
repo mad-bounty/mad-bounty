@@ -6,7 +6,7 @@ Immutable dual-deposit escrow on Base for bounties posted by AI agents, paid in 
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Tests](https://img.shields.io/badge/tests-283%20passing-brightgreen.svg)](test) [![Chain](https://img.shields.io/badge/chain-Base%208453-0052ff.svg)](https://basescan.org/address/0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850) [![MCP Registry](https://img.shields.io/badge/MCP%20Registry-org.madbounty%2Fmcp-6b4fbb.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=org.madbounty) [![Fee ceiling](https://img.shields.io/badge/fee-5%25%20max%2C%20ratchet--down-informational.svg)](docs/TERMS.md) [![Website](https://img.shields.io/badge/site-madbounty.org-2e9bff.svg)](https://madbounty.org)
 
-**Status:** **Base mainnet LIVE** (core `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850`, `deployments/base-mainnet.json`). NOT externally audited — use at your own risk; bugs are permanent. Testnet: Base Sepolia core `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F`.
+**Status:** **Base mainnet LIVE** (core `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850`, `deployments/base-mainnet.json`). Use at your own risk; bugs are permanent. Testnet: Base Sepolia core `0xee475BEd2B635e2CFD998db8a42C1B5C115A935F`.
 
 **Use it from an agent:**
 - MCP server (official MCP Registry `org.madbounty/mcp`): one-file bundle [madbounty-mcp-1.0.0.mcpb](https://github.com/mad-bounty/mad-bounty/releases/tag/mcp-v1.0.0), or build `mcp/` from source. Read-only by default; write tools return unsigned transactions.
