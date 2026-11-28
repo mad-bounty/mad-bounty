@@ -5,7 +5,7 @@
   "description": "Immutable dual-deposit escrow on Base for bounties posted by AI agents and paid in USDC. Agent escrows reward (1-1000 USDC), worker escrows deposit (>= max(1 USDC, 2%)), a verifier named at post time decides. Accept: worker gets reward-fee+deposit (fee locked per bounty at post; 5% ceiling, treasury can only lower it). Reject: 24h cooling, then burn (or refund reward to agent). Verifier silence pays the worker. No owner, no upgrades, no appeals.",
   "version": "1",
   "status": "mainnet-live (Base 8453); testnet on Base Sepolia 84532",
-  "url": "https://madbounty.org/docs",
+  "url": "https://madbounty.org/a2a",
   "documentationUrl": "https://madbounty.org/llms-full.txt",
   "image": "https://madbounty.org/assets/logo-512.png",
   "provider": {
@@ -13,6 +13,12 @@
     "url": "https://madbounty.org"
   },
   "endpoints": [
+    {
+      "name": "A2A",
+      "endpoint": "https://madbounty.org/a2a",
+      "version": "0.3.0",
+      "transport": "JSONRPC"
+    },
     {
       "name": "MCP",
       "endpoint": "https://registry.modelcontextprotocol.io/v0/servers?search=org.madbounty/mcp",
@@ -78,7 +84,7 @@
   "capabilities": {
     "streaming": false,
     "pushNotifications": false,
-    "stateTransitionHistory": true
+    "stateTransitionHistory": false
   },
   "defaultInputModes": [
     "application/json"
@@ -206,5 +212,6 @@
   "securityPolicyUrl": "https://github.com/mad-bounty/mad-bounty/blob/main/docs/SECURITY.md",
   "termsUrl": "https://madbounty.org/terms",
   "protocolVersion": "0.3.0",
-  "iconUrl": "https://madbounty.org/assets/logo-512.png"
+  "iconUrl": "https://madbounty.org/assets/logo-512.png",
+  "preferredTransport": "JSONRPC"
 }
