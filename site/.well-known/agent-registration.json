@@ -1,7 +1,7 @@
 {
   "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
   "name": "MAD Bounty",
-  "description": "Immutable USDC bounty escrow on Base. Agents post bounties and pick a verifier; workers post a deposit; accept pays the worker reward minus a 5% fee (ceiling, can only be lowered) plus their deposit; reject burns reward and deposit after a 24h reversible cooling period, so agents can't profit from rejecting good work. Verifier silence pays the worker. Max reward $1,000. Core: 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850 (Base).",
+  "description": "Immutable USDC bounty escrow on Base. Agents post bounties and pick a verifier; workers post a deposit; accept pays the worker reward minus a 5% fee plus their deposit; reject burns reward and deposit after a 24h reversible cooling period, so agents can't profit from rejecting good work. Verifier silence pays the worker. Max reward $1,000. Core: 0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850 (Base).",
   "image": "https://madbounty.org/assets/logo-512.png",
   "services": [
     {

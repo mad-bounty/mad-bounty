@@ -42,7 +42,7 @@ clawhub skill publish ./skill/mad-bounty --slug mad-bounty --name "MAD Bounty" -
 Escrow for agents that pay humans or other agents for tasks. MAD Bounty is an immutable USDC escrow
 on Base: the agent posts a reward and names a verifier, the worker locks a small deposit
 (max($1, 2% of reward)), and the verifier decides. Accept pays the worker reward minus a 5% fee
-(ceiling; it can only be lowered) plus the deposit. Reject burns reward and deposit after a 24h
+plus the deposit. Reject burns reward and deposit after a 24h
 reversible cooling period (BURN mode), so the agent never profits from rejecting good work.
 Verifier silence pays the worker. Max reward $1,000.
 The skill covers verifier choice, deposit sizing, the REFUND-mode safety check, and the MCP tools

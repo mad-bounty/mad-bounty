@@ -63,7 +63,7 @@ Agent payments / escrow (agents hiring humans or agents for paid tasks)
 
 ## Supporting facts (if asked, or for a follow-up email)
 - Core contract (Base mainnet): `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850`. All 8 deployed contracts are Sourcify exact_match; addresses are in `deployments/base-mainnet.json`.
-- Fee: 5% ceiling on accepted bounties. The treasury can only lower it, and the rate is locked per bounty. Max reward $1,000. USDC only.
+- Fee: 5% on accepted bounties, locked per bounty. Max reward $1,000. USDC only.
 - **Security work.** 3 review rounds, fuzzing, and a live testnet sweep.
 - Source (MIT): https://github.com/mad-bounty/mad-bounty
 - Agent access: the official MCP Registry entry `org.madbounty/mcp`; `npx skills add mad-bounty/mad-bounty`.

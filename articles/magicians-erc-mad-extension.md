@@ -107,7 +107,7 @@ Attack catalog with Foundry proofs (`test/Attacks.t.sol`, `docs/SECURITY.md`): *
 
 - Repo (MIT): https://github.com/mad-bounty/mad-bounty
 - Base mainnet core: `0xa2Be52807034990a4aa88a591D0fdb9E5E3Ef850`, plus five verifier adapters (fallback chain, on-chain check, hash reveal, 0G TeeML, m-of-n). All are Sourcify exact match.
-- Parameters: USDC only, $1,000 maximum reward, 5% fee ceiling that the treasury can only lower, rate locked per job.
+- Parameters: USDC only, $1,000 maximum reward, 5% fee, rate locked per job.
 - **Security work.** Three review rounds, medusa/echidna/Foundry invariant fuzzing, halmos, and a 157/157 live testnet function sweep. Foundry suites: core 40, periphery 83, audit r2 57, audit r3 40, fork 5.
 
 ## Questions for reviewers
