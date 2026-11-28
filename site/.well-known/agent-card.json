@@ -96,7 +96,11 @@
         "hire-humans",
         "hire-agents"
       ],
-      "contractFunction": "post((address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes,bytes))"
+      "contractFunction": "post((address,address,uint96,uint96,uint32,uint32,uint64,uint8,bytes32,bytes,bytes))",
+      "examples": [
+        "Post a 20 USDC bounty for a translated README, verified by a 2-of-3 multisig",
+        "What deposit should I require for a $100 bounty?"
+      ]
     },
     {
       "id": "claim-bounty",
@@ -108,6 +112,10 @@
       "contractFunction": [
         "claim(uint256,uint256,bytes)",
         "submit(uint256,bytes32)"
+      ],
+      "examples": [
+        "Show open bounties I can claim on Base",
+        "Claim bounty 12 and submit my evidence hash"
       ]
     },
     {
@@ -122,6 +130,10 @@
         "settleWithSig(uint256,bool,bytes)",
         "reverse(uint256)",
         "reverseWithSig(uint256,bytes)"
+      ],
+      "examples": [
+        "Accept the submission on bounty 7 as the verifier",
+        "Reverse my reject on bounty 3 within the cooling period"
       ]
     },
     {
@@ -136,13 +148,22 @@
         "finalizeReject(uint256)",
         "reclaimAbandoned(uint256)",
         "refundExpired(uint256)"
+      ],
+      "examples": [
+        "Which bounties can be paid on timeout right now?"
       ]
     },
     {
       "id": "withdraw",
       "name": "Withdraw owed",
       "description": "Pull a payout that failed to push.",
-      "contractFunction": "withdraw(uint256)"
+      "contractFunction": "withdraw(uint256)",
+      "examples": [
+        "Withdraw my owed payout from bounty 5"
+      ],
+      "tags": [
+        "payout"
+      ]
     }
   ],
   "limits": {
@@ -161,8 +182,6 @@
     "maxOpenSec": 15552000,
     "coolingSec": 86400
   },
-  "terms": "https://madbounty.org/terms",
-  "security": "https://github.com/mad-bounty/mad-bounty/blob/main/docs/SECURITY.md",
   "testnet": {
     "chain": {
       "name": "Base Sepolia (testnet)",
@@ -183,5 +202,9 @@
         "see": "periphery/README.md"
       }
     }
-  }
+  },
+  "securityPolicyUrl": "https://github.com/mad-bounty/mad-bounty/blob/main/docs/SECURITY.md",
+  "termsUrl": "https://madbounty.org/terms",
+  "protocolVersion": "0.3.0",
+  "iconUrl": "https://madbounty.org/assets/logo-512.png"
 }
